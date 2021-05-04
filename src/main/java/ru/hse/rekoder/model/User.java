@@ -5,24 +5,12 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.util.*;
 
-public class User {
-    private Integer id;
+public class User extends ProblemOwner {
     private String name;
 
     private String bio;
     @JsonFormat(pattern="yyyy-MM-dd" /* TODO,timezone=*/)
     private Date registrationTime;
-
-    @JsonManagedReference
-    private List<Problem> problems = new ArrayList<>();
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -46,13 +34,5 @@ public class User {
 
     public void setRegistrationTime(Date registrationTime) {
         this.registrationTime = registrationTime;
-    }
-
-    public List<Problem> getProblems() {
-        return problems;
-    }
-
-    public void setProblems(List<Problem> problems) {
-        this.problems = problems;
     }
 }

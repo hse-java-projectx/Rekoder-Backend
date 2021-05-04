@@ -8,8 +8,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.User;
 import ru.hse.rekoder.services.UserService;
+
+import java.util.List;
 
 
 @RestController
@@ -40,6 +43,19 @@ public class UserController {
             return ResponseEntity.badRequest().build();
         } else {
             return ResponseEntity.ok(createdUser);
+        }
+    }
+
+    @GetMapping("/{userId}/problems")
+    public ResponseEntity<List<Problem>> getProblems(@PathVariable int userId) {
+        return requireNonNullOrElse(userService.getProblems(userId), ResponseEntity.notFound().build());
+    }
+
+    private <T> ResponseEntity<T> requireNonNullOrElse(T ifNotNull, ResponseEntity<T> ifNull) {
+        if (ifNotNull == null) {
+            return ifNull;
+        } else {
+            return ResponseEntity.ok(ifNotNull);
         }
     }
 }

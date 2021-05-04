@@ -15,13 +15,13 @@ public class Problem {
     private List<Submission> submissions = new ArrayList<>();
     private Problem originalProblem;
     @JsonBackReference
-    private User owner;
+    private ProblemOwner owner;
 
-    public User getOwner() {
+    public ProblemOwner getOwner() {
         return owner;
     }
 
-    public void setOwner(User owner) {
+    public void setOwner(ProblemOwner owner) {
         this.owner = owner;
     }
 
