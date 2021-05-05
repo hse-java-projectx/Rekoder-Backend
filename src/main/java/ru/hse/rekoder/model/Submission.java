@@ -3,6 +3,7 @@ package ru.hse.rekoder.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 public class Submission {
@@ -11,7 +12,9 @@ public class Submission {
     private Problem problem;
     private String comment;
 
+    @NotNull(message = "Source code must be not empty")
     private String sourceCode;
+    @NotNull(message = "Compiler must be not empty")
     private String compiler;
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss" /* TODO,timezone=*/)

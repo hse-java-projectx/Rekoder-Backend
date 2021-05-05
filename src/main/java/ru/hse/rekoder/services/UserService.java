@@ -10,7 +10,7 @@ public interface UserService {
     //so far, the methods return null if something went wrong
 
     User getUser(int userId);
-    User addUser(User user);
+    User createUser(User user);
 
     List<Problem> getProblems(int ownerId);
 }

@@ -4,12 +4,15 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Problem {
     private Integer id;
     private String name;
+
+    @NotEmpty(message = "Specify not empty statement")
     private String statement;
     @JsonManagedReference
     private List<Submission> submissions = new ArrayList<>();

@@ -12,6 +12,7 @@ import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.User;
 import ru.hse.rekoder.services.UserService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 
@@ -27,18 +28,12 @@ public class UserController {
     @GetMapping("/{userId}")
     @ResponseBody
     public ResponseEntity<User> getUser(@PathVariable int userId) {
-        User user = userService.getUser(userId);
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        } else {
-            return ResponseEntity.ok(user);
-        }
+        return ResponseEntity.ok(userService.getUser(userId));
     }
 
     @PostMapping()
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        //TODO validate user
-        User createdUser = userService.addUser(user);
+    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+        User createdUser = userService.createUser(user);
         if (createdUser == null) {
             return ResponseEntity.badRequest().build();
         } else {
@@ -48,14 +43,6 @@ public class UserController {
 
     @GetMapping("/{userId}/problems")
     public ResponseEntity<List<Problem>> getProblems(@PathVariable int userId) {
-        return requireNonNullOrElse(userService.getProblems(userId), ResponseEntity.notFound().build());
-    }
-
-    private <T> ResponseEntity<T> requireNonNullOrElse(T ifNotNull, ResponseEntity<T> ifNull) {
-        if (ifNotNull == null) {
-            return ifNull;
-        } else {
-            return ResponseEntity.ok(ifNotNull);
-        }
+        return ResponseEntity.ok(userService.getProblems(userId));
     }
 }

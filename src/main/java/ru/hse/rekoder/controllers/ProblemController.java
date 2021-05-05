@@ -6,6 +6,7 @@ import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.Submission;
 import ru.hse.rekoder.services.ProblemService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -18,28 +19,18 @@ public class ProblemController {
     }
 
     @PostMapping()
-    public ResponseEntity<Problem> createNewProblem(@MatrixVariable(value = "ownerId") int ownerId, @RequestBody Problem problem) {
-        //TODO validate problem
-        return requireNonNullOrElse(problemService.createNewProblem(ownerId, problem),
-                ResponseEntity.badRequest().build());
+    public ResponseEntity<Problem> createNewProblem(@MatrixVariable(value = "ownerId") int ownerId,
+                                                    @Valid @RequestBody Problem problem) {
+        return ResponseEntity.ok(problemService.createNewProblem(ownerId, problem));
     }
 
     @GetMapping("/{problemId}")
     public ResponseEntity<Problem> getProblem(@PathVariable int problemId) {
-        return requireNonNullOrElse(problemService.getProblem(problemId), ResponseEntity.notFound().build());
+        return ResponseEntity.ok(problemService.getProblem(problemId));
     }
 
     @GetMapping("/{problemId}/submissions")
     public ResponseEntity<List<Submission>> getSubmissions(@PathVariable int problemId) {
-        return requireNonNullOrElse(problemService.getAllSubmissions(problemId),
-                ResponseEntity.notFound().build());
-    }
-
-    private <T> ResponseEntity<T> requireNonNullOrElse(T ifNotNull, ResponseEntity<T> ifNull) {
-        if (ifNotNull == null) {
-            return ifNull;
-        } else {
-            return ResponseEntity.ok(ifNotNull);
-        }
+        return ResponseEntity.ok(problemService.getAllSubmissions(problemId));
     }
 }

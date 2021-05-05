@@ -1,6 +1,8 @@
 package ru.hse.rekoder.services;
 
 import org.springframework.stereotype.Service;
+import ru.hse.rekoder.exceptions.ProblemNotFoundException;
+import ru.hse.rekoder.exceptions.ProblemOwnerNotFoundException;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.ProblemOwner;
 import ru.hse.rekoder.model.Submission;
@@ -22,15 +24,14 @@ public class ProblemServiceImpl implements ProblemService {
 
     @Override
     public Problem getProblem(int problemId) {
-        return problemRepository.findById(problemId).orElse(null);
+        return problemRepository.findById(problemId)
+                .orElseThrow(() -> new ProblemNotFoundException("Problem with id \"" + problemId + "\" not found"));
     }
 
     @Override
     public Problem createNewProblem(int ownerId, Problem problem) {
-        ProblemOwner owner = ownerRepository.findById(ownerId).orElse(null);
-        if (owner == null) {
-            return null;
-        }
+        ProblemOwner owner = ownerRepository.findById(ownerId)
+                .orElseThrow(() -> new ProblemOwnerNotFoundException("Problem owner with id \"" + ownerId + "\" not found"));
         problem.setId(null);//???
         problem.setOriginalProblem(null);
         problem.setOwner(owner);
@@ -46,10 +47,8 @@ public class ProblemServiceImpl implements ProblemService {
 
     @Override
     public List<Submission> getAllSubmissions(int problemId) {
-        Problem problem = problemRepository.findById(problemId).orElse(null);
-        if (problem == null) {
-            return null;
-        }
-        return problem.getSubmissions();
+        return problemRepository.findById(problemId)
+                .map(Problem::getSubmissions)
+                .orElseThrow(() -> new ProblemNotFoundException("Problem with id \"" + problemId + "\" not found"));
     }
 }

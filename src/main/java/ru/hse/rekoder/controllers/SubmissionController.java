@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.hse.rekoder.model.Submission;
 import ru.hse.rekoder.services.SubmissionService;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/submissions")
 public class SubmissionController {
@@ -16,23 +18,12 @@ public class SubmissionController {
 
     @GetMapping("/{submissionId}")
     public ResponseEntity<Submission> getSubmission(@PathVariable int submissionId) {
-        return requireNonNullOrElse(submissionService.getSubmission(submissionId),
-                ResponseEntity.notFound().build());
+        return ResponseEntity.ok(submissionService.getSubmission(submissionId));
     }
 
     @PostMapping("/submissions")
     public ResponseEntity<Submission> createSubmission(@MatrixVariable(value = "problemId") int problemId,
-                                                       @RequestBody Submission submission) {
-        //TODO validate submission
-        return requireNonNullOrElse(submissionService.addSubmission(problemId, submission),
-                ResponseEntity.badRequest().build());
-    }
-
-    private <T> ResponseEntity<T> requireNonNullOrElse(T ifNotNull, ResponseEntity<T> ifNull) {
-        if (ifNotNull == null) {
-            return ifNull;
-        } else {
-            return ResponseEntity.ok(ifNotNull);
-        }
+                                                       @Valid @RequestBody Submission submission) {
+        return ResponseEntity.ok(submissionService.createSubmission(problemId, submission));
     }
 }

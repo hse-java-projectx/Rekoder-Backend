@@ -1,6 +1,8 @@
 package ru.hse.rekoder.services;
 
 import org.springframework.stereotype.Service;
+import ru.hse.rekoder.exceptions.ProblemNotFoundException;
+import ru.hse.rekoder.exceptions.SubmissionNotFoundException;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.Submission;
 import ru.hse.rekoder.repositories.ProblemRepository;
@@ -21,15 +23,14 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Override
     public Submission getSubmission(int submissionId) {
-        return submissionRepository.findById(submissionId).orElse(null);
+        return submissionRepository.findById(submissionId)
+            .orElseThrow(() -> new SubmissionNotFoundException("Submission with id \"" + submissionId + "\" not found"));
     }
 
     @Override
-    public Submission addSubmission(int problemId, Submission submission) {
-        Problem problem = problemRepository.findById(problemId).orElse(null);
-        if (problem == null) {
-            return null;
-        }
+    public Submission createSubmission(int problemId, Submission submission) {
+        Problem problem = problemRepository.findById(problemId)
+                .orElseThrow(() -> new ProblemNotFoundException("Problem with id \"" + problemId + "\" not found"));
         submission.setSubmissionTime(new Date());
         submission.setId(null);//???
         submission.setProblem(problem);

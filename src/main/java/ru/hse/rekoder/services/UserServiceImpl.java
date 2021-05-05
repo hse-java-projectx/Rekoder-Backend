@@ -1,6 +1,7 @@
 package ru.hse.rekoder.services;
 
 import org.springframework.stereotype.Service;
+import ru.hse.rekoder.exceptions.ProblemOwnerNotFoundException;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.Submission;
 import ru.hse.rekoder.model.User;
@@ -14,29 +15,28 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final ProblemRepository problemRepository;
-    private final SubmissionRepository submissionRepository;
 
     public UserServiceImpl(UserRepository userRepository,
                            ProblemRepository problemRepository,
                            SubmissionRepository submissionRepository) {
         this.userRepository = userRepository;
-        this.problemRepository = problemRepository;
-        this.submissionRepository = submissionRepository;
     }
 
     @Override
-    public User getUser(int userId) {
-        return userRepository.findById(userId).orElse(null);
+    public User getUser(int userId) throws ProblemOwnerNotFoundException {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ProblemOwnerNotFoundException("User with id \"" + userId + "\" not found"));
     }
 
     @Override
-    public List<Problem> getProblems(int id) {
-        return userRepository.findById(id).map(User::getProblems).orElse(null);
+    public List<Problem> getProblems(int id) throws ProblemOwnerNotFoundException {
+        return userRepository.findById(id)
+                .map(User::getProblems)
+                .orElseThrow(() -> new ProblemOwnerNotFoundException("User with id \"" + id + "\" not found"));
     }
 
     @Override
-    public User addUser(User user) {
+    public User createUser(User user) {
         user.setId(null);
         user.setRegistrationTime(new Date());
         return userRepository.save(user);
