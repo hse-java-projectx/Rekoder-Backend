@@ -65,12 +65,6 @@ public class TeamController {
         return null;
     }
 
-    @PostMapping("/{userId}/problems")
-    public ResponseEntity<Problem> createProblem(@PathVariable int userId, @RequestParam int origProblem) {
-        //TODO
-        return null;
-    }
-
     @GetMapping("/{userId}/folders")
     public ResponseEntity<List<Folder>> getAllTopFolders(@PathVariable int userId) {
         //TODO

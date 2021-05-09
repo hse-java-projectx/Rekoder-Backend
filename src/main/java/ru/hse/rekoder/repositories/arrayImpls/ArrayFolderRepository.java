@@ -7,7 +7,6 @@ import ru.hse.rekoder.repositories.FolderRepository;
 import java.util.ArrayList;
 import java.util.Optional;
 
-@Component
 public class ArrayFolderRepository implements FolderRepository {
     private final ArrayList<Folder> folders = new ArrayList<>();
 

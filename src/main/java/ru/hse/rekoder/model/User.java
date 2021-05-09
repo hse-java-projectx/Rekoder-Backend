@@ -2,11 +2,21 @@ package ru.hse.rekoder.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.springframework.data.annotation.Transient;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.*;
 
 public class User extends ProblemOwner {
+    @Transient
+    public static final String PROBLEM_OWNER_TYPE = "user";
+
+    public static class UserCompositeKey extends CompositeKey {
+        public UserCompositeKey(String name) {
+            super(PROBLEM_OWNER_TYPE, name);
+        }
+    }
+
     @NotEmpty(message = "User name cannot be empty")
     private String name;
 

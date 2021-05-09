@@ -14,12 +14,12 @@ import java.util.List;
 @Service
 public class ProblemServiceImpl implements ProblemService {
     private final ProblemRepository problemRepository;
-    private final ProblemOwnerRepository ownerRepository;
+    //private final ProblemOwnerRepository ownerRepository;
 
-    public ProblemServiceImpl(ProblemRepository problemRepository,
-                              ProblemOwnerRepository ownerRepository) {
+    public ProblemServiceImpl(ProblemRepository problemRepository
+                              /*ProblemOwnerRepository ownerRepository*/) {
         this.problemRepository = problemRepository;
-        this.ownerRepository = ownerRepository;
+        //this.ownerRepository = ownerRepository;
     }
 
     @Override
@@ -30,7 +30,7 @@ public class ProblemServiceImpl implements ProblemService {
 
     @Override
     public Problem createNewProblem(int ownerId, Problem problem) {
-        ProblemOwner owner = ownerRepository.findById(ownerId)
+        /*ProblemOwner owner = ownerRepository.findById(ownerId)
                 .orElseThrow(() -> new ProblemOwnerNotFoundException("Problem owner with id \"" + ownerId + "\" not found"));
         problem.setId(null);//???
         problem.setOriginalProblem(null);
@@ -38,6 +38,8 @@ public class ProblemServiceImpl implements ProblemService {
         problem = problemRepository.save(problem);
         owner.getProblems().add(problem);
         return problem;
+        */
+        return null;
     }
 
     @Override

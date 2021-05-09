@@ -5,11 +5,12 @@ import org.springframework.web.bind.annotation.*;
 import ru.hse.rekoder.model.Folder;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.User;
+import ru.hse.rekoder.repositories.ProblemRepository;
+import ru.hse.rekoder.repositories.UserRepository;
 import ru.hse.rekoder.services.UserService;
 
 import javax.validation.Valid;
 import java.util.List;
-
 
 @RestController
 @RequestMapping("/users")
@@ -22,7 +23,7 @@ public class UserController {
 
     @GetMapping("/{userId}")
     @ResponseBody
-    public ResponseEntity<User> getUser(@PathVariable int userId) {
+    public ResponseEntity<User> getUser(@PathVariable String userId) {
         return ResponseEntity.ok(userService.getUser(userId));
     }
 
@@ -37,46 +38,24 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/problems")
-    public ResponseEntity<List<Problem>> getProblems(@PathVariable int userId) {
+    public ResponseEntity<List<Problem>> getProblems(@PathVariable String userId) {
         return ResponseEntity.ok(userService.getProblems(userId));
     }
 
     @PostMapping("/{userId}/problems")
-    public ResponseEntity<Problem> createProblem(@PathVariable int userId,
+    public ResponseEntity<Problem> createProblem(@PathVariable String userId,
                                                  @Valid @RequestBody Problem problem) {
-        //TODO
-        /*
-        * @PostMapping()
-    public ResponseEntity<Problem> createNewProblem(@MatrixVariable(value = "ownerId") int ownerId,
-                                                    @Valid @RequestBody Problem problem) {
-        return ResponseEntity.ok(problemService.createNewProblem(ownerId, problem));
-    }
-        *
-        * */
-        return null;
-    }
-
-    @PostMapping("/{userId}/problems")
-    public ResponseEntity<Problem> createProblem(@PathVariable int userId, @RequestParam int origProblem) {
-        //TODO
-        return null;
+        return ResponseEntity.ok(userService.createProblem(userId, problem));
     }
 
     @GetMapping("/{userId}/folders")
-    public ResponseEntity<List<Folder>> getAllTopFolders(@PathVariable int userId) {
-        //TODO
-        return null;
+    public ResponseEntity<List<Folder>> getAllTopFolders(@PathVariable String userId) {
+        return ResponseEntity.ok(userService.getTopFolder(userId));
     }
 
     @PostMapping("/{userId}/folders")
-    public ResponseEntity<Folder> createFolder(@PathVariable int userId,
+    public ResponseEntity<Folder> createFolder(@PathVariable String userId,
                                                @RequestBody @Valid Folder folder) {
-        //TODO
-        /*@PostMapping("/{folderId}/folders")
-    public ResponseEntity<Folder> createFolder(@PathVariable int folderId,
-                                               @RequestBody @Valid Folder folder) {
-        return ResponseEntity.ok(folderService.createNewFolder(folderId, folder));
-    }*/
-        return null;
+        return ResponseEntity.ok(userService.createTopFolder(userId, folder));
     }
 }

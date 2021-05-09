@@ -2,12 +2,18 @@ package ru.hse.rekoder.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
+@Document(collection = "submission")
 public class Submission {
+    @Id
     private Integer id;
+    @DBRef
     @JsonBackReference
     private Problem problem;
     private String comment;

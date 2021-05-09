@@ -7,7 +7,6 @@ import ru.hse.rekoder.repositories.ProblemRepository;
 import java.util.ArrayList;
 import java.util.Optional;
 
-@Component
 public class ArrayProblemRepository implements ProblemRepository {
     private final ArrayList<Problem> problems = new ArrayList<>();
 

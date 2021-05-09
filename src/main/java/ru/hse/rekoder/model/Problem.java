@@ -3,13 +3,18 @@ package ru.hse.rekoder.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+@Document(collection = "problem")
 public class Problem {
+    @Id
     private Integer id;
     private String name;
 
@@ -19,9 +24,12 @@ public class Problem {
     private List<@NotNull String> tags = new ArrayList<>();
     private List<@NotNull Test> tests = new ArrayList<>();
 
+    @DBRef
     @JsonManagedReference
     private List<Submission> submissions = new ArrayList<>();
+    @DBRef
     private Problem originalProblem;
+    @DBRef
     @JsonBackReference
     private ProblemOwner owner;
 
