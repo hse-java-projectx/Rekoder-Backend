@@ -4,41 +4,50 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hse.rekoder.model.Folder;
 import ru.hse.rekoder.model.Problem;
+import ru.hse.rekoder.model.Team;
 import ru.hse.rekoder.model.User;
-import ru.hse.rekoder.services.UserService;
+import ru.hse.rekoder.services.TeamService;
 
 import javax.validation.Valid;
 import java.util.List;
 
-
 @RestController
-@RequestMapping("/users")
-public class UserController {
-    private final UserService userService;
+@RequestMapping("/teams")
+public class TeamController {
+    private final TeamService teamService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public TeamController(TeamService teamService) {
+        this.teamService = teamService;
     }
 
-    @GetMapping("/{userId}")
-    @ResponseBody
-    public ResponseEntity<User> getUser(@PathVariable int userId) {
-        return ResponseEntity.ok(userService.getUser(userId));
+    @GetMapping("/{teamId}")
+    public ResponseEntity<Team> getTeam(@PathVariable int teamId) {
+        //TODO
+        return null;
     }
 
-    @PostMapping()
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
-        User createdUser = userService.createUser(user);
-        if (createdUser == null) {
-            return ResponseEntity.badRequest().build();
-        } else {
-            return ResponseEntity.ok(createdUser);
-        }
+    @PostMapping
+    public ResponseEntity<Team> createTeam(@RequestBody @Valid Team team) {
+        //TODO
+        return null;
+    }
+
+    @GetMapping("/{teamId}/users")
+    public ResponseEntity<List<User>> getAllMembers(@PathVariable int teamId) {
+        //TODO
+        return null;
+    }
+
+    @PostMapping("/{teamId}/users")
+    public ResponseEntity<User> addMember(@PathVariable int teamId/*TODO member*/) {
+        //TODO
+        return null;
     }
 
     @GetMapping("/{userId}/problems")
     public ResponseEntity<List<Problem>> getProblems(@PathVariable int userId) {
-        return ResponseEntity.ok(userService.getProblems(userId));
+        //TODO
+        return null;
     }
 
     @PostMapping("/{userId}/problems")

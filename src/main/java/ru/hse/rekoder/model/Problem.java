@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,11 +15,31 @@ public class Problem {
 
     @NotEmpty(message = "Specify not empty statement")
     private String statement;
+
+    private List<@NotNull String> tags = new ArrayList<>();
+    private List<@NotNull Test> tests = new ArrayList<>();
+
     @JsonManagedReference
     private List<Submission> submissions = new ArrayList<>();
     private Problem originalProblem;
     @JsonBackReference
     private ProblemOwner owner;
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
+
+    public List<Test> getTests() {
+        return tests;
+    }
+
+    public void setTests(List<Test> tests) {
+        this.tests = tests;
+    }
 
     public ProblemOwner getOwner() {
         return owner;

@@ -20,6 +20,8 @@ public class Submission {
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss" /* TODO,timezone=*/)
     private Date submissionTime;
 
+    private Feedback feedback;
+
     public Integer getId() {
         return id;
     }

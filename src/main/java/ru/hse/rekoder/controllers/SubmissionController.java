@@ -20,10 +20,4 @@ public class SubmissionController {
     public ResponseEntity<Submission> getSubmission(@PathVariable int submissionId) {
         return ResponseEntity.ok(submissionService.getSubmission(submissionId));
     }
-
-    @PostMapping("/submissions")
-    public ResponseEntity<Submission> createSubmission(@MatrixVariable(value = "problemId") int problemId,
-                                                       @Valid @RequestBody Submission submission) {
-        return ResponseEntity.ok(submissionService.createSubmission(problemId, submission));
-    }
 }

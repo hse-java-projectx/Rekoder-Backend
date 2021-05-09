@@ -18,12 +18,6 @@ public class ProblemController {
         this.problemService = problemService;
     }
 
-    @PostMapping()
-    public ResponseEntity<Problem> createNewProblem(@MatrixVariable(value = "ownerId") int ownerId,
-                                                    @Valid @RequestBody Problem problem) {
-        return ResponseEntity.ok(problemService.createNewProblem(ownerId, problem));
-    }
-
     @GetMapping("/{problemId}")
     public ResponseEntity<Problem> getProblem(@PathVariable int problemId) {
         return ResponseEntity.ok(problemService.getProblem(problemId));
@@ -32,5 +26,17 @@ public class ProblemController {
     @GetMapping("/{problemId}/submissions")
     public ResponseEntity<List<Submission>> getSubmissions(@PathVariable int problemId) {
         return ResponseEntity.ok(problemService.getAllSubmissions(problemId));
+    }
+
+    @PostMapping("/{problemId}/submissions")
+    public ResponseEntity<Submission> createSubmission(@PathVariable int problemId,
+                                                       @Valid @RequestBody Submission submission) {
+        //TODO
+        /*@PostMapping("/submissions")
+    public ResponseEntity<Submission> createSubmission(@MatrixVariable(value = "problemId") int problemId,
+                                                       @Valid @RequestBody Submission submission) {
+        return ResponseEntity.ok(submissionService.createSubmission(problemId, submission));
+    }*/
+        return null;
     }
 }

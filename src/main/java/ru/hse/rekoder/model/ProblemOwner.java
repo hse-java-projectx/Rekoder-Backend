@@ -6,9 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProblemOwner {
-    private Integer id;
+    protected Integer id;
     @JsonManagedReference
-    private List<Problem> problems = new ArrayList<>();
+    protected List<Problem> problems = new ArrayList<>();
+
+    protected List<Folder> topFolders;
 
     public Integer getId() {
         return id;
