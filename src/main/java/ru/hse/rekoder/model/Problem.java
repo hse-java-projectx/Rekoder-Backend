@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-@Document(collection = "problem")
+@Document(collection = "problems")
 public class Problem {
     @Id
     private Integer id;

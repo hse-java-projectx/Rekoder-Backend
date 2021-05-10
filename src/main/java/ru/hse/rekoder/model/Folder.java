@@ -9,7 +9,7 @@ import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
 
-@Document(collection = "folder")
+@Document(collection = "folders")
 public class Folder {
     @Id
     private Integer id;

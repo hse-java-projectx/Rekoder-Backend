@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 @Configuration
 @EnableMongoRepositories(basePackages = "ru.hse.rekoder.repositories")
-public class SimpleMongoConfiguration {
+public class MongoConfiguration {
     @Bean
     public MongoClient mongo() throws Exception {
         final ConnectionString connectionString = new ConnectionString("mongodb://localhost:27017/test");

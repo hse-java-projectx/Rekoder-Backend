@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
-@Document(collection = "submission")
+@Document(collection = "submissions")
 public class Submission {
     @Id
     private Integer id;

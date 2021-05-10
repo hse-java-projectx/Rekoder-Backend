@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.ArrayList;
 import java.util.List;
 
-@Document(collection = "problemOwner")
+@Document(collection = "problem_owners")
 public class ProblemOwner {
     protected static class CompositeKey {
         private String problemOwnerType;
@@ -18,6 +18,8 @@ public class ProblemOwner {
             this.problemOwnerType = problemOwnerType;
             this.problemOwnerId = name;
         }
+
+        public CompositeKey() {}
 
         public String getProblemOwnerType() {
             return problemOwnerType;
