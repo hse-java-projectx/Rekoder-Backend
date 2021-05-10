@@ -9,7 +9,9 @@ import ru.hse.rekoder.model.User;
 import ru.hse.rekoder.services.TeamService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/teams")
@@ -21,65 +23,45 @@ public class TeamController {
     }
 
     @GetMapping("/{teamId}")
-    public ResponseEntity<Team> getTeam(@PathVariable int teamId) {
-        //TODO
-        return null;
+    public ResponseEntity<Team> getTeam(@PathVariable String teamId) {
+        return ResponseEntity.ok(teamService.getTeam(teamId));
     }
 
     @PostMapping
     public ResponseEntity<Team> createTeam(@RequestBody @Valid Team team) {
-        //TODO
-        return null;
+        return ResponseEntity.ok(teamService.createTeam(team));
     }
 
     @GetMapping("/{teamId}/users")
-    public ResponseEntity<List<User>> getAllMembers(@PathVariable int teamId) {
-        //TODO
-        return null;
+    public ResponseEntity<List<User>> getAllMembers(@PathVariable String teamId) {
+        return ResponseEntity.ok(teamService.getAllMembers(teamId));
     }
 
     @PostMapping("/{teamId}/users")
-    public ResponseEntity<User> addMember(@PathVariable int teamId/*TODO member*/) {
-        //TODO
-        return null;
+    public ResponseEntity<Team> addMembers(@PathVariable String teamId,
+                                           @Valid @RequestBody @NotEmpty Set<@NotEmpty String> members) {
+        return ResponseEntity.ok(teamService.addExistingUsers(teamId, members));
     }
 
-    @GetMapping("/{userId}/problems")
-    public ResponseEntity<List<Problem>> getProblems(@PathVariable int userId) {
-        //TODO
-        return null;
+    @GetMapping("/{teamId}/problems")
+    public ResponseEntity<List<Problem>> getProblems(@PathVariable String teamId) {
+        return ResponseEntity.ok(teamService.getAllProblems(teamId));
     }
 
-    @PostMapping("/{userId}/problems")
-    public ResponseEntity<Problem> createProblem(@PathVariable int userId,
+    @PostMapping("/{teamId}/problems")
+    public ResponseEntity<Problem> createProblem(@PathVariable String teamId,
                                                  @Valid @RequestBody Problem problem) {
-        //TODO
-        /*
-        * @PostMapping()
-    public ResponseEntity<Problem> createNewProblem(@MatrixVariable(value = "ownerId") int ownerId,
-                                                    @Valid @RequestBody Problem problem) {
-        return ResponseEntity.ok(problemService.createNewProblem(ownerId, problem));
-    }
-        *
-        * */
-        return null;
+        return ResponseEntity.ok(teamService.createProblem(teamId, problem));
     }
 
-    @GetMapping("/{userId}/folders")
-    public ResponseEntity<List<Folder>> getAllTopFolders(@PathVariable int userId) {
-        //TODO
-        return null;
+    @GetMapping("/{teamId}/folders")
+    public ResponseEntity<List<Folder>> getAllTopFolders(@PathVariable String teamId) {
+        return ResponseEntity.ok(teamService.getTopFolders(teamId));
     }
 
-    @PostMapping("/{userId}/folders")
-    public ResponseEntity<Folder> createFolder(@PathVariable int userId,
+    @PostMapping("/{teamId}/folders")
+    public ResponseEntity<Folder> createFolder(@PathVariable String teamId,
                                                @RequestBody @Valid Folder folder) {
-        //TODO
-        /*@PostMapping("/{folderId}/folders")
-    public ResponseEntity<Folder> createFolder(@PathVariable int folderId,
-                                               @RequestBody @Valid Folder folder) {
-        return ResponseEntity.ok(folderService.createNewFolder(folderId, folder));
-    }*/
-        return null;
+        return ResponseEntity.ok(teamService.createTopFolder(teamId, folder));
     }
 }

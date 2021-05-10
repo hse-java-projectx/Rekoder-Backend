@@ -21,8 +21,10 @@ public class FolderServiceImpl implements FolderService{
     public Folder createNewFolder(int parentFolderId, Folder folder) {
         Folder parentFolder = folderRepository.findById(parentFolderId).orElseThrow();
         folder.setParentFolder(parentFolder);
+        folder.setId(null);
         folder = folderRepository.save(folder);
         parentFolder.getSubfolders().add(folder);
+        folderRepository.save(parentFolder);
         return folder;
     }
 }

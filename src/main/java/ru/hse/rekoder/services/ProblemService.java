@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ProblemService {
     Problem getProblem(int problemId);
-    Problem createNewProblem(int ownerId, Problem problem);
-    Problem copyProblem(int destOwnerId, int srcOwnerId, int srcProblemId);
+
     List<Submission> getAllSubmissions(int problemId);
+    Submission createSubmission(int problemId, Submission submission);
 }

@@ -31,12 +31,6 @@ public class ProblemController {
     @PostMapping("/{problemId}/submissions")
     public ResponseEntity<Submission> createSubmission(@PathVariable int problemId,
                                                        @Valid @RequestBody Submission submission) {
-        //TODO
-        /*@PostMapping("/submissions")
-    public ResponseEntity<Submission> createSubmission(@MatrixVariable(value = "problemId") int problemId,
-                                                       @Valid @RequestBody Submission submission) {
-        return ResponseEntity.ok(submissionService.createSubmission(problemId, submission));
-    }*/
-        return null;
+        return ResponseEntity.ok(problemService.createSubmission(problemId, submission));
     }
 }
