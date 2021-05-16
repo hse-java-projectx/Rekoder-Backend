@@ -32,8 +32,6 @@ public class SubmissionResponse extends BaseResponse {
         this(originalSubmission, "/submissions/" + originalSubmission.getId());
     }
 
-
-
     public String getAuthorId() {
         return authorId;
     }

@@ -62,6 +62,8 @@ public class TeamServiceImpl implements TeamService {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new ProblemOwnerNotFoundException("User with name \"" + userId + "\" not found"));
             team.getMembers().add(user);
+            user.getTeams().add(team);
+            userRepository.save(user);
         }
         teamRepository.save(team);
         return team;

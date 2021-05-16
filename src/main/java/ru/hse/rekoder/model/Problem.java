@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ public class Problem {
     private String statement;
 
     private List<@NotNull String> tags = new ArrayList<>();
-    private List<@NotNull Test> tests = new ArrayList<>();
+    private List<@Valid @NotNull Test> tests = new ArrayList<>();
 
     @DBRef
     @JsonManagedReference

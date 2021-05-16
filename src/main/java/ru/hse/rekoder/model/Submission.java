@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
@@ -27,6 +28,7 @@ public class Submission {
     private Date submissionTime;
     @DBRef
     private ProblemOwner author;
+    @Valid
     private Feedback feedback;
 
     public Feedback getFeedback() {
