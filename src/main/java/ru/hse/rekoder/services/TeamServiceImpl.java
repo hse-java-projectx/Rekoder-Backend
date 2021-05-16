@@ -8,6 +8,7 @@ import ru.hse.rekoder.repositories.ProblemRepository;
 import ru.hse.rekoder.repositories.TeamRepository;
 import ru.hse.rekoder.repositories.UserRepository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -40,6 +41,7 @@ public class TeamServiceImpl implements TeamService {
         if (teamRepository.exists(team.getName())) {
             throw new RuntimeException();
         }
+        team.setRegistrationDate(new Date());
         team.setId(null);
         return teamRepository.save(team);
     }

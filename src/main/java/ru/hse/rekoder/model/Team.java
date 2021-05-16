@@ -3,8 +3,7 @@ package ru.hse.rekoder.model;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Team extends ProblemOwner {
     @Transient
@@ -12,6 +11,8 @@ public class Team extends ProblemOwner {
 
     private String name;
     private String bio;
+    private Date registrationDate;
+    private Map<String, String> contacts = Collections.emptyMap();
     @DBRef
     private List<User> members = new ArrayList<>();
 
@@ -19,6 +20,22 @@ public class Team extends ProblemOwner {
         public TeamCompositeKey(String name) {
             super(PROBLEM_OWNER_TYPE, name);
         }
+    }
+
+    public Date getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(Date registrationDate) {
+        this.registrationDate = registrationDate;
+    }
+
+    public Map<String, String> getContacts() {
+        return contacts;
+    }
+
+    public void setContacts(Map<String, String> contacts) {
+        this.contacts = contacts;
     }
 
     public String getName() {

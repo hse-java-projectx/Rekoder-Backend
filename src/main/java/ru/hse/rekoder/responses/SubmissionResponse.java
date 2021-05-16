@@ -1,5 +1,6 @@
 package ru.hse.rekoder.responses;
 
+import ru.hse.rekoder.model.Feedback;
 import ru.hse.rekoder.model.Submission;
 
 import java.util.Date;
@@ -11,6 +12,9 @@ public class SubmissionResponse extends BaseResponse {
     private final String sourceCode;
     private final String compiler;
     private final Date submissionTime;
+    //TODO Is always author a User?
+    private final String authorId;
+    private final Feedback feedback;
 
     public SubmissionResponse(Submission originalSubmission, String pathToResource) {
         super(pathToResource);
@@ -20,10 +24,22 @@ public class SubmissionResponse extends BaseResponse {
         this.sourceCode = originalSubmission.getSourceCode();
         this.compiler = originalSubmission.getCompiler();
         this.submissionTime = originalSubmission.getSubmissionTime();
+        this.authorId = originalSubmission.getAuthor().getId().getProblemOwnerType();
+        this.feedback = originalSubmission.getFeedback();
     }
 
     public SubmissionResponse(Submission originalSubmission) {
         this(originalSubmission, "/submissions/" + originalSubmission.getId());
+    }
+
+
+
+    public String getAuthorId() {
+        return authorId;
+    }
+
+    public Feedback getFeedback() {
+        return feedback;
     }
 
     public int getId() {

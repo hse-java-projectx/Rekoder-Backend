@@ -1,7 +1,6 @@
 package ru.hse.rekoder.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -32,6 +31,24 @@ public class Problem {
     @DBRef
     @JsonBackReference
     private ProblemOwner owner;
+    private String problemUrl;
+    private int numberOfSuccessfulSubmissions = 0;
+
+    public int getNumberOfSuccessfulSubmissions() {
+        return numberOfSuccessfulSubmissions;
+    }
+
+    public void setNumberOfSuccessfulSubmissions(int numberOfSuccessfulSubmissions) {
+        this.numberOfSuccessfulSubmissions = numberOfSuccessfulSubmissions;
+    }
+
+    public String getProblemUrl() {
+        return problemUrl;
+    }
+
+    public void setProblemUrl(String problemUrl) {
+        this.problemUrl = problemUrl;
+    }
 
     public List<String> getTags() {
         return tags;

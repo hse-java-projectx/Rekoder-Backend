@@ -25,8 +25,25 @@ public class Submission {
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss" /* TODO,timezone=*/)
     private Date submissionTime;
-
+    @DBRef
+    private ProblemOwner author;
     private Feedback feedback;
+
+    public Feedback getFeedback() {
+        return feedback;
+    }
+
+    public void setFeedback(Feedback feedback) {
+        this.feedback = feedback;
+    }
+
+    public ProblemOwner getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(ProblemOwner author) {
+        this.author = author;
+    }
 
     public Integer getId() {
         return id;

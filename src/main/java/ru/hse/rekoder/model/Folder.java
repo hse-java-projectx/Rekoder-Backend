@@ -23,6 +23,17 @@ public class Folder {
     @DBRef
     private List<Problem> problems = new ArrayList<>();
 
+    @DBRef
+    private ProblemOwner owner;
+
+    public ProblemOwner getOwner() {
+        return owner;
+    }
+
+    public void setOwner(ProblemOwner owner) {
+        this.owner = owner;
+    }
+
     public Integer getId() {
         return id;
     }
