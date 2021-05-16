@@ -1,10 +1,15 @@
 package ru.hse.rekoder.responses;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import ru.hse.rekoder.model.Folder;
+import ru.hse.rekoder.model.ProblemOwner;
+
+import java.util.Objects;
 
 public class FolderResponse extends BaseResponse {
     private final int id;
     private final String name;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private final Integer parentFolderId;
     private final String ownerId;
 
@@ -12,7 +17,8 @@ public class FolderResponse extends BaseResponse {
         super(pathToResource);
         this.id = originalFolder.getId();
         this.name = originalFolder.getName();
-        this.parentFolderId = originalFolder.getParentFolder().getId();
+        Folder parentFolder = originalFolder.getParentFolder();
+        this.parentFolderId = Objects.isNull(parentFolder) ? null : parentFolder.getId();
         this.ownerId = originalFolder.getOwner().getId().getProblemOwnerId();
     }
 
