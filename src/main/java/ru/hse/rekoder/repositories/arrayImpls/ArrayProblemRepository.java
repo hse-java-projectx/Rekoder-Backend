@@ -21,13 +21,14 @@ public class ArrayProblemRepository implements ProblemRepository {
 
     @Override
     public Problem save(Problem problem) {
-        if (problem.getId() == null || problem.getId() < 0 || problem.getId() >= problems.size()) {
+        /*if (problem.getId() == null || problem.getId() < 0 || problem.getId() >= problems.size()) {
             problem.setId(problems.size());
             problems.add(problem);
             return problem;
         }
         problems.set(problem.getId(), problem);
-        return problem;
+        return problem;*/
+        return null;
     }
 
     @Override

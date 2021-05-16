@@ -3,6 +3,7 @@ package ru.hse.rekoder.controllers;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hse.rekoder.model.Folder;
+import ru.hse.rekoder.responses.FolderResponse;
 import ru.hse.rekoder.services.FolderService;
 
 import javax.validation.Valid;
@@ -17,14 +18,15 @@ public class FolderController {
     }
 
     @GetMapping("/{folderId}")
-    public ResponseEntity<Folder> getFolder(@PathVariable int folderId) {
-        return ResponseEntity.ok(folderService.getFolder(folderId));
+    public ResponseEntity<FolderResponse> getFolder(@PathVariable int folderId) {
+        Folder folder = folderService.getFolder(folderId);
+        return ResponseEntity.ok(new FolderResponse(folder));
     }
 
     @PostMapping("/{folderId}/folders")
-    public ResponseEntity<Folder> createFolder(@PathVariable int folderId,
+    public ResponseEntity<FolderResponse> createFolder(@PathVariable int folderId,
                                                @RequestBody @Valid Folder folder) {
-        //TODO
-        return ResponseEntity.ok(folderService.createNewFolder(folderId, folder));
+        Folder createdFolder = folderService.createNewFolder(folderId, folder);
+        return ResponseEntity.ok(new FolderResponse(createdFolder));
     }
 }

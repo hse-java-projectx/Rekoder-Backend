@@ -10,7 +10,7 @@ import java.util.List;
 
 @Document(collection = "problem_owners")
 public class ProblemOwner {
-    protected static class CompositeKey {
+    public static class CompositeKey {
         private String problemOwnerType;
         private String problemOwnerId;
 

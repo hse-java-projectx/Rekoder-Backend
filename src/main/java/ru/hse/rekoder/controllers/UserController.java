@@ -7,10 +7,14 @@ import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.User;
 import ru.hse.rekoder.repositories.ProblemRepository;
 import ru.hse.rekoder.repositories.UserRepository;
+import ru.hse.rekoder.responses.FolderResponse;
+import ru.hse.rekoder.responses.ProblemResponse;
+import ru.hse.rekoder.responses.UserResponse;
 import ru.hse.rekoder.services.UserService;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
@@ -23,39 +27,48 @@ public class UserController {
 
     @GetMapping("/{userId}")
     @ResponseBody
-    public ResponseEntity<User> getUser(@PathVariable String userId) {
-        return ResponseEntity.ok(userService.getUser(userId));
+    public ResponseEntity<UserResponse> getUser(@PathVariable String userId) {
+        User user = userService.getUser(userId);
+        return ResponseEntity.ok(new UserResponse(user));
     }
 
     @PostMapping()
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody User user) {
         User createdUser = userService.createUser(user);
         if (createdUser == null) {
             return ResponseEntity.badRequest().build();
         } else {
-            return ResponseEntity.ok(createdUser);
+            return ResponseEntity.ok(new UserResponse(createdUser));
         }
     }
 
     @GetMapping("/{userId}/problems")
-    public ResponseEntity<List<Problem>> getProblems(@PathVariable String userId) {
-        return ResponseEntity.ok(userService.getProblems(userId));
+    public ResponseEntity<List<ProblemResponse>> getProblems(@PathVariable String userId) {
+        return ResponseEntity.ok(userService.getProblems(userId)
+                .stream()
+                .map(ProblemResponse::new)
+                .collect(Collectors.toList()));
     }
 
     @PostMapping("/{userId}/problems")
-    public ResponseEntity<Problem> createProblem(@PathVariable String userId,
+    public ResponseEntity<ProblemResponse> createProblem(@PathVariable String userId,
                                                  @Valid @RequestBody Problem problem) {
-        return ResponseEntity.ok(userService.createProblem(userId, problem));
+        Problem createdProblem = userService.createProblem(userId, problem);
+        return ResponseEntity.ok(new ProblemResponse(createdProblem));
     }
 
     @GetMapping("/{userId}/folders")
-    public ResponseEntity<List<Folder>> getAllTopFolders(@PathVariable String userId) {
-        return ResponseEntity.ok(userService.getTopFolder(userId));
+    public ResponseEntity<List<FolderResponse>> getAllTopFolders(@PathVariable String userId) {
+        return ResponseEntity.ok(userService.getTopFolder(userId)
+                .stream()
+                .map(FolderResponse::new)
+                .collect(Collectors.toList()));
     }
 
     @PostMapping("/{userId}/folders")
-    public ResponseEntity<Folder> createFolder(@PathVariable String userId,
+    public ResponseEntity<FolderResponse> createFolder(@PathVariable String userId,
                                                @RequestBody @Valid Folder folder) {
-        return ResponseEntity.ok(userService.createTopFolder(userId, folder));
+        Folder createdFolder = userService.createTopFolder(userId, folder);
+        return ResponseEntity.ok(new FolderResponse(createdFolder));
     }
 }

@@ -5,13 +5,17 @@ import org.springframework.web.bind.annotation.*;
 import ru.hse.rekoder.model.Folder;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.Team;
-import ru.hse.rekoder.model.User;
+import ru.hse.rekoder.responses.FolderResponse;
+import ru.hse.rekoder.responses.ProblemResponse;
+import ru.hse.rekoder.responses.TeamResponse;
+import ru.hse.rekoder.responses.UserResponse;
 import ru.hse.rekoder.services.TeamService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/teams")
@@ -23,45 +27,59 @@ public class TeamController {
     }
 
     @GetMapping("/{teamId}")
-    public ResponseEntity<Team> getTeam(@PathVariable String teamId) {
-        return ResponseEntity.ok(teamService.getTeam(teamId));
+    public ResponseEntity<TeamResponse> getTeam(@PathVariable String teamId) {
+        Team team = teamService.getTeam(teamId);
+        return ResponseEntity.ok(new TeamResponse(team));
     }
 
     @PostMapping
-    public ResponseEntity<Team> createTeam(@RequestBody @Valid Team team) {
-        return ResponseEntity.ok(teamService.createTeam(team));
+    public ResponseEntity<TeamResponse> createTeam(@RequestBody @Valid Team team) {
+        Team createdTeam = teamService.createTeam(team);
+        return ResponseEntity.ok(new TeamResponse(createdTeam));
     }
 
     @GetMapping("/{teamId}/users")
-    public ResponseEntity<List<User>> getAllMembers(@PathVariable String teamId) {
-        return ResponseEntity.ok(teamService.getAllMembers(teamId));
+    public ResponseEntity<List<UserResponse>> getAllMembers(@PathVariable String teamId) {
+        return ResponseEntity.ok(teamService.getAllMembers(teamId)
+                .stream()
+                .map(UserResponse::new)
+                .collect(Collectors.toList()));
     }
 
     @PostMapping("/{teamId}/users")
-    public ResponseEntity<Team> addMembers(@PathVariable String teamId,
-                                           @Valid @RequestBody @NotEmpty Set<@NotEmpty String> members) {
-        return ResponseEntity.ok(teamService.addExistingUsers(teamId, members));
+    public ResponseEntity<TeamResponse> addMembers(@PathVariable String teamId,
+                                                   @Valid @RequestBody @NotEmpty Set<@NotEmpty String> members) {
+        Team team = teamService.addExistingUsers(teamId, members);
+        return ResponseEntity.ok(new TeamResponse(team));
     }
 
     @GetMapping("/{teamId}/problems")
-    public ResponseEntity<List<Problem>> getProblems(@PathVariable String teamId) {
-        return ResponseEntity.ok(teamService.getAllProblems(teamId));
+    public ResponseEntity<List<ProblemResponse>> getProblems(@PathVariable String teamId) {
+        return ResponseEntity.ok(teamService.getAllProblems(teamId)
+                .stream()
+                .map(ProblemResponse::new)
+                .collect(Collectors.toList()));
     }
 
     @PostMapping("/{teamId}/problems")
-    public ResponseEntity<Problem> createProblem(@PathVariable String teamId,
-                                                 @Valid @RequestBody Problem problem) {
-        return ResponseEntity.ok(teamService.createProblem(teamId, problem));
+    public ResponseEntity<ProblemResponse> createProblem(@PathVariable String teamId,
+                                                         @Valid @RequestBody Problem problem) {
+        Problem createdProblem = teamService.createProblem(teamId, problem);
+        return ResponseEntity.ok(new ProblemResponse(createdProblem));
     }
 
     @GetMapping("/{teamId}/folders")
-    public ResponseEntity<List<Folder>> getAllTopFolders(@PathVariable String teamId) {
-        return ResponseEntity.ok(teamService.getTopFolders(teamId));
+    public ResponseEntity<List<FolderResponse>> getAllTopFolders(@PathVariable String teamId) {
+        return ResponseEntity.ok(teamService.getTopFolders(teamId)
+                .stream()
+                .map(FolderResponse::new)
+                .collect(Collectors.toList()));
     }
 
     @PostMapping("/{teamId}/folders")
-    public ResponseEntity<Folder> createFolder(@PathVariable String teamId,
-                                               @RequestBody @Valid Folder folder) {
-        return ResponseEntity.ok(teamService.createTopFolder(teamId, folder));
+    public ResponseEntity<FolderResponse> createFolder(@PathVariable String teamId,
+                                                       @RequestBody @Valid Folder folder) {
+        Folder createdFolder = teamService.createTopFolder(teamId, folder);
+        return ResponseEntity.ok(new FolderResponse(createdFolder));
     }
 }

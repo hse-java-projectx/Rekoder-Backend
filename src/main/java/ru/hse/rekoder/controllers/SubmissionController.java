@@ -3,6 +3,7 @@ package ru.hse.rekoder.controllers;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hse.rekoder.model.Submission;
+import ru.hse.rekoder.responses.SubmissionResponse;
 import ru.hse.rekoder.services.SubmissionService;
 
 import javax.validation.Valid;
@@ -17,7 +18,8 @@ public class SubmissionController {
     }
 
     @GetMapping("/{submissionId}")
-    public ResponseEntity<Submission> getSubmission(@PathVariable int submissionId) {
-        return ResponseEntity.ok(submissionService.getSubmission(submissionId));
+    public ResponseEntity<SubmissionResponse> getSubmission(@PathVariable int submissionId) {
+        Submission submission = submissionService.getSubmission(submissionId);
+        return ResponseEntity.ok(new SubmissionResponse(submission));
     }
 }
