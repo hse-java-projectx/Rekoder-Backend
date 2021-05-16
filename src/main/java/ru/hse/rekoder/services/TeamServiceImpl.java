@@ -54,17 +54,15 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public Team addExistingUsers(String teamName, Set<String> userIds) {
+    public Team addExistingUsers(String teamName, String userId) {
         Team team = teamRepository.findById(teamName)
                 .orElseThrow();
-        for (String userId : userIds) {
-            //TODO maybe check that user.getId() != null
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new ProblemOwnerNotFoundException("User with name \"" + userId + "\" not found"));
-            team.getMembers().add(user);
-            user.getTeams().add(team);
-            userRepository.save(user);
-        }
+        //TODO maybe check that user.getId() != null
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ProblemOwnerNotFoundException("User with name \"" + userId + "\" not found"));
+        team.getMembers().add(user);
+        user.getTeams().add(team);
+        userRepository.save(user);
         teamRepository.save(team);
         return team;
     }

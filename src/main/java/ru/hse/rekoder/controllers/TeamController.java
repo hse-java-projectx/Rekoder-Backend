@@ -48,8 +48,8 @@ public class TeamController {
 
     @PostMapping("/{teamId}/users")
     public ResponseEntity<TeamResponse> addMembers(@PathVariable String teamId,
-                                                   @Valid @RequestBody @NotEmpty Set<@NotEmpty String> members) {
-        Team team = teamService.addExistingUsers(teamId, members);
+                                                   @Valid @RequestBody @NotEmpty String member) {
+        Team team = teamService.addExistingUsers(teamId, member);
         return ResponseEntity.ok(new TeamResponse(team));
     }
 

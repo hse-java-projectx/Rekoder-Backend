@@ -14,7 +14,7 @@ public interface TeamService {
     Team createTeam(Team team);
 
     List<User> getAllMembers(String teamName);
-    Team addExistingUsers(String teamName, Set<String> userIds);
+    Team addExistingUsers(String teamName, String userId);
 
     List<Folder> getTopFolders(String teamName);
     Folder createTopFolder(String teamName, Folder folder);

@@ -44,7 +44,7 @@ public class ProblemOwner {
     @JsonManagedReference
     protected List<Problem> problems = new ArrayList<>();
     @DBRef
-    protected List<Folder> topFolders;
+    protected List<Folder> topFolders = new ArrayList<>();
 
     public List<Folder> getTopFolders() {
         return topFolders;
