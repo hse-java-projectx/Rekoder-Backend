@@ -34,8 +34,8 @@ public class GlobalExceptionHandler {
         return  new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler
+    /*@ExceptionHandler
     public ResponseEntity<String> handleUnhandledException(Exception e) {
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    }*/
 }

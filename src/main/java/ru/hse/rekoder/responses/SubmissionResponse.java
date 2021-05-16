@@ -24,7 +24,7 @@ public class SubmissionResponse extends BaseResponse {
         this.sourceCode = originalSubmission.getSourceCode();
         this.compiler = originalSubmission.getCompiler();
         this.submissionTime = originalSubmission.getSubmissionTime();
-        this.authorId = originalSubmission.getAuthor().getId().getProblemOwnerType();
+        this.authorId = originalSubmission.getAuthor().getId().getProblemOwnerId();
         this.feedback = originalSubmission.getFeedback();
     }
 

@@ -41,6 +41,7 @@ public class ProblemServiceImpl implements ProblemService {
                 .orElseThrow(() -> new ProblemNotFoundException("Problem with id \"" + problemId + "\" not found"));
         submission.setId(null);
         submission.setProblem(problem);
+        submission.setAuthor(problem.getOwner());
         submission = submissionRepository.save(submission);
         problem.getSubmissions().add(submission);
         problemRepository.save(problem);

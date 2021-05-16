@@ -80,6 +80,7 @@ public class TeamServiceImpl implements TeamService {
                 .orElseThrow();
         folder.setParentFolder(null);
         folder.setId(null);
+        folder.setOwner(team);
         folder = folderRepository.save(folder);
         team.getTopFolders().add(folder);
         teamRepository.save(team);

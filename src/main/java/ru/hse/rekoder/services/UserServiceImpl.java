@@ -63,6 +63,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ProblemOwnerNotFoundException("User with name \"" + userName + "\" not found"));
         folder.setParentFolder(null);
         folder.setId(null);//???
+        folder.setOwner(user);
         folder = folderRepository.save(folder);
         user.getTopFolders().add(folder);
         userRepository.save(user);

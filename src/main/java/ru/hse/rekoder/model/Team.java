@@ -3,12 +3,14 @@ package ru.hse.rekoder.model;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.*;
 
 public class Team extends ProblemOwner {
     @Transient
     private static final String PROBLEM_OWNER_TYPE = "team";
 
+    @NotEmpty(message = "Team name cannot be empty")
     private String name;
     private String bio;
     private Date registrationDate;
