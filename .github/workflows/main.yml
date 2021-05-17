@@ -21,14 +21,14 @@ jobs:
     runs-on: ubuntu-latest
 
     # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
+    steps:      
+      - name: Checkout
+        uses: actions/checkout@v2
+        
       - name: Set database password
         env:
           SECRETS_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
         run: echo "database_password=$SECRETS_PASSWORD" | cat >> ./src/main/resources/application.properties
-        
-      - name: Checkout
-        uses: actions/checkout@v2
         
       - id: Deploy
         uses: google-github-actions/deploy-appengine@main
