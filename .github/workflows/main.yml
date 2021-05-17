@@ -22,7 +22,10 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
       - id: Deploy
         uses: google-github-actions/deploy-appengine@main
         with:
+          deliverables: app.yaml
           credentials: ${{ secrets.GCP_SA_KEY }}
