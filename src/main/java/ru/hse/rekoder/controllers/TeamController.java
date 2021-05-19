@@ -2,10 +2,8 @@ package ru.hse.rekoder.controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.hse.rekoder.model.Folder;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.Team;
-import ru.hse.rekoder.responses.FolderResponse;
 import ru.hse.rekoder.responses.ProblemResponse;
 import ru.hse.rekoder.responses.TeamResponse;
 import ru.hse.rekoder.responses.UserResponse;
@@ -14,7 +12,6 @@ import ru.hse.rekoder.services.TeamService;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -66,20 +63,5 @@ public class TeamController {
                                                          @Valid @RequestBody Problem problem) {
         Problem createdProblem = teamService.createProblem(teamId, problem);
         return ResponseEntity.ok(new ProblemResponse(createdProblem));
-    }
-
-    @GetMapping("/{teamId}/folders")
-    public ResponseEntity<List<FolderResponse>> getAllTopFolders(@PathVariable String teamId) {
-        return ResponseEntity.ok(teamService.getTopFolders(teamId)
-                .stream()
-                .map(FolderResponse::new)
-                .collect(Collectors.toList()));
-    }
-
-    @PostMapping("/{teamId}/folders")
-    public ResponseEntity<FolderResponse> createFolder(@PathVariable String teamId,
-                                                       @RequestBody @Valid Folder folder) {
-        Folder createdFolder = teamService.createTopFolder(teamId, folder);
-        return ResponseEntity.ok(new FolderResponse(createdFolder));
     }
 }

@@ -14,6 +14,7 @@ public class TeamResponse extends BaseResponse {
     private final Date registrationDate;
     private final Map<String, String> contacts;
     private final List<String> membersId;
+    private final int rootFolderId;
 
     public TeamResponse(Team originalTeam, String pathToResource) {
         super(pathToResource);
@@ -22,10 +23,15 @@ public class TeamResponse extends BaseResponse {
         this.membersId = originalTeam.getMembers().stream().map(User::getName).collect(Collectors.toList());
         this.registrationDate = originalTeam.getRegistrationDate();
         this.contacts = originalTeam.getContacts();
+        this.rootFolderId = originalTeam.getRootFolder().getId();
     }
 
     public TeamResponse(Team originalTeam) {
         this(originalTeam, "/teams/" + originalTeam.getId().getProblemOwnerId());
+    }
+
+    public int getRootFolderId() {
+        return rootFolderId;
     }
 
     public String getName() {

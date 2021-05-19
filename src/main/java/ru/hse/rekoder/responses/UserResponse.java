@@ -14,6 +14,7 @@ public class UserResponse extends BaseResponse {
     private final Map<String, String> contacts;
     private final Date registrationDate;
     private final List<String> teamIds;
+    private final int rootFolderId;
 
     public UserResponse(User originalUser) {
         this(originalUser, "/users/" + originalUser.getId().getProblemOwnerId());
@@ -26,6 +27,11 @@ public class UserResponse extends BaseResponse {
         this.contacts = originalUser.getContacts();
         this.registrationDate = originalUser.getRegistrationTime();
         this.teamIds = originalUser.getTeams().stream().map(Team::getName).collect(Collectors.toList());
+        this.rootFolderId = originalUser.getRootFolder().getId();
+    }
+
+    public int getRootFolderId() {
+        return rootFolderId;
     }
 
     public Map<String, String> getContacts() {

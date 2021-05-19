@@ -43,15 +43,16 @@ public class ProblemOwner {
     @DBRef
     @JsonManagedReference
     protected List<Problem> problems = new ArrayList<>();
-    @DBRef
-    protected List<Folder> topFolders = new ArrayList<>();
 
-    public List<Folder> getTopFolders() {
-        return topFolders;
+    @DBRef
+    protected Folder rootFolder;
+
+    public Folder getRootFolder() {
+        return rootFolder;
     }
 
-    public void setTopFolders(List<Folder> topFolders) {
-        this.topFolders = topFolders;
+    public void setRootFolder(Folder rootFolder) {
+        this.rootFolder = rootFolder;
     }
 
     public CompositeKey getId() {

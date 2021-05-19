@@ -43,6 +43,11 @@ public class TeamServiceImpl implements TeamService {
         }
         team.setRegistrationDate(new Date());
         team.setId(null);
+        Folder rootFolder = new Folder();
+        rootFolder.setOwner(team);
+        rootFolder.setName("root");
+        rootFolder = folderRepository.save(rootFolder);
+        team.setRootFolder(rootFolder);
         return teamRepository.save(team);
     }
 
@@ -68,23 +73,10 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public List<Folder> getTopFolders(String teamName) {
+    public Folder getRootFolder(String teamName) {
         return teamRepository.findById(teamName)
-                .map(ProblemOwner::getTopFolders)
+                .map(ProblemOwner::getRootFolder)
                 .orElseThrow();
-    }
-
-    @Override
-    public Folder createTopFolder(String teamName, Folder folder) {
-        Team team = teamRepository.findById(teamName)
-                .orElseThrow();
-        folder.setParentFolder(null);
-        folder.setId(null);
-        folder.setOwner(team);
-        folder = folderRepository.save(folder);
-        team.getTopFolders().add(folder);
-        teamRepository.save(team);
-        return folder;
     }
 
     @Override

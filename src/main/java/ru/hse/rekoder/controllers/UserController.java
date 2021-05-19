@@ -56,19 +56,4 @@ public class UserController {
         Problem createdProblem = userService.createProblem(userId, problem);
         return ResponseEntity.ok(new ProblemResponse(createdProblem));
     }
-
-    @GetMapping("/{userId}/folders")
-    public ResponseEntity<List<FolderResponse>> getAllTopFolders(@PathVariable String userId) {
-        return ResponseEntity.ok(userService.getTopFolder(userId)
-                .stream()
-                .map(FolderResponse::new)
-                .collect(Collectors.toList()));
-    }
-
-    @PostMapping("/{userId}/folders")
-    public ResponseEntity<FolderResponse> createFolder(@PathVariable String userId,
-                                               @RequestBody @Valid Folder folder) {
-        Folder createdFolder = userService.createTopFolder(userId, folder);
-        return ResponseEntity.ok(new FolderResponse(createdFolder));
-    }
 }

@@ -50,24 +50,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Folder> getTopFolder(String userName) {
+    public Folder getRootFolder(String userName) {
         return userRepository.findById(userName)
-                .map(ProblemOwner::getTopFolders)
+                .map(ProblemOwner::getRootFolder)
                 .orElseThrow(() -> new ProblemOwnerNotFoundException("User with name \"" + userName + "\" not found"));
 
-    }
-
-    @Override
-    public Folder createTopFolder(String userName, Folder folder) {
-        User user = userRepository.findById(userName)
-                .orElseThrow(() -> new ProblemOwnerNotFoundException("User with name \"" + userName + "\" not found"));
-        folder.setParentFolder(null);
-        folder.setId(null);//???
-        folder.setOwner(user);
-        folder = folderRepository.save(folder);
-        user.getTopFolders().add(folder);
-        userRepository.save(user);
-        return folder;
     }
 
     @Override
@@ -77,6 +64,11 @@ public class UserServiceImpl implements UserService {
         }
         user.setId(null);
         user.setRegistrationTime(new Date());
+        Folder rootFolder = new Folder();
+        rootFolder.setOwner(user);
+        rootFolder.setName("root");
+        rootFolder = folderRepository.save(rootFolder);
+        user.setRootFolder(rootFolder);
         return userRepository.save(user);
     }
 }

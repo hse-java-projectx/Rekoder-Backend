@@ -16,6 +16,5 @@ public interface UserService {
     List<Problem> getProblems(String userName);
     Problem createProblem(String userName, Problem problem);
 
-    List<Folder> getTopFolder(String userName);
-    Folder createTopFolder(String userName, Folder folder);
+    Folder getRootFolder(String userName);
 }

@@ -5,9 +5,7 @@ import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.Team;
 import ru.hse.rekoder.model.User;
 
-import javax.validation.constraints.NotEmpty;
 import java.util.List;
-import java.util.Set;
 
 public interface TeamService {
     Team getTeam(String teamName);
@@ -16,8 +14,7 @@ public interface TeamService {
     List<User> getAllMembers(String teamName);
     Team addExistingUsers(String teamName, String userId);
 
-    List<Folder> getTopFolders(String teamName);
-    Folder createTopFolder(String teamName, Folder folder);
+    Folder getRootFolder(String teamName);
 
     List<Problem> getAllProblems(String teamName);
     Problem createProblem(String teamName, Problem problem);
