@@ -39,7 +39,7 @@ jobs:
           ORG: 0deefb8etrial
           SPACE: dev
           USERNAME: ${{ secrets.CF_USERNAME }}
-          PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          PASSWORD: ${{ secrets.CF_PASSWORD }}
           APP_NAME: rekoderback
           ARTIFACT_PATH: build/libs/rekoder-0.0.1-SNAPSHOT.jar
         run: |
