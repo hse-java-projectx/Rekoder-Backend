@@ -7,11 +7,11 @@ import ru.hse.rekoder.repositories.ProblemRepository;
 import java.util.ArrayList;
 import java.util.Optional;
 
-public class ArrayProblemRepository implements ProblemRepository {
+public class ArrayProblemRepository /*implements ProblemRepository*/ {
     private final ArrayList<Problem> problems = new ArrayList<>();
 
 
-    @Override
+    //@Override
     public Optional<Problem> findById(Integer id) {
         if (id < 0 || id >= problems.size()) {
             return Optional.empty();
@@ -19,7 +19,7 @@ public class ArrayProblemRepository implements ProblemRepository {
         return Optional.of(problems.get(id));
     }
 
-    @Override
+    //@Override
     public Problem save(Problem problem) {
         /*if (problem.getId() == null || problem.getId() < 0 || problem.getId() >= problems.size()) {
             problem.setId(problems.size());
@@ -31,7 +31,7 @@ public class ArrayProblemRepository implements ProblemRepository {
         return null;
     }
 
-    @Override
+    //@Override
     public long count() {
         return problems.size();
     }

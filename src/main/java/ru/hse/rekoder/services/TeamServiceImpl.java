@@ -7,10 +7,10 @@ import ru.hse.rekoder.repositories.FolderRepository;
 import ru.hse.rekoder.repositories.ProblemRepository;
 import ru.hse.rekoder.repositories.TeamRepository;
 import ru.hse.rekoder.repositories.UserRepository;
+import ru.hse.rekoder.repositories.mongodb.seqGenerators.DatabaseIntSequenceService;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class TeamServiceImpl implements TeamService {
@@ -18,16 +18,20 @@ public class TeamServiceImpl implements TeamService {
     private final FolderRepository folderRepository;
     private final ProblemRepository problemRepository;
     private final UserRepository userRepository;
+    private final DatabaseIntSequenceService sequenceService;
 
     //TODO use TeamNotFoundException
 
     public TeamServiceImpl(TeamRepository teamRepository,
                            FolderRepository folderRepository,
-                           ProblemRepository problemRepository, UserRepository userRepository) {
+                           ProblemRepository problemRepository,
+                           UserRepository userRepository,
+                           DatabaseIntSequenceService sequenceService) {
         this.teamRepository = teamRepository;
         this.folderRepository = folderRepository;
         this.problemRepository = problemRepository;
         this.userRepository = userRepository;
+        this.sequenceService = sequenceService;
     }
 
     @Override
@@ -44,8 +48,9 @@ public class TeamServiceImpl implements TeamService {
         team.setRegistrationDate(new Date());
         team.setId(null);
         Folder rootFolder = new Folder();
-        rootFolder.setOwner(team);
+        rootFolder.setOwnerId(new Team.TeamCompositeKey(team.getName()));
         rootFolder.setName("root");
+        rootFolder.setId(sequenceService.generateSequence(Folder.SEQUENCE_NAME));
         rootFolder = folderRepository.save(rootFolder);
         team.setRootFolder(rootFolder);
         return teamRepository.save(team);
@@ -90,9 +95,8 @@ public class TeamServiceImpl implements TeamService {
     public Problem createProblem(String teamName, Problem problem) {
         Team team = teamRepository.findById(teamName)
                 .orElseThrow();
-        problem.setId(null);
-        problem.setOriginalProblem(null);
-        problem.setOwner(team);
+        problem.setOwnerId(new Team.TeamCompositeKey(teamName));
+        problem.setId(sequenceService.generateSequence(Problem.SEQUENCE_NAME));
         problem = problemRepository.save(problem);
         team.getProblems().add(problem);
         teamRepository.save(team);

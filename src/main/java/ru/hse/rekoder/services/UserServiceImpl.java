@@ -6,6 +6,7 @@ import ru.hse.rekoder.model.*;
 import ru.hse.rekoder.repositories.FolderRepository;
 import ru.hse.rekoder.repositories.ProblemRepository;
 import ru.hse.rekoder.repositories.UserRepository;
+import ru.hse.rekoder.repositories.mongodb.seqGenerators.DatabaseIntSequenceService;
 
 import java.util.Date;
 import java.util.List;
@@ -15,13 +16,16 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ProblemRepository problemRepository;
     private final FolderRepository folderRepository;
+    private final DatabaseIntSequenceService sequenceService;
 
     public UserServiceImpl(UserRepository userRepository,
                            ProblemRepository problemRepository,
-                           FolderRepository folderRepository) {
+                           FolderRepository folderRepository,
+                           DatabaseIntSequenceService sequenceService) {
         this.userRepository = userRepository;
         this.problemRepository = problemRepository;
         this.folderRepository = folderRepository;
+        this.sequenceService = sequenceService;
     }
 
     @Override
@@ -32,17 +36,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<Problem> getProblems(String userName) throws ProblemOwnerNotFoundException {
-        return userRepository.findById(userName)
-                .map(User::getProblems)
-                .orElseThrow(() -> new ProblemOwnerNotFoundException("User with id \"" + userName + "\" not found"));
+        return problemRepository.findAllByOwnerId(new User.UserCompositeKey(userName));
     }
 
     @Override
     public Problem createProblem(String userName, Problem problem) {
         User user = userRepository.findById(userName)
                 .orElseThrow(() -> new ProblemOwnerNotFoundException("User with name \"" + userName + "\" not found"));
-        problem.setOwner(user);
-        problem.setId(null);//??
+        problem.setOwnerId(new User.UserCompositeKey(userName));
+        problem.setId(sequenceService.generateSequence(Problem.SEQUENCE_NAME));
         problem = problemRepository.save(problem);
         user.getProblems().add(problem);
         userRepository.save(user);
@@ -65,8 +67,9 @@ public class UserServiceImpl implements UserService {
         user.setId(null);
         user.setRegistrationTime(new Date());
         Folder rootFolder = new Folder();
-        rootFolder.setOwner(user);
+        rootFolder.setOwnerId(new User.UserCompositeKey(user.getName()));
         rootFolder.setName("root");
+        rootFolder.setId(sequenceService.generateSequence(Folder.SEQUENCE_NAME));
         rootFolder = folderRepository.save(rootFolder);
         user.setRootFolder(rootFolder);
         return userRepository.save(user);

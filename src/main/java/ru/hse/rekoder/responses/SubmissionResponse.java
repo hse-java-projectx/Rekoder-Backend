@@ -19,12 +19,12 @@ public class SubmissionResponse extends BaseResponse {
     public SubmissionResponse(Submission originalSubmission, String pathToResource) {
         super(pathToResource);
         this.id = originalSubmission.getId();
-        this.problemId = originalSubmission.getProblem().getId();
+        this.problemId = originalSubmission.getProblemId();
         this.comment = originalSubmission.getComment();
         this.sourceCode = originalSubmission.getSourceCode();
         this.compiler = originalSubmission.getCompiler();
         this.submissionTime = originalSubmission.getSubmissionTime();
-        this.authorId = originalSubmission.getAuthor().getId().getProblemOwnerId();
+        this.authorId = originalSubmission.getAuthorId().getProblemOwnerId();
         this.feedback = originalSubmission.getFeedback();
     }
 

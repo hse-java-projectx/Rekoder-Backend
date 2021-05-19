@@ -7,10 +7,10 @@ import ru.hse.rekoder.repositories.FolderRepository;
 import java.util.ArrayList;
 import java.util.Optional;
 
-public class ArrayFolderRepository implements FolderRepository {
+public class ArrayFolderRepository /*implements FolderRepository*/ {
     private final ArrayList<Folder> folders = new ArrayList<>();
 
-    @Override
+    //@Override
     public Optional<Folder> findById(Integer id) {
         if (id == null || id < 0 || id >= folders.size()) {
             return Optional.empty();
@@ -18,7 +18,7 @@ public class ArrayFolderRepository implements FolderRepository {
         return Optional.of(folders.get(id));
     }
 
-    @Override
+    //@Override
     public Folder save(Folder folder) {
         if (folder.getId() != null) {
             folders.set(folder.getId(), folder);

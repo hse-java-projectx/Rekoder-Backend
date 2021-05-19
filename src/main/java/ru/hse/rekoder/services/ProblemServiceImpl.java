@@ -6,6 +6,7 @@ import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.Submission;
 import ru.hse.rekoder.repositories.ProblemRepository;
 import ru.hse.rekoder.repositories.SubmissionRepository;
+import ru.hse.rekoder.repositories.mongodb.seqGenerators.DatabaseIntSequenceService;
 
 import java.util.Date;
 import java.util.List;
@@ -14,11 +15,14 @@ import java.util.List;
 public class ProblemServiceImpl implements ProblemService {
     private final ProblemRepository problemRepository;
     private final SubmissionRepository submissionRepository;
+    private final DatabaseIntSequenceService sequenceService;
 
     public ProblemServiceImpl(ProblemRepository problemRepository,
-                              SubmissionRepository submissionRepository) {
+                              SubmissionRepository submissionRepository,
+                              DatabaseIntSequenceService sequenceService) {
         this.problemRepository = problemRepository;
         this.submissionRepository = submissionRepository;
+        this.sequenceService = sequenceService;
     }
 
     @Override
@@ -29,9 +33,7 @@ public class ProblemServiceImpl implements ProblemService {
 
     @Override
     public List<Submission> getAllSubmissions(int problemId) {
-        return problemRepository.findById(problemId)
-                .map(Problem::getSubmissions)
-                .orElseThrow(() -> new ProblemNotFoundException("Problem with id \"" + problemId + "\" not found"));
+        return submissionRepository.findAllByProblemId(problemId);
     }
 
     @Override
@@ -39,12 +41,11 @@ public class ProblemServiceImpl implements ProblemService {
         submission.setSubmissionTime(new Date());
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new ProblemNotFoundException("Problem with id \"" + problemId + "\" not found"));
-        submission.setId(null);
-        submission.setProblem(problem);
-        submission.setAuthor(problem.getOwner());
+        submission.setProblemId(problemId);
+        //TODO
+        submission.setAuthorId(problem.getOwnerId());
+        submission.setId(sequenceService.generateSequence(Submission.SEQUENCE_NAME));
         submission = submissionRepository.save(submission);
-        problem.getSubmissions().add(submission);
-        problemRepository.save(problem);
         return submission;
     }
 }

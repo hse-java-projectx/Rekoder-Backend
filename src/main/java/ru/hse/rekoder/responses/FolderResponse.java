@@ -17,9 +17,8 @@ public class FolderResponse extends BaseResponse {
         super(pathToResource);
         this.id = originalFolder.getId();
         this.name = originalFolder.getName();
-        Folder parentFolder = originalFolder.getParentFolder();
-        this.parentFolderId = Objects.isNull(parentFolder) ? null : parentFolder.getId();
-        this.ownerId = originalFolder.getOwner().getId().getProblemOwnerId();
+        this.parentFolderId = originalFolder.getParentFolderId();
+        this.ownerId = originalFolder.getOwnerId().getProblemOwnerId();
     }
 
     public FolderResponse(Folder originalFolder) {

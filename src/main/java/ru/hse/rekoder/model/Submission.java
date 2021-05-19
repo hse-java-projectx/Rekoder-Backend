@@ -1,9 +1,8 @@
 package ru.hse.rekoder.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.Valid;
@@ -12,11 +11,12 @@ import java.util.Date;
 
 @Document(collection = "submissions")
 public class Submission {
+    @Transient
+    public static final String SEQUENCE_NAME = "submission_sequence";
+
     @Id
     private Integer id;
-    @DBRef
-    @JsonBackReference
-    private Problem problem;
+    private Integer problemId;
     private String comment;
 
     @NotNull(message = "Source code must be not empty")
@@ -26,10 +26,25 @@ public class Submission {
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss" /* TODO,timezone=*/)
     private Date submissionTime;
-    @DBRef(lazy = true)
-    private ProblemOwner author;
+    private ProblemOwner.CompositeKey authorId;
     @Valid
     private Feedback feedback;
+
+    public Integer getProblemId() {
+        return problemId;
+    }
+
+    public void setProblemId(Integer problemId) {
+        this.problemId = problemId;
+    }
+
+    public ProblemOwner.CompositeKey getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(ProblemOwner.CompositeKey authorId) {
+        this.authorId = authorId;
+    }
 
     public Feedback getFeedback() {
         return feedback;
@@ -39,28 +54,12 @@ public class Submission {
         this.feedback = feedback;
     }
 
-    public ProblemOwner getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(ProblemOwner author) {
-        this.author = author;
-    }
-
     public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Problem getProblem() {
-        return problem;
-    }
-
-    public void setProblem(Problem problem) {
-        this.problem = problem;
     }
 
     public String getComment() {

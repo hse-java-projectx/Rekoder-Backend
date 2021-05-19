@@ -7,10 +7,10 @@ import ru.hse.rekoder.repositories.SubmissionRepository;
 import java.util.ArrayList;
 import java.util.Optional;
 
-public class ArraySubmissionRepository implements SubmissionRepository {
+public class ArraySubmissionRepository /*implements SubmissionRepository*/ {
     private final ArrayList<Submission> submissions = new ArrayList<>();
 
-    @Override
+    //@Override
     public Optional<Submission> findById(Integer id) {
         if (id < 0 || id >= submissions.size()) {
             return Optional.empty();
@@ -18,7 +18,7 @@ public class ArraySubmissionRepository implements SubmissionRepository {
         return Optional.of(submissions.get(id));
     }
 
-    @Override
+    //@Override
     public Submission save(Submission submission) {
         if (submission.getId() == null || submission.getId() < 0 || submission.getId() >= submissions.size()) {
             submission.setId(submissions.size());

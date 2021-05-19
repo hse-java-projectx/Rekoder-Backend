@@ -41,7 +41,6 @@ public class ProblemOwner {
     @Id
     protected CompositeKey id;
     @DBRef(lazy = true)
-    @JsonManagedReference
     protected List<Problem> problems = new ArrayList<>();
 
     @DBRef(lazy = true)

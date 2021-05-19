@@ -1,9 +1,6 @@
 package ru.hse.rekoder.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.Valid;
@@ -14,6 +11,7 @@ import java.util.List;
 
 @Document(collection = "problems")
 public class Problem {
+    public static final String SEQUENCE_NAME = "problem_sequence";
     @Id
     private Integer id;
     private String name;
@@ -24,16 +22,26 @@ public class Problem {
     private List<@NotNull String> tags = new ArrayList<>();
     private List<@Valid @NotNull Test> tests = new ArrayList<>();
 
-    @DBRef(lazy = true)
-    @JsonManagedReference
-    private List<Submission> submissions = new ArrayList<>();
-    @DBRef(lazy = true)
-    private Problem originalProblem;
-    @DBRef(lazy = true)
-    @JsonBackReference
-    private ProblemOwner owner;
+    private Integer originalProblemId;
+    private ProblemOwner.CompositeKey ownerId;
     private String problemUrl;
     private int numberOfSuccessfulSubmissions = 0;
+
+    public Integer getOriginalProblemId() {
+        return originalProblemId;
+    }
+
+    public void setOriginalProblemId(Integer originalProblemId) {
+        this.originalProblemId = originalProblemId;
+    }
+
+    public ProblemOwner.CompositeKey getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(ProblemOwner.CompositeKey ownerId) {
+        this.ownerId = ownerId;
+    }
 
     public int getNumberOfSuccessfulSubmissions() {
         return numberOfSuccessfulSubmissions;
@@ -67,14 +75,6 @@ public class Problem {
         this.tests = tests;
     }
 
-    public ProblemOwner getOwner() {
-        return owner;
-    }
-
-    public void setOwner(ProblemOwner owner) {
-        this.owner = owner;
-    }
-
     public Integer getId() {
         return id;
     }
@@ -97,21 +97,5 @@ public class Problem {
 
     public void setStatement(String statement) {
         this.statement = statement;
-    }
-
-    public List<Submission> getSubmissions() {
-        return submissions;
-    }
-
-    public void setSubmissions(List<Submission> submissions) {
-        this.submissions = submissions;
-    }
-
-    public Problem getOriginalProblem() {
-        return originalProblem;
-    }
-
-    public void setOriginalProblem(Problem originalProblem) {
-        this.originalProblem = originalProblem;
     }
 }

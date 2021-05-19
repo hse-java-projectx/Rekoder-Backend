@@ -8,8 +8,7 @@ import ru.hse.rekoder.repositories.mongodb.seqGenerators.DatabaseIntSequenceServ
 
 import java.util.Optional;
 
-@Repository
-public class MongoSubmissionRepository implements SubmissionRepository {
+public class MongoSubmissionRepository  {
     private static final String COLLECTION_NAME = "submissions";
     private static final String SEQUENCE_NAME = "submission_sequence";
 
@@ -22,12 +21,11 @@ public class MongoSubmissionRepository implements SubmissionRepository {
         this.sequenceGeneratorService = sequenceGeneratorService;
     }
 
-    @Override
     public Optional<Submission> findById(Integer id) {
         return Optional.ofNullable(mongoOperations.findById(id, Submission.class, COLLECTION_NAME));
     }
 
-    @Override
+
     public Submission save(Submission newSubmission) {
         if (newSubmission.getId() == null) {
             newSubmission.setId(sequenceGeneratorService.generateSequence(SEQUENCE_NAME));

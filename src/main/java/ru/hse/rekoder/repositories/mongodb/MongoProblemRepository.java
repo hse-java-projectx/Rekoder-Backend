@@ -9,8 +9,8 @@ import ru.hse.rekoder.repositories.mongodb.seqGenerators.DatabaseIntSequenceServ
 
 import java.util.Optional;
 
-@Repository
-public class MongoProblemRepository implements ProblemRepository {
+
+public class MongoProblemRepository /*implements ProblemRepository*/ {
     private static final String COLLECTION_NAME = "problems";
     private static final String SEQUENCE_NAME = "problem_sequence";
 
@@ -23,12 +23,12 @@ public class MongoProblemRepository implements ProblemRepository {
         this.sequenceGeneratorService = sequenceGeneratorService;
     }
 
-    @Override
+    //@Override
     public Optional<Problem> findById(Integer id) {
         return Optional.ofNullable(mongoOperations.findById(id, Problem.class, COLLECTION_NAME));
     }
 
-    @Override
+    //@Override
     public Problem save(Problem newProblem) {
         if (newProblem.getId() == null) {
             newProblem.setId(sequenceGeneratorService.generateSequence(SEQUENCE_NAME));
@@ -36,7 +36,7 @@ public class MongoProblemRepository implements ProblemRepository {
         return mongoOperations.save(newProblem, COLLECTION_NAME);
     }
 
-    @Override
+    //@Override
     public long count() {
         return mongoOperations.count(new Query(), Problem.class, COLLECTION_NAME);
     }

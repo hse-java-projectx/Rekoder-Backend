@@ -8,8 +8,8 @@ import ru.hse.rekoder.repositories.mongodb.seqGenerators.DatabaseIntSequenceServ
 
 import java.util.Optional;
 
-@Repository
-public class MongoFolderRepository implements FolderRepository {
+//@Repository
+public class MongoFolderRepository /*implements FolderRepository*/ {
     private static final String COLLECTION_NAME = "folders";
     private static final String SEQUENCE_NAME = "folder_sequence";
 
@@ -22,12 +22,12 @@ public class MongoFolderRepository implements FolderRepository {
         this.sequenceGeneratorService = sequenceGeneratorService;
     }
 
-    @Override
+    //@Override
     public Optional<Folder> findById(Integer id) {
         return Optional.ofNullable(mongoOperations.findById(id, Folder.class, COLLECTION_NAME));
     }
 
-    @Override
+    //@Override
     public Folder save(Folder folder) {
         if (folder.getId() == null) {
             folder.setId(sequenceGeneratorService.generateSequence(SEQUENCE_NAME));
