@@ -36,7 +36,7 @@ jobs:
       - name: Deploy to PWS
         uses: louisthomas/cloud-foundry-cli-action@master
         env:
-          CF_API_ENDPOINT = https://api.cf.eu10.hana.ondemand.com
+          CF_API_ENDPOINT = api.cf.eu10.hana.ondemand.com
           ORG = 0deefb8etrial
           SPACE = dev
           USERNAME = ${{secrets.CF_USERNAME }}
