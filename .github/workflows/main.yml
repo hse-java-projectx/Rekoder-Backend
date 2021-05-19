@@ -41,5 +41,5 @@ jobs:
           SPACE = dev
           USERNAME = ${{ secrets.CF_USERNAME }}
           APP_NAME = rekoderback
-          ARTIFACT_PATH = build/lib/rekoder-0.0.1-SNAPSHOT.jar
-          PASSWORD: ${{ secrets.CF_PASSWORD }}
+          ARTIFACT_PATH = build/libs/rekoder-0.0.1-SNAPSHOT.jar
+          PASSWORD = ${{ secrets.CF_PASSWORD }}
