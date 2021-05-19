@@ -34,12 +34,16 @@ jobs:
         run: ./gradlew bootJar
         
       - name: Deploy to PWS
-        uses: louisthomas/cloud-foundry-cli-action@master
         env:
-          CF_API_ENDPOINT = api.cf.eu10.hana.ondemand.com
-          ORG = 0deefb8etrial
-          SPACE = dev
-          USERNAME = ${{ secrets.CF_USERNAME }}
-          APP_NAME = rekoderback
-          ARTIFACT_PATH = build/libs/rekoder-0.0.1-SNAPSHOT.jar
-          PASSWORD = ${{ secrets.CF_PASSWORD }}
+          CF_API_ENDPOINT: api.cf.eu10.hana.ondemand.com
+          ORG: 0deefb8etrial
+          SPACE: dev
+          USERNAME: ${{ secrets.CF_USERNAME }}
+          PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          APP_NAME: rekoderback
+          ARTIFACT_PATH: build/libs/rekoder-0.0.1-SNAPSHOT.jar
+        run: |
+          wget 'https://packages.cloudfoundry.org/stable?release=debian64&version=7.2.0&source=github-rel' -O package.deb,
+          apt install ./package.deb,
+          cf login -a $CF_API_ENDPOINT -o $ORG -s $SPACE -u $USERNAME -p $PASSWORD,
+          cf push $APP_NAME -p $ARTIFACT_PATH -b https://github.com/cloudfoundry/java-buildpack.git
