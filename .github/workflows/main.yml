@@ -30,6 +30,9 @@ jobs:
           SECRETS_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
         run: echo "database_password=$SECRETS_PASSWORD" | cat >> ./src/main/resources/application.properties
         
+      - name: Build jar
+        run: ./gradlew bootJar
+        
       - name: Deploy to PWS
         uses: louisthomas/cloud-foundry-cli-action@master
         env:
