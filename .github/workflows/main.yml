@@ -43,7 +43,7 @@ jobs:
           APP_NAME: rekoderback
           ARTIFACT_PATH: build/libs/rekoder-0.0.1-SNAPSHOT.jar
         run: |
-          wget 'https://packages.cloudfoundry.org/stable?release=debian64&version=7.2.0&source=github-rel' -O package.deb,
-          sudo apt-get install ./package.deb,
-          cf login -a $CF_API_ENDPOINT -o $ORG -s $SPACE -u $USERNAME -p $PASSWORD,
+          wget 'https://packages.cloudfoundry.org/stable?release=debian64&version=7.2.0&source=github-rel' -O package.deb
+          sudo apt-get install ./package.deb
+          cf login -a $CF_API_ENDPOINT -o $ORG -s $SPACE -u $USERNAME -p $PASSWORD
           cf push $APP_NAME -p $ARTIFACT_PATH -b https://github.com/cloudfoundry/java-buildpack.git
