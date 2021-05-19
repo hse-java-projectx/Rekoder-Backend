@@ -30,8 +30,13 @@ jobs:
           SECRETS_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
         run: echo "database_password=$SECRETS_PASSWORD" | cat >> ./src/main/resources/application.properties
         
-      - id: Deploy
-        uses: google-github-actions/deploy-appengine@main
-        with:
-          deliverables: app.yaml
-          credentials: ${{ secrets.GCP_SA_KEY }}
+      - name: Deploy to PWS
+        uses: louisthomas/cloud-foundry-cli-action@master
+        env:
+          CF_API_ENDPOINT = https://api.cf.eu10.hana.ondemand.com
+          ORG = 0deefb8etrial
+          SPACE = dev
+          USERNAME = ${{secrets.CF_USERNAME }}
+          APP_NAME = rekoderback
+          ARTIFACT_PATH = build/lib/rekoder-0.0.1-SNAPSHOT.jar
+          PASSWORD = ${{ secrets.CF_PASSWORD }}
