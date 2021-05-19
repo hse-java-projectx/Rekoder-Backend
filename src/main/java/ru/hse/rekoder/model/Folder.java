@@ -15,15 +15,15 @@ public class Folder {
     private Integer id;
     @NotEmpty(message = "Folder name cannot be a empty string")
     private String name;
-    @DBRef
+    @DBRef(lazy = true)
     @JsonIgnore
     private Folder parentFolder;
-    @DBRef
+    @DBRef(lazy = true)
     private List<Folder> subfolders = new ArrayList<>();
-    @DBRef
+    @DBRef(lazy = true)
     private List<Problem> problems = new ArrayList<>();
 
-    @DBRef
+    @DBRef(lazy = true)
     private ProblemOwner owner;
 
     public ProblemOwner getOwner() {

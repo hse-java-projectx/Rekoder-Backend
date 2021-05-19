@@ -40,11 +40,11 @@ public class ProblemOwner {
 
     @Id
     protected CompositeKey id;
-    @DBRef
+    @DBRef(lazy = true)
     @JsonManagedReference
     protected List<Problem> problems = new ArrayList<>();
 
-    @DBRef
+    @DBRef(lazy = true)
     protected Folder rootFolder;
 
     public Folder getRootFolder() {

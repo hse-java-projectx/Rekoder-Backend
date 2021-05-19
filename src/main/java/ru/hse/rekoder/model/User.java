@@ -24,7 +24,7 @@ public class User extends ProblemOwner {
     private String bio;
     @JsonFormat(pattern="yyyy-MM-dd" /* TODO,timezone=*/)
     private Date registrationTime;
-    @DBRef
+    @DBRef(lazy = true)
     private List<Team> teams = new ArrayList<>();
     private Map<String, String> contacts = Collections.emptyMap();
 

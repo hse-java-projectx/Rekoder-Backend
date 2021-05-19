@@ -15,7 +15,7 @@ public class Team extends ProblemOwner {
     private String bio;
     private Date registrationDate;
     private Map<String, String> contacts = Collections.emptyMap();
-    @DBRef
+    @DBRef(lazy = true)
     private List<User> members = new ArrayList<>();
 
     public static class TeamCompositeKey extends CompositeKey {

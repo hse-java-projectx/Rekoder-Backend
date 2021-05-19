@@ -24,12 +24,12 @@ public class Problem {
     private List<@NotNull String> tags = new ArrayList<>();
     private List<@Valid @NotNull Test> tests = new ArrayList<>();
 
-    @DBRef
+    @DBRef(lazy = true)
     @JsonManagedReference
     private List<Submission> submissions = new ArrayList<>();
-    @DBRef
+    @DBRef(lazy = true)
     private Problem originalProblem;
-    @DBRef
+    @DBRef(lazy = true)
     @JsonBackReference
     private ProblemOwner owner;
     private String problemUrl;

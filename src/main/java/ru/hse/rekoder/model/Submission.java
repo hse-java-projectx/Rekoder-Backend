@@ -26,7 +26,7 @@ public class Submission {
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss" /* TODO,timezone=*/)
     private Date submissionTime;
-    @DBRef
+    @DBRef(lazy = true)
     private ProblemOwner author;
     @Valid
     private Feedback feedback;
