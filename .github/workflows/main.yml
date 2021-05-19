@@ -39,7 +39,7 @@ jobs:
           CF_API_ENDPOINT = api.cf.eu10.hana.ondemand.com
           ORG = 0deefb8etrial
           SPACE = dev
-          USERNAME = ${{secrets.CF_USERNAME }}
+          USERNAME = ${{ secrets.CF_USERNAME }}
           APP_NAME = rekoderback
           ARTIFACT_PATH = build/lib/rekoder-0.0.1-SNAPSHOT.jar
-          PASSWORD = ${{ secrets.CF_PASSWORD }}
+          PASSWORD: ${{ secrets.CF_PASSWORD }}
