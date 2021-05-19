@@ -46,4 +46,4 @@ jobs:
           wget 'https://packages.cloudfoundry.org/stable?release=debian64&version=7.2.0&source=github-rel' -O package.deb
           sudo apt-get install ./package.deb
           cf login -a $CF_API_ENDPOINT -o $ORG -s $SPACE -u $USERNAME -p $PASSWORD
-          cf push $APP_NAME -p $ARTIFACT_PATH -b https://github.com/cloudfoundry/java-buildpack.git
+          cf push $APP_NAME -p $ARTIFACT_PATH -i 3 -b https://github.com/cloudfoundry/java-buildpack.git
