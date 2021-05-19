@@ -9,8 +9,8 @@ import ru.hse.rekoder.repositories.TeamRepository;
 
 import java.util.Optional;
 
-@Repository
-public class MongoTeamRepository implements TeamRepository {
+//@Repository
+public class MongoTeamRepository /*implements TeamRepository*/ {
     private static final String COLLECTION_NAME = "problem_owners";
 
     private final MongoOperations mongoOperations;
@@ -19,14 +19,14 @@ public class MongoTeamRepository implements TeamRepository {
         this.mongoOperations = mongoOperations;
     }
 
-    @Override
+    //@Override
     public Optional<Team> findById(String teamName) {
         return Optional.ofNullable(mongoOperations.findById(new Team.TeamCompositeKey(teamName),
                                                             Team.class,
                                                             COLLECTION_NAME));
     }
 
-    @Override
+    //@Override
     public Team save(Team team) {
         if (team.getId() == null) {
             team.setId(new Team.TeamCompositeKey(team.getName()));
@@ -34,7 +34,7 @@ public class MongoTeamRepository implements TeamRepository {
         return mongoOperations.save(team, COLLECTION_NAME);
     }
 
-    @Override
+    //@Override
     public boolean exists(String teamName) {
         Query query = new Query();
         query.addCriteria(Criteria.where("name").is(teamName));

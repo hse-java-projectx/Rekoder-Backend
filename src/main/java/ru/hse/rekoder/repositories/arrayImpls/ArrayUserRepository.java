@@ -7,10 +7,10 @@ import ru.hse.rekoder.repositories.UserRepository;
 import java.util.ArrayList;
 import java.util.Optional;
 
-public class ArrayUserRepository implements UserRepository {
+public class ArrayUserRepository/* implements UserRepository*/ {
     private final ArrayList<User> users = new ArrayList<>();
 
-    @Override
+    //@Override
     public Optional<User> findById(String id) {
         /*if (id < 0 || id >= users.size()) {
             return Optional.empty();
@@ -20,7 +20,7 @@ public class ArrayUserRepository implements UserRepository {
         return null;
     }
 
-    @Override
+    //@Override
     public User save(User user) {
         /*if (user.getId() == null || user.getId() < 0 || user.getId() >= users.size()) {
             user.setId(users.size());
@@ -33,12 +33,12 @@ public class ArrayUserRepository implements UserRepository {
         return null;
     }
 
-    @Override
+    //@Override
     public boolean exists(String id) {
         return false;
     }
 
-    @Override
+    //@Override
     public long count() {
         return users.size();
     }

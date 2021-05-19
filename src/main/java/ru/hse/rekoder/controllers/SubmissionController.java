@@ -9,6 +9,7 @@ import ru.hse.rekoder.services.SubmissionService;
 import javax.validation.Valid;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/submissions")
 public class SubmissionController {
     private final SubmissionService submissionService;

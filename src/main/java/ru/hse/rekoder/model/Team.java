@@ -15,13 +15,27 @@ public class Team extends ProblemOwner {
     private String bio;
     private Date registrationDate;
     private Map<String, String> contacts = Collections.emptyMap();
-    @DBRef(lazy = true)
-    private List<User> members = new ArrayList<>();
+    private Set<String> memberIds = new HashSet<>();
 
     public static class TeamCompositeKey extends CompositeKey {
         public TeamCompositeKey(String name) {
             super(PROBLEM_OWNER_TYPE, name);
         }
+
+        public TeamCompositeKey(String problemOwnerType, String name) {
+            super(problemOwnerType, name);
+        }
+
+        public TeamCompositeKey() {
+        }
+    }
+
+    public Set<String> getMemberIds() {
+        return memberIds;
+    }
+
+    public void setMemberIds(Set<String> memberIds) {
+        this.memberIds = memberIds;
     }
 
     public Date getRegistrationDate() {
@@ -54,13 +68,5 @@ public class Team extends ProblemOwner {
 
     public void setBio(String bio) {
         this.bio = bio;
-    }
-
-    public List<User> getMembers() {
-        return members;
-    }
-
-    public void setMembers(List<User> members) {
-        this.members = members;
     }
 }

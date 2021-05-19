@@ -1,12 +1,13 @@
 package ru.hse.rekoder.repositories;
 
+import org.springframework.data.mongodb.repository.MongoRepository;
 import ru.hse.rekoder.model.User;
 
+import java.util.List;
 import java.util.Optional;
 
-public interface UserRepository {
-    Optional<User> findById(String id);
-    User save(User newUser);
-    boolean exists(String id);
-    long count();
+public interface UserRepository extends MongoRepository<User, User.UserCompositeKey> {
+    Optional<User> findById(User.UserCompositeKey id);
+    List<User> findById(Iterable<User.UserCompositeKey> id);
+    boolean existsById(User.UserCompositeKey id);
 }

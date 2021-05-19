@@ -9,8 +9,8 @@ import ru.hse.rekoder.repositories.UserRepository;
 
 import java.util.Optional;
 
-@Repository
-public class MongoUserRepository implements UserRepository {
+//@Repository
+public class MongoUserRepository /*implements UserRepository*/ {
     private static final String COLLECTION_NAME = "problem_owners";
 
     private final MongoOperations mongoOperations;
@@ -20,14 +20,14 @@ public class MongoUserRepository implements UserRepository {
     }
 
 
-    @Override
+    //@Override
     public Optional<User> findById(String name) {
         return Optional.ofNullable(mongoOperations.findById(new User.UserCompositeKey(name),
                                                             User.class,
                                                             COLLECTION_NAME));
     }
 
-    @Override
+    //@Override
     public User save(User newUser) {
         if (newUser.getId() == null) {
             newUser.setId(new User.UserCompositeKey(newUser.getName()));
@@ -35,14 +35,14 @@ public class MongoUserRepository implements UserRepository {
         return mongoOperations.save(newUser, COLLECTION_NAME);
     }
 
-    @Override
+    //@Override
     public boolean exists(String id) {
         Query query = new Query();
         query.addCriteria(Criteria.where("name").is(id));
         return mongoOperations.exists(query, User.class, COLLECTION_NAME);
     }
 
-    @Override
+    //@Override
     public long count() {
         return mongoOperations.count(new Query(), User.class, COLLECTION_NAME);
     }

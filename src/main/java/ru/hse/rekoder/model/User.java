@@ -16,6 +16,13 @@ public class User extends ProblemOwner {
         public UserCompositeKey(String name) {
             super(PROBLEM_OWNER_TYPE, name);
         }
+
+        public UserCompositeKey(String problemOwnerType, String name) {
+            super(problemOwnerType, name);
+        }
+
+        public UserCompositeKey() {
+        }
     }
 
     @NotEmpty(message = "User name cannot be empty")
@@ -24,9 +31,16 @@ public class User extends ProblemOwner {
     private String bio;
     @JsonFormat(pattern="yyyy-MM-dd" /* TODO,timezone=*/)
     private Date registrationTime;
-    @DBRef(lazy = true)
-    private List<Team> teams = new ArrayList<>();
+    private Set<String> teamIds = new HashSet<>();
     private Map<String, String> contacts = Collections.emptyMap();
+
+    public Set<String> getTeamIds() {
+        return teamIds;
+    }
+
+    public void setTeamIds(Set<String> teamIds) {
+        this.teamIds = teamIds;
+    }
 
     public Map<String, String> getContacts() {
         return contacts;
@@ -34,14 +48,6 @@ public class User extends ProblemOwner {
 
     public void setContacts(Map<String, String> contacts) {
         this.contacts = contacts;
-    }
-
-    public List<Team> getTeams() {
-        return teams;
-    }
-
-    public void setTeams(List<Team> teams) {
-        this.teams = teams;
     }
 
     public String getName() {

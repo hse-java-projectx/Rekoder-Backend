@@ -40,18 +40,14 @@ public class ProblemOwner {
 
     @Id
     protected CompositeKey id;
-    @DBRef(lazy = true)
-    protected List<Problem> problems = new ArrayList<>();
+    protected Integer rootFolderId;
 
-    @DBRef(lazy = true)
-    protected Folder rootFolder;
-
-    public Folder getRootFolder() {
-        return rootFolder;
+    public Integer getRootFolderId() {
+        return rootFolderId;
     }
 
-    public void setRootFolder(Folder rootFolder) {
-        this.rootFolder = rootFolder;
+    public void setRootFolderId(Integer rootFolderId) {
+        this.rootFolderId = rootFolderId;
     }
 
     public CompositeKey getId() {
@@ -60,13 +56,5 @@ public class ProblemOwner {
 
     public void setId(CompositeKey id) {
         this.id = id;
-    }
-
-    public List<Problem> getProblems() {
-        return problems;
-    }
-
-    public void setProblems(List<Problem> problems) {
-        this.problems = problems;
     }
 }

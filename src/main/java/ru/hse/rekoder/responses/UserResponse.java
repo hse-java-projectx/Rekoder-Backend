@@ -3,6 +3,7 @@ package ru.hse.rekoder.responses;
 import ru.hse.rekoder.model.Team;
 import ru.hse.rekoder.model.User;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -26,8 +27,8 @@ public class UserResponse extends BaseResponse {
         this.bio = originalUser.getBio();
         this.contacts = originalUser.getContacts();
         this.registrationDate = originalUser.getRegistrationTime();
-        this.teamIds = originalUser.getTeams().stream().map(Team::getName).collect(Collectors.toList());
-        this.rootFolderId = originalUser.getRootFolder().getId();
+        this.teamIds = new ArrayList<>(originalUser.getTeamIds());
+        this.rootFolderId = originalUser.getRootFolderId();
     }
 
     public int getRootFolderId() {

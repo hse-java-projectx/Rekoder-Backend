@@ -1,6 +1,7 @@
 package ru.hse.rekoder.services;
 
 import org.springframework.stereotype.Service;
+import ru.hse.rekoder.exceptions.FolderNotFoundException;
 import ru.hse.rekoder.exceptions.ProblemOwnerNotFoundException;
 import ru.hse.rekoder.model.*;
 import ru.hse.rekoder.repositories.FolderRepository;
@@ -30,7 +31,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUser(String userName) throws ProblemOwnerNotFoundException {
-        return userRepository.findById(userName)
+        return userRepository.findById(new User.UserCompositeKey(userName))
                 .orElseThrow(() -> new ProblemOwnerNotFoundException("User with id \"" + userName + "\" not found"));
     }
 
@@ -41,37 +42,36 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Problem createProblem(String userName, Problem problem) {
-        User user = userRepository.findById(userName)
+        User user = userRepository.findById(new User.UserCompositeKey(userName))
                 .orElseThrow(() -> new ProblemOwnerNotFoundException("User with name \"" + userName + "\" not found"));
         problem.setOwnerId(new User.UserCompositeKey(userName));
         problem.setId(sequenceService.generateSequence(Problem.SEQUENCE_NAME));
         problem = problemRepository.save(problem);
-        user.getProblems().add(problem);
-        userRepository.save(user);
         return problem;
     }
 
     @Override
     public Folder getRootFolder(String userName) {
-        return userRepository.findById(userName)
-                .map(ProblemOwner::getRootFolder)
+        User user = userRepository.findById(new User.UserCompositeKey(userName))
                 .orElseThrow(() -> new ProblemOwnerNotFoundException("User with name \"" + userName + "\" not found"));
+        return folderRepository.findById(user.getRootFolderId())
+                .orElseThrow(() -> new FolderNotFoundException("Root folder not found"));
 
     }
 
     @Override
     public User createUser(User user) {
-        if (userRepository.exists(user.getName())) {
+        user.setId(new User.UserCompositeKey(user.getName()));
+        if (userRepository.existsById((User.UserCompositeKey)user.getId())) {
             throw new RuntimeException("User has already existed");
         }
-        user.setId(null);
         user.setRegistrationTime(new Date());
         Folder rootFolder = new Folder();
         rootFolder.setOwnerId(new User.UserCompositeKey(user.getName()));
         rootFolder.setName("root");
         rootFolder.setId(sequenceService.generateSequence(Folder.SEQUENCE_NAME));
         rootFolder = folderRepository.save(rootFolder);
-        user.setRootFolder(rootFolder);
+        user.setRootFolderId(rootFolder.getId());
         return userRepository.save(user);
     }
 }

@@ -1,12 +1,8 @@
 package ru.hse.rekoder.responses;
 
 import ru.hse.rekoder.model.Team;
-import ru.hse.rekoder.model.User;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class TeamResponse extends BaseResponse {
     private final String name;
@@ -20,10 +16,10 @@ public class TeamResponse extends BaseResponse {
         super(pathToResource);
         this.name = originalTeam.getName();
         this.bio = originalTeam.getBio();
-        this.membersId = originalTeam.getMembers().stream().map(User::getName).collect(Collectors.toList());
+        this.membersId = new ArrayList<>(originalTeam.getMemberIds());
         this.registrationDate = originalTeam.getRegistrationDate();
         this.contacts = originalTeam.getContacts();
-        this.rootFolderId = originalTeam.getRootFolder().getId();
+        this.rootFolderId = originalTeam.getRootFolderId();
     }
 
     public TeamResponse(Team originalTeam) {
