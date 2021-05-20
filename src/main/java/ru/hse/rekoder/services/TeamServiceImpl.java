@@ -72,7 +72,7 @@ public class TeamServiceImpl implements TeamService {
     public Team addExistingUsers(String teamName, String userId) {
         Team team = teamRepository.findById(new Team.TeamCompositeKey(teamName))
                 .orElseThrow(() -> new ProblemOwnerNotFoundException("Team not found"));
-        User user = userRepository.findById(new User.UserCompositeKey(teamName))
+        User user = userRepository.findById(new User.UserCompositeKey(userId))
                 .orElseThrow(() -> new ProblemOwnerNotFoundException("User with name \"" + userId + "\" not found"));
         team.getMemberIds().add(user.getId().getProblemOwnerId());
         user.getTeamIds().add(team.getId().getProblemOwnerId());

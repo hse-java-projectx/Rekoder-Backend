@@ -14,6 +14,7 @@ public class Problem {
     public static final String SEQUENCE_NAME = "problem_sequence";
     @Id
     private Integer id;
+    @NotEmpty(message = "Problem name must be not empty")
     private String name;
 
     @NotEmpty(message = "Specify not empty statement")

@@ -3,6 +3,7 @@ package ru.hse.rekoder.controllers;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hse.rekoder.model.Folder;
+import ru.hse.rekoder.requests.ProblemIdWrap;
 import ru.hse.rekoder.responses.FolderResponse;
 import ru.hse.rekoder.responses.ProblemResponse;
 import ru.hse.rekoder.services.FolderService;
@@ -60,18 +61,6 @@ public class FolderController {
     public ResponseEntity<?> deleteProblemFromFolder(@PathVariable int folderId, @RequestBody ProblemIdWrap problemToAdd) {
         folderService.deleteProblemFromFolder(folderId, problemToAdd.getProblemId());
         return ResponseEntity.noContent().build();
-    }
-
-    private static class ProblemIdWrap {
-        private int problemId;
-
-        public int getProblemId() {
-            return problemId;
-        }
-
-        public void setProblemId(int problemId) {
-            this.problemId = problemId;
-        }
     }
 
     @DeleteMapping("/{folderId}")

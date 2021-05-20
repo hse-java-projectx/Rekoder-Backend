@@ -11,6 +11,7 @@ import ru.hse.rekoder.repositories.ProblemRepository;
 import ru.hse.rekoder.repositories.mongodb.seqGenerators.DatabaseIntSequenceService;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -96,8 +97,10 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     public void deleteFolder(int folderId) {
-        if (!folderRepository.existsById(folderId)) {
-            throw new FolderNotFoundException("Folder not found");
+        Folder folder = folderRepository.findById(folderId)
+                .orElseThrow(() -> new FolderNotFoundException("Folder not found"));
+        if (Objects.isNull(folder.getParentFolderId())) {
+            throw new RuntimeException("You cannot delete a root folder");
         }
         List<Integer> s = folderRepository.getSubTree(folderId);
         folderRepository.deleteByIdIn(s);

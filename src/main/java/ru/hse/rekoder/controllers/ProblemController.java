@@ -8,6 +8,7 @@ import ru.hse.rekoder.responses.ProblemResponse;
 import ru.hse.rekoder.responses.SubmissionResponse;
 import ru.hse.rekoder.services.ProblemService;
 
+import javax.json.JsonMergePatch;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,9 +39,16 @@ public class ProblemController {
 
     @PostMapping("/{problemId}/submissions")
     public ResponseEntity<SubmissionResponse> createSubmission(@PathVariable int problemId,
-                                                       @Valid @RequestBody Submission submission) {
+                                                               @Valid @RequestBody Submission submission) {
         Submission createdSubmission = problemService.createSubmission(problemId, submission);
         return ResponseEntity.ok(new SubmissionResponse(createdSubmission));
+    }
+
+    @PatchMapping(path = "/{problemId}", consumes = "application/merge-patch+json")
+    public ResponseEntity<ProblemResponse> updateProblem(@PathVariable int problemId,
+                                                         @Valid @RequestBody JsonMergePatch jsonMergePatch) {
+        Problem problem = problemService.updateProblem(problemId, jsonMergePatch);
+        return ResponseEntity.ok(new ProblemResponse(problem));
     }
 
     @DeleteMapping("/{problemId}")
