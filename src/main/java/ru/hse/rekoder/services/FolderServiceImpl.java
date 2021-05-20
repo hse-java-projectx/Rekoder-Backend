@@ -2,6 +2,7 @@ package ru.hse.rekoder.services;
 
 import org.springframework.stereotype.Service;
 import ru.hse.rekoder.exceptions.FolderNotFoundException;
+import ru.hse.rekoder.exceptions.ProblemNotFoundException;
 import ru.hse.rekoder.model.Folder;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.repositories.FolderRepository;
@@ -55,13 +56,39 @@ public class FolderServiceImpl implements FolderService {
         //TODO
         Folder folder = folderRepository.findById(folderId)
                 .orElseThrow(() -> new FolderNotFoundException("Folder not found"));
+        return problemRepository.findAllById(folder.getProblemIds());
+    }
+
+    @Override
+    public void addProblemToFolder(int folderId, int problemId) {
+        Folder folder = folderRepository.findById(folderId)
+                .orElseThrow(() -> new FolderNotFoundException("Folder not found"));
+        if (!problemRepository.existsById(problemId)) {
+            throw new ProblemNotFoundException("Problem does not exist");
+        }
         List<Problem> problems = problemRepository.findAllById(folder.getProblemIds());
         Set<Integer> problemIds = problems.stream()
                 .map(Problem::getId)
                 .collect(Collectors.toSet());
-        if (problemIds.size() != folder.getProblemIds().size()) {
-            folderRepository.save(folder);
+        if (!problemIds.add(problemId)) {
+            throw new RuntimeException("The problem is already in the folder");
         }
-        return problems;
+        folder.setProblemIds(problemIds);
+        folderRepository.save(folder);
+    }
+
+    @Override
+    public void deleteProblemFromFolder(int folderId, int problemId) {
+        Folder folder = folderRepository.findById(folderId)
+                .orElseThrow(() -> new FolderNotFoundException("Folder not found"));
+        List<Problem> problems = problemRepository.findAllById(folder.getProblemIds());
+        Set<Integer> problemIds = problems.stream()
+                .map(Problem::getId)
+                .collect(Collectors.toSet());
+        if (!problemIds.remove(problemId)) {
+            throw new RuntimeException("The problem does not exist or the folder does not contains it");
+        }
+        folder.setProblemIds(problemIds);
+        folderRepository.save(folder);
     }
 }

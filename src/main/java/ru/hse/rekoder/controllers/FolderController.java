@@ -49,4 +49,28 @@ public class FolderController {
                 .map(ProblemResponse::new)
                 .collect(Collectors.toList()));
     }
+
+    @PatchMapping("/{folderId}/problems")
+    public ResponseEntity<?> addProblemToFolder(@PathVariable int folderId, @RequestBody ProblemIdWrap problemToAdd) {
+        folderService.addProblemToFolder(folderId, problemToAdd.getProblemId());
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{folderId}/problems")
+    public ResponseEntity<?> deleteProblemFromFolder(@PathVariable int folderId, @RequestBody ProblemIdWrap problemToAdd) {
+        folderService.deleteProblemFromFolder(folderId, problemToAdd.getProblemId());
+        return ResponseEntity.noContent().build();
+    }
+
+    private static class ProblemIdWrap {
+        private int problemId;
+
+        public int getProblemId() {
+            return problemId;
+        }
+
+        public void setProblemId(int problemId) {
+            this.problemId = problemId;
+        }
+    }
 }

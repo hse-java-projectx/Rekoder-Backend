@@ -11,4 +11,7 @@ public interface FolderService {
 
     List<Folder> getSubFolders(int folderId);
     List<Problem> getProblemsFromFolder(int folderId);
+
+    void addProblemToFolder(int folderId, int problemId);
+    void deleteProblemFromFolder(int folderId, int problemId);
 }
