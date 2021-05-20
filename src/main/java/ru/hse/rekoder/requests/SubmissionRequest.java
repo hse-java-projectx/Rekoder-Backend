@@ -1,5 +1,6 @@
 package ru.hse.rekoder.requests;
 
+import org.springframework.validation.annotation.Validated;
 import ru.hse.rekoder.model.Feedback;
 
 import javax.validation.Valid;

@@ -10,11 +10,10 @@ import java.util.List;
 public interface TeamService {
     Team getTeam(String teamName);
     Team createTeam(Team team);
+    Team updateTeam(Team team);
 
     List<User> getAllMembers(String teamName);
     Team addExistingUsers(String teamName, String userId);
-
-    Folder getRootFolder(String teamName);
 
     List<Problem> getAllProblems(String teamName);
     Problem createProblem(String teamName, Problem problem);

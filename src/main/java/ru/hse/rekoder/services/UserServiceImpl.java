@@ -11,6 +11,7 @@ import ru.hse.rekoder.repositories.mongodb.seqGenerators.DatabaseIntSequenceServ
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -51,18 +52,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Folder getRootFolder(String userName) {
-        User user = userRepository.findById(new User.UserCompositeKey(userName))
-                .orElseThrow(() -> new ProblemOwnerNotFoundException("User with name \"" + userName + "\" not found"));
-        return folderRepository.findById(user.getRootFolderId())
-                .orElseThrow(() -> new FolderNotFoundException("Root folder not found"));
-
-    }
-
-    @Override
     public User createUser(User user) {
         user.setId(new User.UserCompositeKey(user.getName()));
-        if (userRepository.existsById((User.UserCompositeKey)user.getId())) {
+        if (userRepository.existsById((User.UserCompositeKey) user.getId())) {
             throw new RuntimeException("User has already existed");
         }
         user.setRegistrationTime(new Date());
@@ -72,6 +64,14 @@ public class UserServiceImpl implements UserService {
         rootFolder.setId(sequenceService.generateSequence(Folder.SEQUENCE_NAME));
         rootFolder = folderRepository.save(rootFolder);
         user.setRootFolderId(rootFolder.getId());
+        return userRepository.save(user);
+    }
+
+    @Override
+    public User updateUser(User user) {
+        if (Objects.isNull(user.getId())) {
+            throw new RuntimeException("User must have an id");
+        }
         return userRepository.save(user);
     }
 }

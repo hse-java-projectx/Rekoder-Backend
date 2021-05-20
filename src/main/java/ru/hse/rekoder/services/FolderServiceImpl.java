@@ -50,6 +50,24 @@ public class FolderServiceImpl implements FolderService {
     }
 
     @Override
+    public Folder updateFolder(Folder folder) {
+        if (Objects.isNull(folder.getId())) {
+            //TODO
+            throw new RuntimeException("Folder must have an id");
+        }
+        if (Objects.isNull(folder.getParentFolderId())) {
+            throw new RuntimeException("You cannot change the root folder");
+        }
+        if (folderRepository.existsByParentFolderIdAndNameAndIdIsNot(folder.getParentFolderId(),
+                                                                     folder.getName(),
+                                                                     folder.getId())) {
+            //TODO
+            throw new RuntimeException("Cannot update folder name because of duplicate in the folder");
+        }
+        return folderRepository.save(folder);
+    }
+
+    @Override
     public List<Folder> getSubFolders(int folderId) {
         return folderRepository.findAllByParentFolderId(folderId);
     }

@@ -1,26 +1,22 @@
 package ru.hse.rekoder.services;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import ru.hse.rekoder.exceptions.ProblemNotFoundException;
-import ru.hse.rekoder.exceptions.ProblemOwnerNotFoundException;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.Submission;
 import ru.hse.rekoder.repositories.ProblemRepository;
 import ru.hse.rekoder.repositories.SubmissionRepository;
 import ru.hse.rekoder.repositories.mongodb.seqGenerators.DatabaseIntSequenceService;
-import ru.hse.rekoder.requests.ProblemRequest;
 
-import javax.json.JsonMergePatch;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ProblemServiceImpl implements ProblemService {
     private final ProblemRepository problemRepository;
     private final SubmissionRepository submissionRepository;
     private final DatabaseIntSequenceService sequenceService;
-    private final JsonMergePatchService jsonMergePatchService;
 
     public ProblemServiceImpl(ProblemRepository problemRepository,
                               SubmissionRepository submissionRepository,
@@ -29,7 +25,6 @@ public class ProblemServiceImpl implements ProblemService {
         this.problemRepository = problemRepository;
         this.submissionRepository = submissionRepository;
         this.sequenceService = sequenceService;
-        this.jsonMergePatchService = jsonMergePatchService;
     }
 
     @Override
@@ -57,18 +52,12 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public Problem updateProblem(int problemId, JsonMergePatch jsonMergePatch) {
-        Problem problem = problemRepository.findById(problemId)
-                .orElseThrow(() -> new ProblemOwnerNotFoundException("Problem not found"));
-
-        ProblemRequest problemRequest = new ProblemRequest(problem);
-
-        BeanUtils.copyProperties(
-                jsonMergePatchService.mergePatch(jsonMergePatch, problemRequest, ProblemRequest.class),
-                problem);
-
-        problem = problemRepository.save(problem);
-        return problem;
+    public Problem updateProblem(Problem problem) {
+        if (Objects.isNull(problem.getId())) {
+            throw new RuntimeException("Problem must have an id");
+        }
+        //use update
+        return problemRepository.save(problem);
     }
 
     @Override

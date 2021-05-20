@@ -12,5 +12,6 @@ public interface FolderRepository extends MongoRepository<Folder, Integer>, Fold
     Optional<Folder> findById(Integer id);
     List<Folder> findAllByParentFolderId(Integer id);
     boolean existsByParentFolderIdAndName(Integer parentFolderId, String name);
+    boolean existsByParentFolderIdAndNameAndIdIsNot(Integer parentFolderId, String name, Integer id);
     void deleteByIdIn(List<Integer> ids);
 }

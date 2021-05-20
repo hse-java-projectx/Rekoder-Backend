@@ -18,16 +18,6 @@ public class ProblemRequest {
     private List<@Valid @NotNull Test> tests = new ArrayList<>();
     private String problemUrl;
 
-    public ProblemRequest() {}
-
-    public ProblemRequest(Problem originalProblem) {
-        this.name = originalProblem.getName();
-        this.statement = originalProblem.getStatement();
-        this.tags = originalProblem.getTags();
-        this.tests = originalProblem.getTests();
-        this.problemUrl = originalProblem.getProblemUrl();
-    }
-
     public String getName() {
         return name;
     }

@@ -9,7 +9,9 @@ import ru.hse.rekoder.requests.ProblemIdWrap;
 import ru.hse.rekoder.responses.FolderResponse;
 import ru.hse.rekoder.responses.ProblemResponse;
 import ru.hse.rekoder.services.FolderService;
+import ru.hse.rekoder.services.JsonMergePatchService;
 
+import javax.json.JsonMergePatch;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,9 +21,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/folders")
 public class FolderController {
     private final FolderService folderService;
+    private final JsonMergePatchService jsonMergePatchService;
 
-    public FolderController(FolderService folderService) {
+    public FolderController(FolderService folderService,
+                            JsonMergePatchService jsonMergePatchService) {
         this.folderService = folderService;
+        this.jsonMergePatchService = jsonMergePatchService;
     }
 
     @GetMapping("/{folderId}")
@@ -67,9 +72,26 @@ public class FolderController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping(path = "/{folderId}", consumes = "application/merge-patch+json")
+    public ResponseEntity<FolderResponse> updateProblem(@PathVariable int folderId,
+                                                         @Valid @RequestBody JsonMergePatch jsonMergePatch) {
+        Folder folder = folderService.getFolder(folderId);
+        BeanUtils.copyProperties(
+                jsonMergePatchService.mergePatch(jsonMergePatch, convertToRequest(folder), FolderRequest.class),
+                folder);
+        Folder updatedFolder = folderService.updateFolder(folder);
+        return ResponseEntity.ok(new FolderResponse(updatedFolder));
+    }
+
     @DeleteMapping("/{folderId}")
     public ResponseEntity<?> deleteFolder(@PathVariable int folderId) {
         folderService.deleteFolder(folderId);
         return ResponseEntity.noContent().build();
+    }
+
+    private FolderRequest convertToRequest(Folder folder) {
+        FolderRequest folderRequest = new FolderRequest();
+        folderRequest.setName(folder.getName());
+        return folderRequest;
     }
 }

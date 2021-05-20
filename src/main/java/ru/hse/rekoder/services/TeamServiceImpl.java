@@ -12,6 +12,7 @@ import ru.hse.rekoder.repositories.mongodb.seqGenerators.DatabaseIntSequenceServ
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,6 +60,14 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
+    public Team updateTeam(Team team) {
+        if (Objects.isNull(team.getId())) {
+            throw new RuntimeException("Team must have an id");
+        }
+        return teamRepository.save(team);
+    }
+
+    @Override
     public List<User> getAllMembers(String teamName) {
         Team team = teamRepository.findById(new Team.TeamCompositeKey(teamName))
                 .orElseThrow(() -> new ProblemOwnerNotFoundException("Team not found"));
@@ -79,14 +88,6 @@ public class TeamServiceImpl implements TeamService {
         userRepository.save(user);
         teamRepository.save(team);
         return team;
-    }
-
-    @Override
-    public Folder getRootFolder(String teamName) {
-        Team team = teamRepository.findById(new Team.TeamCompositeKey(teamName))
-                .orElseThrow(() -> new ProblemOwnerNotFoundException("Team not found"));
-        return folderRepository.findById(team.getRootFolderId())
-                .orElseThrow(() -> new FolderNotFoundException("Root folder not found"));
     }
 
     @Override

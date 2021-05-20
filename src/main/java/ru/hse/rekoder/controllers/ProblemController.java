@@ -5,9 +5,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.Submission;
+import ru.hse.rekoder.requests.ProblemRequest;
 import ru.hse.rekoder.requests.SubmissionRequest;
 import ru.hse.rekoder.responses.ProblemResponse;
 import ru.hse.rekoder.responses.SubmissionResponse;
+import ru.hse.rekoder.services.JsonMergePatchService;
 import ru.hse.rekoder.services.ProblemService;
 
 import javax.json.JsonMergePatch;
@@ -20,9 +22,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/problems")
 public class ProblemController {
     private final ProblemService problemService;
+    private final JsonMergePatchService jsonMergePatchService;
 
-    public ProblemController(ProblemService problemService) {
+    public ProblemController(ProblemService problemService,
+                             JsonMergePatchService jsonMergePatchService) {
         this.problemService = problemService;
+        this.jsonMergePatchService = jsonMergePatchService;
     }
 
     @GetMapping("/{problemId}")
@@ -51,13 +56,27 @@ public class ProblemController {
     @PatchMapping(path = "/{problemId}", consumes = "application/merge-patch+json")
     public ResponseEntity<ProblemResponse> updateProblem(@PathVariable int problemId,
                                                          @Valid @RequestBody JsonMergePatch jsonMergePatch) {
-        Problem problem = problemService.updateProblem(problemId, jsonMergePatch);
-        return ResponseEntity.ok(new ProblemResponse(problem));
+        Problem problem = problemService.getProblem(problemId);
+        BeanUtils.copyProperties(
+                jsonMergePatchService.mergePatch(jsonMergePatch, convertToRequest(problem), ProblemRequest.class),
+                problem);
+        Problem updatedProblem = problemService.updateProblem(problem);
+        return ResponseEntity.ok(new ProblemResponse(updatedProblem));
     }
 
     @DeleteMapping("/{problemId}")
     public ResponseEntity<?> deleteProblem(@PathVariable int problemId) {
         problemService.deleteProblem(problemId);
         return ResponseEntity.noContent().build();
+    }
+
+    private ProblemRequest convertToRequest(Problem problem) {
+        ProblemRequest problemRequest = new ProblemRequest();
+        problemRequest.setProblemUrl(problem.getProblemUrl());
+        problemRequest.setName(problem.getName());
+        problemRequest.setStatement(problem.getStatement());
+        problemRequest.setTags(problem.getTags());
+        problemRequest.setTests(problem.getTests());
+        return problemRequest;
     }
 }

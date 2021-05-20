@@ -10,8 +10,10 @@ import ru.hse.rekoder.requests.TeamRequest;
 import ru.hse.rekoder.responses.ProblemResponse;
 import ru.hse.rekoder.responses.TeamResponse;
 import ru.hse.rekoder.responses.UserResponse;
+import ru.hse.rekoder.services.JsonMergePatchService;
 import ru.hse.rekoder.services.TeamService;
 
+import javax.json.JsonMergePatch;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
@@ -22,9 +24,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/teams")
 public class TeamController {
     private final TeamService teamService;
+    private final JsonMergePatchService jsonMergePatchService;
 
-    public TeamController(TeamService teamService) {
+    public TeamController(TeamService teamService,
+                          JsonMergePatchService jsonMergePatchService) {
         this.teamService = teamService;
+        this.jsonMergePatchService = jsonMergePatchService;
     }
 
     @GetMapping("/{teamId}")
@@ -34,9 +39,7 @@ public class TeamController {
     }
 
     @PostMapping
-    public ResponseEntity<TeamResponse> createTeam(@RequestBody @Valid TeamRequest teamRequest) {
-        Team team = new Team();
-        BeanUtils.copyProperties(teamRequest, team);
+    public ResponseEntity<TeamResponse> createTeam(@RequestBody @Valid Team team) {
         Team createdTeam = teamService.createTeam(team);
         return ResponseEntity.ok(new TeamResponse(createdTeam));
     }
@@ -71,5 +74,24 @@ public class TeamController {
         BeanUtils.copyProperties(problemRequest, problem);
         Problem createdProblem = teamService.createProblem(teamId, problem);
         return ResponseEntity.ok(new ProblemResponse(createdProblem));
+    }
+
+    @PatchMapping(path = "/{teamId}", consumes = "application/merge-patch+json")
+    public ResponseEntity<TeamResponse> updateTeam(@PathVariable String teamId,
+                                                   @RequestBody JsonMergePatch jsonMergePatch) {
+        Team team = teamService.getTeam(teamId);
+        BeanUtils.copyProperties(
+                jsonMergePatchService.mergePatch(jsonMergePatch, convertToRequest(team), TeamRequest.class),
+                team
+        );
+        Team updatedTeam = teamService.updateTeam(team);
+        return ResponseEntity.ok(new TeamResponse(updatedTeam));
+    }
+
+    private TeamRequest convertToRequest(Team team) {
+        TeamRequest teamRequest = new TeamRequest();
+        teamRequest.setBio(team.getBio());
+        teamRequest.setContacts(team.getContacts());
+        return teamRequest;
     }
 }
