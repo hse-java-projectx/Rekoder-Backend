@@ -12,6 +12,7 @@ import ru.hse.rekoder.repositories.mongodb.seqGenerators.DatabaseIntSequenceServ
 import ru.hse.rekoder.requests.PatchingProblem;
 
 import javax.json.JsonMergePatch;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 

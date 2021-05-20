@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface UserRepository extends MongoRepository<User, User.UserCompositeKey> {
     Optional<User> findById(User.UserCompositeKey id);
-    List<User> findById(Iterable<User.UserCompositeKey> id);
+    List<User> findAllById(Iterable<User.UserCompositeKey> id);
     boolean existsById(User.UserCompositeKey id);
 }

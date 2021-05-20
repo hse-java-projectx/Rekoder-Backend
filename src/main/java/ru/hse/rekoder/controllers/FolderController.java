@@ -57,9 +57,9 @@ public class FolderController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{folderId}/problems")
-    public ResponseEntity<?> deleteProblemFromFolder(@PathVariable int folderId, @RequestBody ProblemIdWrap problemToAdd) {
-        folderService.deleteProblemFromFolder(folderId, problemToAdd.getProblemId());
+    @DeleteMapping("/{folderId}/problems/{problemId}")
+    public ResponseEntity<?> deleteProblemFromFolder(@PathVariable int folderId, @PathVariable int problemId) {
+        folderService.deleteProblemFromFolder(folderId, problemId);
         return ResponseEntity.noContent().build();
     }
 

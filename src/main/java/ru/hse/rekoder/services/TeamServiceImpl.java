@@ -62,7 +62,7 @@ public class TeamServiceImpl implements TeamService {
     public List<User> getAllMembers(String teamName) {
         Team team = teamRepository.findById(new Team.TeamCompositeKey(teamName))
                 .orElseThrow(() -> new ProblemOwnerNotFoundException("Team not found"));
-        return userRepository.findById(team.getMemberIds()
+        return userRepository.findAllById(team.getMemberIds()
                 .stream()
                 .map(User.UserCompositeKey::new)
                 .collect(Collectors.toList()));

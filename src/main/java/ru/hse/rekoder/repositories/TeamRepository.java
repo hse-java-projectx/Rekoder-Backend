@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface TeamRepository extends MongoRepository<Team, Team.TeamCompositeKey> {
     Optional<Team> findById(Team.TeamCompositeKey teamName);
-    List<Team> findById(Iterable<Team.TeamCompositeKey> id);
+    List<Team> findAllById(Iterable<Team.TeamCompositeKey> id);
     boolean existsById(Team.TeamCompositeKey id);
 }
