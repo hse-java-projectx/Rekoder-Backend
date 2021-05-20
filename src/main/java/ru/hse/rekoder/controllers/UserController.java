@@ -1,5 +1,7 @@
 package ru.hse.rekoder.controllers;
 
+import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hse.rekoder.model.Folder;
@@ -7,6 +9,8 @@ import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.User;
 import ru.hse.rekoder.repositories.ProblemRepository;
 import ru.hse.rekoder.repositories.UserRepository;
+import ru.hse.rekoder.requests.ProblemRequest;
+import ru.hse.rekoder.requests.UserRequest;
 import ru.hse.rekoder.responses.FolderResponse;
 import ru.hse.rekoder.responses.ProblemResponse;
 import ru.hse.rekoder.responses.UserResponse;
@@ -34,7 +38,9 @@ public class UserController {
     }
 
     @PostMapping()
-    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody User user) {
+    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest userRequest) {
+        User user = new User();
+        BeanUtils.copyProperties(userRequest, user);
         User createdUser = userService.createUser(user);
         if (createdUser == null) {
             return ResponseEntity.badRequest().build();
@@ -53,7 +59,9 @@ public class UserController {
 
     @PostMapping("/{userId}/problems")
     public ResponseEntity<ProblemResponse> createProblem(@PathVariable String userId,
-                                                 @Valid @RequestBody Problem problem) {
+                                                         @Valid @RequestBody ProblemRequest problemRequest) {
+        Problem problem = new Problem();
+        BeanUtils.copyProperties(problemRequest, problem);
         Problem createdProblem = userService.createProblem(userId, problem);
         return ResponseEntity.ok(new ProblemResponse(createdProblem));
     }

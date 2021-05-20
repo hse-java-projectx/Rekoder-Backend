@@ -1,9 +1,12 @@
 package ru.hse.rekoder.controllers;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.Team;
+import ru.hse.rekoder.requests.ProblemRequest;
+import ru.hse.rekoder.requests.TeamRequest;
 import ru.hse.rekoder.responses.ProblemResponse;
 import ru.hse.rekoder.responses.TeamResponse;
 import ru.hse.rekoder.responses.UserResponse;
@@ -31,7 +34,9 @@ public class TeamController {
     }
 
     @PostMapping
-    public ResponseEntity<TeamResponse> createTeam(@RequestBody @Valid Team team) {
+    public ResponseEntity<TeamResponse> createTeam(@RequestBody @Valid TeamRequest teamRequest) {
+        Team team = new Team();
+        BeanUtils.copyProperties(teamRequest, team);
         Team createdTeam = teamService.createTeam(team);
         return ResponseEntity.ok(new TeamResponse(createdTeam));
     }
@@ -61,7 +66,9 @@ public class TeamController {
 
     @PostMapping("/{teamId}/problems")
     public ResponseEntity<ProblemResponse> createProblem(@PathVariable String teamId,
-                                                         @Valid @RequestBody Problem problem) {
+                                                         @Valid @RequestBody ProblemRequest problemRequest) {
+        Problem problem = new Problem();
+        BeanUtils.copyProperties(problemRequest, problem);
         Problem createdProblem = teamService.createProblem(teamId, problem);
         return ResponseEntity.ok(new ProblemResponse(createdProblem));
     }

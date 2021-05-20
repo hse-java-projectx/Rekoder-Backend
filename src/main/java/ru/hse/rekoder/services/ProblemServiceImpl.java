@@ -9,10 +9,9 @@ import ru.hse.rekoder.model.Submission;
 import ru.hse.rekoder.repositories.ProblemRepository;
 import ru.hse.rekoder.repositories.SubmissionRepository;
 import ru.hse.rekoder.repositories.mongodb.seqGenerators.DatabaseIntSequenceService;
-import ru.hse.rekoder.requests.PatchingProblem;
+import ru.hse.rekoder.requests.ProblemRequest;
 
 import javax.json.JsonMergePatch;
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -62,10 +61,10 @@ public class ProblemServiceImpl implements ProblemService {
         Problem problem = problemRepository.findById(problemId)
                 .orElseThrow(() -> new ProblemOwnerNotFoundException("Problem not found"));
 
-        PatchingProblem patchingProblem = new PatchingProblem(problem);
+        ProblemRequest problemRequest = new ProblemRequest(problem);
 
         BeanUtils.copyProperties(
-                jsonMergePatchService.mergePatch(jsonMergePatch, patchingProblem, PatchingProblem.class),
+                jsonMergePatchService.mergePatch(jsonMergePatch, problemRequest, ProblemRequest.class),
                 problem);
 
         problem = problemRepository.save(problem);

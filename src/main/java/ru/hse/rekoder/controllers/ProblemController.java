@@ -1,9 +1,11 @@
 package ru.hse.rekoder.controllers;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.Submission;
+import ru.hse.rekoder.requests.SubmissionRequest;
 import ru.hse.rekoder.responses.ProblemResponse;
 import ru.hse.rekoder.responses.SubmissionResponse;
 import ru.hse.rekoder.services.ProblemService;
@@ -39,7 +41,9 @@ public class ProblemController {
 
     @PostMapping("/{problemId}/submissions")
     public ResponseEntity<SubmissionResponse> createSubmission(@PathVariable int problemId,
-                                                               @Valid @RequestBody Submission submission) {
+                                                               @Valid @RequestBody SubmissionRequest submissionRequest) {
+        Submission submission = new Submission();
+        BeanUtils.copyProperties(submissionRequest, submission);
         Submission createdSubmission = problemService.createSubmission(problemId, submission);
         return ResponseEntity.ok(new SubmissionResponse(createdSubmission));
     }

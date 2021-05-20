@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PatchingProblem {
+public class ProblemRequest {
     @NotEmpty(message = "Problem name must be not empty")
     private String name;
     @NotEmpty(message = "Specify not empty statement")
@@ -18,9 +18,9 @@ public class PatchingProblem {
     private List<@Valid @NotNull Test> tests = new ArrayList<>();
     private String problemUrl;
 
-    public PatchingProblem() {}
+    public ProblemRequest() {}
 
-    public PatchingProblem(Problem originalProblem) {
+    public ProblemRequest(Problem originalProblem) {
         this.name = originalProblem.getName();
         this.statement = originalProblem.getStatement();
         this.tags = originalProblem.getTags();
