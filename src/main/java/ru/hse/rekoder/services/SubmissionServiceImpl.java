@@ -19,4 +19,13 @@ public class SubmissionServiceImpl implements SubmissionService {
         return submissionRepository.findById(submissionId)
             .orElseThrow(() -> new SubmissionNotFoundException("Submission with id \"" + submissionId + "\" not found"));
     }
+
+    @Override
+    public void deleteSubmission(int submissionId) {
+        //TODO decrease number of successful submissions in Problem
+        if (submissionRepository.existsById(submissionId)) {
+            throw new SubmissionNotFoundException("Submission not found");
+        }
+        submissionRepository.deleteById(submissionId);
+    }
 }

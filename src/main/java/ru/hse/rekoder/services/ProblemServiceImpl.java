@@ -48,4 +48,13 @@ public class ProblemServiceImpl implements ProblemService {
         submission = submissionRepository.save(submission);
         return submission;
     }
+
+    @Override
+    public void deleteProblem(int problemId) {
+        if (!problemRepository.existsById(problemId)) {
+            throw new ProblemNotFoundException("Problem not found");
+        }
+        problemRepository.deleteById(problemId);
+        submissionRepository.deleteAllByProblemId(problemId);
+    }
 }

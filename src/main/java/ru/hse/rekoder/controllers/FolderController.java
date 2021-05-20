@@ -73,4 +73,10 @@ public class FolderController {
             this.problemId = problemId;
         }
     }
+
+    @DeleteMapping("/{folderId}")
+    public ResponseEntity<?> deleteFolder(@PathVariable int folderId) {
+        folderService.deleteFolder(folderId);
+        return ResponseEntity.noContent().build();
+    }
 }

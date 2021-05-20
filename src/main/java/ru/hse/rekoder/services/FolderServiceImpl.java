@@ -1,5 +1,6 @@
 package ru.hse.rekoder.services;
 
+import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
 import org.springframework.stereotype.Service;
 import ru.hse.rekoder.exceptions.FolderNotFoundException;
 import ru.hse.rekoder.exceptions.ProblemNotFoundException;
@@ -29,7 +30,8 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     public Folder getFolder(int folderId) {
-        return folderRepository.findById(folderId).orElseThrow();
+        return folderRepository.findById(folderId)
+                .orElseThrow(() -> new FolderNotFoundException("Folder not found"));
     }
 
     @Override
@@ -90,5 +92,15 @@ public class FolderServiceImpl implements FolderService {
         }
         folder.setProblemIds(problemIds);
         folderRepository.save(folder);
+    }
+
+    @Override
+    public void deleteFolder(int folderId) {
+        if (!folderRepository.existsById(folderId)) {
+            throw new FolderNotFoundException("Folder not found");
+        }
+        List<Integer> s = folderRepository.getSubTree(folderId);
+        folderRepository.deleteByIdIn(s);
+        folderRepository.deleteById(folderId);
     }
 }

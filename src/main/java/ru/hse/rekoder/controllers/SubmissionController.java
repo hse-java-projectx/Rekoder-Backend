@@ -23,4 +23,10 @@ public class SubmissionController {
         Submission submission = submissionService.getSubmission(submissionId);
         return ResponseEntity.ok(new SubmissionResponse(submission));
     }
+
+    @DeleteMapping("/{submissionId}")
+    public ResponseEntity<?> deleteSubmission(@PathVariable int submissionId) {
+        submissionService.deleteSubmission(submissionId);
+        return ResponseEntity.noContent().build();
+    }
 }

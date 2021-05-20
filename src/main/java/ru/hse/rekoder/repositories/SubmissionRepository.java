@@ -9,4 +9,5 @@ import java.util.Optional;
 public interface SubmissionRepository extends MongoRepository<Submission, Integer> {
     Optional<Submission> findById(Integer id);
     List<Submission> findAllByProblemId(Integer id);
+    void deleteAllByProblemId(Integer id);
 }

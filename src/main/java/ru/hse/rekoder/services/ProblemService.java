@@ -10,4 +10,6 @@ public interface ProblemService {
 
     List<Submission> getAllSubmissions(int problemId);
     Submission createSubmission(int problemId, Submission submission);
+
+    void deleteProblem(int problemId);
 }

@@ -42,4 +42,10 @@ public class ProblemController {
         Submission createdSubmission = problemService.createSubmission(problemId, submission);
         return ResponseEntity.ok(new SubmissionResponse(createdSubmission));
     }
+
+    @DeleteMapping("/{problemId}")
+    public ResponseEntity<?> deleteProblem(@PathVariable int problemId) {
+        problemService.deleteProblem(problemId);
+        return ResponseEntity.noContent().build();
+    }
 }

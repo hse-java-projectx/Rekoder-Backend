@@ -14,4 +14,6 @@ public interface FolderService {
 
     void addProblemToFolder(int folderId, int problemId);
     void deleteProblemFromFolder(int folderId, int problemId);
+
+    void deleteFolder(int folderId);
 }
