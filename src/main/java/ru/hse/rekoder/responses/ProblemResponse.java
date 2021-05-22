@@ -15,6 +15,8 @@ public class ProblemResponse extends BaseResponse {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private final String problemUrl;
     private final int numberOfSuccessfulSubmissions;
+    private final String problemOwnerType;
+    private final String problemOwnerId;
 
     public ProblemResponse(Problem originalProblem, String pathToResource) {
         super(pathToResource);
@@ -25,6 +27,16 @@ public class ProblemResponse extends BaseResponse {
         this.tags = originalProblem.getTags();
         this.problemUrl = originalProblem.getProblemUrl();
         this.numberOfSuccessfulSubmissions = originalProblem.getNumberOfSuccessfulSubmissions();
+        this.problemOwnerType = originalProblem.getOwnerId().getProblemOwnerType();
+        this.problemOwnerId = originalProblem.getOwnerId().getProblemOwnerId();
+    }
+
+    public String getProblemOwnerType() {
+        return problemOwnerType;
+    }
+
+    public String getProblemOwnerId() {
+        return problemOwnerId;
     }
 
     public List<Test> getTests() {
