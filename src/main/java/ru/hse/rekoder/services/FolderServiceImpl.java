@@ -94,8 +94,10 @@ public class FolderServiceImpl implements FolderService {
         if (!problemIds.add(problemId)) {
             throw new RuntimeException("The problem is already in the folder");
         }
-        folder.setProblemIds(problemIds);
-        folderRepository.save(folder);
+        if (problemIds.size() != problems.size()) {
+            folder.setProblemIds(problemIds);
+            folderRepository.save(folder);
+        }
     }
 
     @Override
@@ -109,8 +111,10 @@ public class FolderServiceImpl implements FolderService {
         if (!problemIds.remove(problemId)) {
             throw new RuntimeException("The problem does not exist or the folder does not contains it");
         }
-        folder.setProblemIds(problemIds);
-        folderRepository.save(folder);
+        if (problems.size() != problemIds.size()) {
+            folder.setProblemIds(problemIds);
+            folderRepository.save(folder);
+        }
     }
 
     @Override

@@ -12,8 +12,11 @@ public interface TeamService {
     Team createTeam(Team team);
     Team updateTeam(Team team);
 
+    List<Team> getTeamsUserIn(String userName);
+
     List<User> getAllMembers(String teamName);
-    Team addExistingUsers(String teamName, String userId);
+    boolean addExistingUserToTeam(String teamName, String userName);
+    boolean deleteUserFromTeam(String teamName, String userName);
 
     List<Problem> getAllProblems(String teamName);
     Problem createProblem(String teamName, Problem problem);

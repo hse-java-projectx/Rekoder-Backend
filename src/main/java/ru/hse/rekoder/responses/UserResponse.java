@@ -14,7 +14,6 @@ public class UserResponse extends BaseResponse {
     private final String bio;
     private final Map<String, String> contacts;
     private final Date registrationDate;
-    private final List<String> teamIds;
     private final int rootFolderId;
 
     public UserResponse(User originalUser) {
@@ -27,7 +26,6 @@ public class UserResponse extends BaseResponse {
         this.bio = originalUser.getBio();
         this.contacts = originalUser.getContacts();
         this.registrationDate = originalUser.getRegistrationTime();
-        this.teamIds = new ArrayList<>(originalUser.getTeamIds());
         this.rootFolderId = originalUser.getRootFolderId();
     }
 
@@ -37,10 +35,6 @@ public class UserResponse extends BaseResponse {
 
     public Map<String, String> getContacts() {
         return contacts;
-    }
-
-    public List<String> getTeamIds() {
-        return teamIds;
     }
 
     public String getName() {

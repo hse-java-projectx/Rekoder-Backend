@@ -31,16 +31,7 @@ public class User extends ProblemOwner {
     private String bio;
     @JsonFormat(pattern="yyyy-MM-dd" /* TODO,timezone=*/)
     private Date registrationTime;
-    private Set<String> teamIds = new HashSet<>();
     private Map<String, String> contacts = Collections.emptyMap();
-
-    public Set<String> getTeamIds() {
-        return teamIds;
-    }
-
-    public void setTeamIds(Set<String> teamIds) {
-        this.teamIds = teamIds;
-    }
 
     public Map<String, String> getContacts() {
         return contacts;

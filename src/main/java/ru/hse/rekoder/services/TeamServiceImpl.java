@@ -1,6 +1,7 @@
 package ru.hse.rekoder.services;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.hse.rekoder.exceptions.FolderNotFoundException;
 import ru.hse.rekoder.exceptions.ProblemOwnerNotFoundException;
 import ru.hse.rekoder.model.*;
@@ -10,6 +11,7 @@ import ru.hse.rekoder.repositories.TeamRepository;
 import ru.hse.rekoder.repositories.UserRepository;
 import ru.hse.rekoder.repositories.mongodb.seqGenerators.DatabaseIntSequenceService;
 
+import java.nio.BufferUnderflowException;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -68,6 +70,11 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
+    public List<Team> getTeamsUserIn(String userName) {
+        return teamRepository.findAllByMemberIds(userName);
+    }
+
+    @Override
     public List<User> getAllMembers(String teamName) {
         Team team = teamRepository.findById(new Team.TeamCompositeKey(teamName))
                 .orElseThrow(() -> new ProblemOwnerNotFoundException("Team not found"));
@@ -78,16 +85,25 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public Team addExistingUsers(String teamName, String userId) {
-        Team team = teamRepository.findById(new Team.TeamCompositeKey(teamName))
+    public boolean addExistingUserToTeam(String teamName, String userName) {
+        Team.TeamCompositeKey teamId = new Team.TeamCompositeKey(teamName);
+        User.UserCompositeKey userId = new User.UserCompositeKey(userName);
+        if (!userRepository.existsById(userId)) {
+            throw new ProblemOwnerNotFoundException("User not found");
+        }
+        return teamRepository.addUserToTeamById(teamId, userName)
                 .orElseThrow(() -> new ProblemOwnerNotFoundException("Team not found"));
-        User user = userRepository.findById(new User.UserCompositeKey(userId))
-                .orElseThrow(() -> new ProblemOwnerNotFoundException("User with name \"" + userId + "\" not found"));
-        team.getMemberIds().add(user.getId().getProblemOwnerId());
-        user.getTeamIds().add(team.getId().getProblemOwnerId());
-        userRepository.save(user);
-        teamRepository.save(team);
-        return team;
+    }
+
+    @Override
+    public boolean deleteUserFromTeam(String teamName, String userName) {
+        Team.TeamCompositeKey teamId = new Team.TeamCompositeKey(teamName);
+        User.UserCompositeKey userId = new User.UserCompositeKey(userName);
+        if (!userRepository.existsById(userId)) {
+            throw new ProblemOwnerNotFoundException("User not found");
+        }
+        return teamRepository.deleteUserFromTeamById(teamId, userName)
+                .orElseThrow(() -> new ProblemOwnerNotFoundException("Team not found"));
     }
 
     @Override

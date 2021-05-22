@@ -53,10 +53,23 @@ public class TeamController {
     }
 
     @PostMapping("/{teamId}/users")
-    public ResponseEntity<TeamResponse> addMembers(@PathVariable String teamId,
-                                                   @Valid @RequestBody @NotEmpty String member) {
-        Team team = teamService.addExistingUsers(teamId, member);
-        return ResponseEntity.ok(new TeamResponse(team));
+    public ResponseEntity<?> addMember(@PathVariable String teamId,
+                                       @Valid @RequestBody @NotEmpty String member) {
+        boolean isNewMember = teamService.addExistingUserToTeam(teamId, member);
+        if (!isNewMember) {
+            throw new RuntimeException("Member already in the team");
+        }
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{teamId}/users/{userId}")
+    public ResponseEntity<?> deleteMember(@PathVariable String teamId,
+                                          @PathVariable String userId) {
+        boolean userWasInTeam = teamService.deleteUserFromTeam(teamId, userId);
+        if (!userWasInTeam) {
+            throw new RuntimeException("There is not the user in the team");
+        }
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{teamId}/problems")

@@ -1,7 +1,6 @@
 package ru.hse.rekoder.controllers;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hse.rekoder.model.Problem;
@@ -9,8 +8,10 @@ import ru.hse.rekoder.model.User;
 import ru.hse.rekoder.requests.ProblemRequest;
 import ru.hse.rekoder.requests.UserRequest;
 import ru.hse.rekoder.responses.ProblemResponse;
+import ru.hse.rekoder.responses.TeamResponse;
 import ru.hse.rekoder.responses.UserResponse;
 import ru.hse.rekoder.services.JsonMergePatchService;
+import ru.hse.rekoder.services.TeamService;
 import ru.hse.rekoder.services.UserService;
 
 import javax.json.JsonMergePatch;
@@ -23,11 +24,14 @@ import java.util.stream.Collectors;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
+    private final TeamService teamService;
     private final JsonMergePatchService jsonMergePatchService;
 
     public UserController(UserService userService,
+                          TeamService teamService,
                           JsonMergePatchService jsonMergePatchService) {
         this.userService = userService;
+        this.teamService = teamService;
         this.jsonMergePatchService = jsonMergePatchService;
     }
 
@@ -46,6 +50,15 @@ public class UserController {
         } else {
             return ResponseEntity.ok(new UserResponse(createdUser));
         }
+    }
+
+    @GetMapping("/{userId}/teams")
+    @ResponseBody
+    public ResponseEntity<List<TeamResponse>> getTeamsUserIn(@PathVariable String userId) {
+        return ResponseEntity.ok(teamService.getTeamsUserIn(userId)
+                .stream()
+                .map(TeamResponse::new)
+                .collect(Collectors.toList()));
     }
 
     @GetMapping("/{userId}/problems")
