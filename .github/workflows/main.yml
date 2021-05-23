@@ -29,6 +29,11 @@ jobs:
         env:
           SECRETS_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
         run: echo "database_password=$SECRETS_PASSWORD" | cat >> ./src/main/resources/application.properties
+
+      - name: Set secret key for JWT
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY_FOR_JWT }}
+        run: echo "jwt.encode-secret-key=$SECRET_KEY" | cat >> ./src/main/resources/application.properties
         
       - name: Build jar
         run: ./gradlew bootJar
