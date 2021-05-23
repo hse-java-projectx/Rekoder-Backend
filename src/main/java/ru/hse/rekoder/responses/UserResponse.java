@@ -1,13 +1,9 @@
 package ru.hse.rekoder.responses;
 
-import ru.hse.rekoder.model.Team;
 import ru.hse.rekoder.model.User;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class UserResponse extends BaseResponse {
     private final String name;
@@ -22,7 +18,7 @@ public class UserResponse extends BaseResponse {
 
     public UserResponse(User originalUser, String pathToResource) {
         super(pathToResource);
-        this.name = originalUser.getName();
+        this.name = originalUser.getUsername();
         this.bio = originalUser.getBio();
         this.contacts = originalUser.getContacts();
         this.registrationDate = originalUser.getRegistrationTime();

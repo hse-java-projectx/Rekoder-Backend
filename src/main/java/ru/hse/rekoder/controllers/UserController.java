@@ -1,7 +1,11 @@
 package ru.hse.rekoder.controllers;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.User;
@@ -71,7 +75,12 @@ public class UserController {
 
     @PostMapping("/{userId}/problems")
     public ResponseEntity<ProblemResponse> createProblem(@PathVariable String userId,
-                                                         @Valid @RequestBody ProblemRequest problemRequest) {
+                                                         @Valid @RequestBody ProblemRequest problemRequest,
+                                                         Authentication authentication) {
+        if (!authentication.getName().equals(userId)) {
+            System.out.println(authentication.getPrincipal());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         Problem problem = new Problem();
         BeanUtils.copyProperties(problemRequest, problem);
         Problem createdProblem = userService.createProblem(userId, problem);
@@ -80,7 +89,11 @@ public class UserController {
 
     @PatchMapping(path = "/{userId}", consumes = "application/merge-patch+json")
     public ResponseEntity<UserResponse> updateUser(@PathVariable String userId,
-                                                   @RequestBody JsonMergePatch jsonMergePatch) {
+                                                   @RequestBody JsonMergePatch jsonMergePatch,
+                                                   Authentication authentication) {
+        if (!authentication.getName().equals(userId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         User user = userService.getUser(userId);
         BeanUtils.copyProperties(
                 jsonMergePatchService.mergePatch(jsonMergePatch, convertToRequest(user), UserRequest.class),

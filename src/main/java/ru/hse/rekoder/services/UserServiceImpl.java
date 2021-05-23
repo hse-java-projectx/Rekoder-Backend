@@ -1,7 +1,7 @@
 package ru.hse.rekoder.services;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.hse.rekoder.exceptions.FolderNotFoundException;
 import ru.hse.rekoder.exceptions.ProblemOwnerNotFoundException;
 import ru.hse.rekoder.model.*;
 import ru.hse.rekoder.repositories.FolderRepository;
@@ -19,15 +19,18 @@ public class UserServiceImpl implements UserService {
     private final ProblemRepository problemRepository;
     private final FolderRepository folderRepository;
     private final DatabaseIntSequenceService sequenceService;
+    private final PasswordEncoder passwordEncoder;
 
     public UserServiceImpl(UserRepository userRepository,
                            ProblemRepository problemRepository,
                            FolderRepository folderRepository,
-                           DatabaseIntSequenceService sequenceService) {
+                           DatabaseIntSequenceService sequenceService,
+                           PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.problemRepository = problemRepository;
         this.folderRepository = folderRepository;
         this.sequenceService = sequenceService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -53,13 +56,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(User user) {
-        user.setId(new User.UserCompositeKey(user.getName()));
+        user.setId(new User.UserCompositeKey(user.getUsername()));
         if (userRepository.existsById((User.UserCompositeKey) user.getId())) {
             throw new RuntimeException("User has already existed");
         }
         user.setRegistrationTime(new Date());
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         Folder rootFolder = new Folder();
-        rootFolder.setOwnerId(new User.UserCompositeKey(user.getName()));
+        rootFolder.setOwnerId(new User.UserCompositeKey(user.getUsername()));
         rootFolder.setName("root");
         rootFolder.setId(sequenceService.generateSequence(Folder.SEQUENCE_NAME));
         rootFolder = folderRepository.save(rootFolder);

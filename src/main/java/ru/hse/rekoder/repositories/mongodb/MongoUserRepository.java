@@ -3,9 +3,7 @@ package ru.hse.rekoder.repositories.mongodb;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.stereotype.Repository;
 import ru.hse.rekoder.model.User;
-import ru.hse.rekoder.repositories.UserRepository;
 
 import java.util.Optional;
 
@@ -30,7 +28,7 @@ public class MongoUserRepository /*implements UserRepository*/ {
     //@Override
     public User save(User newUser) {
         if (newUser.getId() == null) {
-            newUser.setId(new User.UserCompositeKey(newUser.getName()));
+            newUser.setId(new User.UserCompositeKey(newUser.getUsername()));
         }
         return mongoOperations.save(newUser, COLLECTION_NAME);
     }
