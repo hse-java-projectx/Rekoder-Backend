@@ -1,8 +1,12 @@
 package ru.hse.rekoder.controllers;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
+import ru.hse.rekoder.exceptions.AccessDeniedException;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.Team;
 import ru.hse.rekoder.requests.ProblemRequest;
@@ -54,7 +58,9 @@ public class TeamController {
 
     @PostMapping("/{teamId}/users")
     public ResponseEntity<?> addMember(@PathVariable String teamId,
-                                       @Valid @RequestBody @NotEmpty String member) {
+                                       @Valid @RequestBody @NotEmpty String member,
+                                       Authentication authentication) {
+        checkAccess(teamId, authentication.getName());
         boolean isNewMember = teamService.addExistingUserToTeam(teamId, member);
         if (!isNewMember) {
             throw new RuntimeException("Member already in the team");
@@ -64,7 +70,9 @@ public class TeamController {
 
     @DeleteMapping("/{teamId}/users/{userId}")
     public ResponseEntity<?> deleteMember(@PathVariable String teamId,
-                                          @PathVariable String userId) {
+                                          @PathVariable String userId,
+                                          Authentication authentication) {
+        checkAccess(teamId, authentication.getName());
         boolean userWasInTeam = teamService.deleteUserFromTeam(teamId, userId);
         if (!userWasInTeam) {
             throw new RuntimeException("There is not the user in the team");
@@ -82,7 +90,9 @@ public class TeamController {
 
     @PostMapping("/{teamId}/problems")
     public ResponseEntity<ProblemResponse> createProblem(@PathVariable String teamId,
-                                                         @Valid @RequestBody ProblemRequest problemRequest) {
+                                                         @Valid @RequestBody ProblemRequest problemRequest,
+                                                         Authentication authentication) {
+        checkAccess(teamId, authentication.getName());
         Problem problem = new Problem();
         BeanUtils.copyProperties(problemRequest, problem);
         Problem createdProblem = teamService.createProblem(teamId, problem);
@@ -91,7 +101,9 @@ public class TeamController {
 
     @PatchMapping(path = "/{teamId}", consumes = "application/merge-patch+json")
     public ResponseEntity<TeamResponse> updateTeam(@PathVariable String teamId,
-                                                   @RequestBody JsonMergePatch jsonMergePatch) {
+                                                   @RequestBody JsonMergePatch jsonMergePatch,
+                                                   Authentication authentication) {
+        checkAccess(teamId, authentication.getName());
         Team team = teamService.getTeam(teamId);
         BeanUtils.copyProperties(
                 jsonMergePatchService.mergePatch(jsonMergePatch, convertToRequest(team), TeamRequest.class),
@@ -99,6 +111,13 @@ public class TeamController {
         );
         Team updatedTeam = teamService.updateTeam(team);
         return ResponseEntity.ok(new TeamResponse(updatedTeam));
+    }
+
+    private void checkAccess(String teamName, String username) {
+        Team team = teamService.getTeam(teamName);
+        if (!team.getMemberIds().contains(username)) {
+            throw new AccessDeniedException();
+        }
     }
 
     private TeamRequest convertToRequest(Team team) {

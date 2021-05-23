@@ -2,7 +2,9 @@ package ru.hse.rekoder.controllers;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import ru.hse.rekoder.exceptions.AccessDeniedException;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.Submission;
 import ru.hse.rekoder.requests.ProblemRequest;
@@ -11,6 +13,7 @@ import ru.hse.rekoder.responses.ProblemResponse;
 import ru.hse.rekoder.responses.SubmissionResponse;
 import ru.hse.rekoder.services.JsonMergePatchService;
 import ru.hse.rekoder.services.ProblemService;
+import ru.hse.rekoder.services.TeamService;
 
 import javax.json.JsonMergePatch;
 import javax.validation.Valid;
@@ -23,11 +26,14 @@ import java.util.stream.Collectors;
 public class ProblemController {
     private final ProblemService problemService;
     private final JsonMergePatchService jsonMergePatchService;
+    private final TeamService teamService;
 
     public ProblemController(ProblemService problemService,
-                             JsonMergePatchService jsonMergePatchService) {
+                             JsonMergePatchService jsonMergePatchService,
+                             TeamService teamService) {
         this.problemService = problemService;
         this.jsonMergePatchService = jsonMergePatchService;
+        this.teamService = teamService;
     }
 
     @GetMapping("/{problemId}")
@@ -46,7 +52,9 @@ public class ProblemController {
 
     @PostMapping("/{problemId}/submissions")
     public ResponseEntity<SubmissionResponse> createSubmission(@PathVariable int problemId,
-                                                               @Valid @RequestBody SubmissionRequest submissionRequest) {
+                                                               @Valid @RequestBody SubmissionRequest submissionRequest,
+                                                               Authentication authentication) {
+        checkAccess(problemId, authentication.getName());
         Submission submission = new Submission();
         BeanUtils.copyProperties(submissionRequest, submission);
         Submission createdSubmission = problemService.createSubmission(problemId, submission);
@@ -55,7 +63,9 @@ public class ProblemController {
 
     @PatchMapping(path = "/{problemId}", consumes = "application/merge-patch+json")
     public ResponseEntity<ProblemResponse> updateProblem(@PathVariable int problemId,
-                                                         @Valid @RequestBody JsonMergePatch jsonMergePatch) {
+                                                         @Valid @RequestBody JsonMergePatch jsonMergePatch,
+                                                         Authentication authentication) {
+        checkAccess(problemId, authentication.getName());
         Problem problem = problemService.getProblem(problemId);
         BeanUtils.copyProperties(
                 jsonMergePatchService.mergePatch(jsonMergePatch, convertToRequest(problem), ProblemRequest.class),
@@ -65,9 +75,23 @@ public class ProblemController {
     }
 
     @DeleteMapping("/{problemId}")
-    public ResponseEntity<?> deleteProblem(@PathVariable int problemId) {
+    public ResponseEntity<?> deleteProblem(@PathVariable int problemId,
+                                           Authentication authentication) {
+        checkAccess(problemId, authentication.getName());
         problemService.deleteProblem(problemId);
         return ResponseEntity.noContent().build();
+    }
+
+    private void checkAccess(int problemId, String username) {
+        Problem problem = problemService.getProblem(problemId);
+        if (problem.getOwnerId().getProblemOwnerType().equals("user")
+                && !problem.getOwnerId().getProblemOwnerId().equals(username)) {
+            throw new AccessDeniedException();
+        } else if (problem.getOwnerId().getProblemOwnerType().equals("team")) {
+            if (!teamService.getTeam(problem.getOwnerId().getProblemOwnerId()).getMemberIds().contains(username)) {
+                throw new AccessDeniedException();
+            }
+        }
     }
 
     private ProblemRequest convertToRequest(Problem problem) {
