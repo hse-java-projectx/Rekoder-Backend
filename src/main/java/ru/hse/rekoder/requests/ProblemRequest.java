@@ -19,6 +19,8 @@ public class ProblemRequest {
     private String name;
     @NotNull(message = "Specify not empty statement")
     private String statement;
+    private String inputFormat;
+    private String outputFormat;
     private Set<@NotNull String> tags = new HashSet<>();
     private List<@Valid @NotNull Test> tests = new ArrayList<>();
     private String problemUrl;

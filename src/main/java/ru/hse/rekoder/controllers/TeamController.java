@@ -11,6 +11,7 @@ import ru.hse.rekoder.exceptions.TeamException;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.Team;
 import ru.hse.rekoder.requests.ProblemRequest;
+import ru.hse.rekoder.requests.TeamMemberWrap;
 import ru.hse.rekoder.requests.TeamRequest;
 import ru.hse.rekoder.responses.ProblemResponse;
 import ru.hse.rekoder.responses.TeamResponse;
@@ -59,12 +60,12 @@ public class TeamController {
 
     @PostMapping("/{teamId}/users")
     public ResponseEntity<?> addMember(@PathVariable String teamId,
-                                       @Valid @RequestBody @NotEmpty String member,
+                                       @Valid @RequestBody TeamMemberWrap member,
                                        Authentication authentication) {
         checkAccess(teamId, authentication.getName());
-        boolean isNewMember = teamService.addExistingUserToTeam(teamId, member);
+        boolean isNewMember = teamService.addExistingUserToTeam(teamId, member.getMemberId());
         if (!isNewMember) {
-            throw new TeamException("User \"" + member+ "\" already in the team");
+            throw new TeamException("User \"" + member.getMemberId() + "\" already in the team");
         }
         return ResponseEntity.noContent().build();
     }

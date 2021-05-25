@@ -15,6 +15,8 @@ public class ProblemResponse {
     private final Integer id;
     private final String name;
     private final String statement;
+    private final String inputFormat;
+    private final String outputFormat;
     private final Set<@NotNull String> tags;
     private final List<@Valid @NotNull Test> tests;
     private final Owner owner;
@@ -25,6 +27,8 @@ public class ProblemResponse {
         this.id = problem.getId();
         this.name = problem.getName();
         this.statement = problem.getStatement();
+        this.inputFormat = problem.getInputFormat();
+        this.outputFormat = problem.getOutputFormat();
         this.tags = problem.getTags();
         this.tests = problem.getTests();
         this.owner = problem.getOwner();
