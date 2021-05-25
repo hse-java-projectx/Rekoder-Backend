@@ -27,15 +27,15 @@ public class FolderServiceImpl implements FolderService {
     @Override
     public Folder getFolder(int folderId) {
         return folderRepository.findById(folderId)
-                .orElseThrow(() -> new FolderNotFoundException("Folder not found"));
+                .orElseThrow(() -> new FolderNotFoundException(folderId));
     }
 
     @Override
     public Folder createNewFolder(int parentFolderId, Folder folder) {
         Folder parentFolder = folderRepository.findById(parentFolderId)
-                .orElseThrow(() -> new FolderNotFoundException("Folder not found"));
+                .orElseThrow(() -> new FolderNotFoundException(parentFolderId));
         if (folderRepository.existsByParentFolderIdAndName(parentFolderId, folder.getName())) {
-            throw new FolderNotFoundException("TODO you create two folders with equal names");
+            throw new RuntimeException("TODO you create two folders with equal names");
         }
         folder.setParentFolderId(parentFolderId);
         folder.setOwner(parentFolder.getOwner());
@@ -63,6 +63,9 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     public List<Folder> getSubFolders(int folderId) {
+        if (!folderRepository.existsById(folderId)) {
+            throw new FolderNotFoundException(folderId);
+        }
         return folderRepository.findAllByParentFolderId(folderId);
     }
 
@@ -70,16 +73,16 @@ public class FolderServiceImpl implements FolderService {
     public List<Problem> getProblemsFromFolder(int folderId) {
         //TODO
         Folder folder = folderRepository.findById(folderId)
-                .orElseThrow(() -> new FolderNotFoundException("Folder not found"));
+                .orElseThrow(() -> new FolderNotFoundException(folderId));
         return problemRepository.findAllById(folder.getProblemIds());
     }
 
     @Override
     public void addProblemToFolder(int folderId, int problemId) {
         Folder folder = folderRepository.findById(folderId)
-                .orElseThrow(() -> new FolderNotFoundException("Folder not found"));
+                .orElseThrow(() -> new FolderNotFoundException(folderId));
         if (!problemRepository.existsById(problemId)) {
-            throw new ProblemNotFoundException("Problem does not exist");
+            throw new ProblemNotFoundException(problemId);
         }
         List<Problem> problems = problemRepository.findAllById(folder.getProblemIds());
         Set<Integer> problemIds = problems.stream()
@@ -97,7 +100,7 @@ public class FolderServiceImpl implements FolderService {
     @Override
     public void deleteProblemFromFolder(int folderId, int problemId) {
         Folder folder = folderRepository.findById(folderId)
-                .orElseThrow(() -> new FolderNotFoundException("Folder not found"));
+                .orElseThrow(() -> new FolderNotFoundException(folderId));
         List<Problem> problems = problemRepository.findAllById(folder.getProblemIds());
         Set<Integer> problemIds = problems.stream()
                 .map(Problem::getId)
@@ -114,7 +117,7 @@ public class FolderServiceImpl implements FolderService {
     @Override
     public void deleteFolder(int folderId) {
         Folder folder = folderRepository.findById(folderId)
-                .orElseThrow(() -> new FolderNotFoundException("Folder not found"));
+                .orElseThrow(() -> new FolderNotFoundException(folderId));
         if (Objects.isNull(folder.getParentFolderId())) {
             throw new RuntimeException("You cannot delete a root folder");
         }

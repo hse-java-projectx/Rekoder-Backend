@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import ru.hse.rekoder.exceptions.FolderNotFoundException;
 import ru.hse.rekoder.exceptions.ProblemNotFoundException;
-import ru.hse.rekoder.exceptions.ProblemOwnerNotFoundException;
 import ru.hse.rekoder.exceptions.SubmissionNotFoundException;
 
 import javax.validation.ConstraintViolationException;
@@ -17,14 +16,6 @@ import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler({ProblemOwnerNotFoundException.class,
-            ProblemNotFoundException.class,
-            SubmissionNotFoundException.class,
-            FolderNotFoundException.class})
-    public ResponseEntity<String> handleNotFoundExceptions(RuntimeException e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-    }
-
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity<Map<String, String>> handleValidationExceptions(
             MethodArgumentNotValidException ex) {

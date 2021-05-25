@@ -19,7 +19,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     public Submission getSubmission(int submissionId) {
         return submissionRepository.findById(submissionId)
-            .orElseThrow(() -> new SubmissionNotFoundException("Submission with id \"" + submissionId + "\" not found"));
+            .orElseThrow(() -> new SubmissionNotFoundException(submissionId));
     }
 
     @Override
@@ -32,9 +32,8 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Override
     public void deleteSubmission(int submissionId) {
-        //TODO decrease number of successful submissions in Problem
-        if (submissionRepository.existsById(submissionId)) {
-            throw new SubmissionNotFoundException("Submission not found");
+        if (!submissionRepository.existsById(submissionId)) {
+            throw new SubmissionNotFoundException(submissionId);
         }
         submissionRepository.deleteById(submissionId);
     }

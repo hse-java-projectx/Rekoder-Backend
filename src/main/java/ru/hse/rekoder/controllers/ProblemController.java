@@ -58,7 +58,7 @@ public class ProblemController {
         checkAccess(problemId, authentication.getName());
         Submission submission = new Submission();
         BeanUtils.copyProperties(submissionRequest, submission);
-        Submission createdSubmission = problemService.createSubmission(problemId, submission);
+        Submission createdSubmission = problemService.createSubmission(problemId, submission, authentication.getName());
         return ResponseEntity.ok(new SubmissionResponse(createdSubmission));
     }
 

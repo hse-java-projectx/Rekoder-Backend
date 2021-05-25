@@ -1,7 +1,8 @@
 package ru.hse.rekoder.services;
 
 import org.springframework.stereotype.Service;
-import ru.hse.rekoder.exceptions.ProblemOwnerNotFoundException;
+import ru.hse.rekoder.exceptions.TeamNotFoundException;
+import ru.hse.rekoder.exceptions.UserNotFoundException;
 import ru.hse.rekoder.model.*;
 import ru.hse.rekoder.repositories.FolderRepository;
 import ru.hse.rekoder.repositories.ProblemRepository;
@@ -19,8 +20,6 @@ public class TeamServiceImpl implements TeamService {
     private final ProblemRepository problemRepository;
     private final UserRepository userRepository;
 
-    //TODO use TeamNotFoundException
-
     public TeamServiceImpl(TeamRepository teamRepository,
                            FolderRepository folderRepository,
                            ProblemRepository problemRepository,
@@ -34,7 +33,7 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public Team getTeam(String teamName) {
         return teamRepository.findByTeamId(teamName)
-                .orElseThrow();
+                .orElseThrow(() -> new TeamNotFoundException(teamName));
     }
 
     @Override
@@ -61,43 +60,46 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public List<Team> getTeamsUserIn(String userName) {
+        if (!userRepository.existsByUsername(userName)) {
+            throw new UserNotFoundException(userName);
+        }
         return teamRepository.findAllByMemberIds(userName);
     }
 
     @Override
     public List<User> getAllMembers(String teamName) {
         Team team = teamRepository.findByTeamId(teamName)
-                .orElseThrow(() -> new ProblemOwnerNotFoundException("Team not found"));
+                .orElseThrow(() -> new TeamNotFoundException(teamName));
         return userRepository.findAllByUsername(team.getMemberIds());
     }
 
     @Override
     public boolean addExistingUserToTeam(String teamId, String username) {
         if (!userRepository.existsByUsername(username)) {
-            throw new ProblemOwnerNotFoundException("User not found");
+            throw new UserNotFoundException(username);
         }
         return teamRepository.addUserToTeamById(teamId, username)
-                .orElseThrow(() -> new ProblemOwnerNotFoundException("Team not found"));
+                .orElseThrow(() -> new TeamNotFoundException(teamId));
     }
 
     @Override
     public boolean deleteUserFromTeam(String teamId, String username) {
         if (!userRepository.existsByUsername(username)) {
-            throw new ProblemOwnerNotFoundException("User not found");
+            throw new UserNotFoundException(username);
         }
         return teamRepository.deleteUserFromTeamById(teamId, username)
-                .orElseThrow(() -> new ProblemOwnerNotFoundException("Team not found"));
+                .orElseThrow(() -> new TeamNotFoundException(teamId));
     }
 
     @Override
     public List<Problem> getAllProblems(String teamId) {
+        checkExistenceOfTeam(teamId);
         return problemRepository.findAllByOwner(createOwner(teamId));
     }
 
     @Override
     public Problem createProblem(String teamId, Problem problem) {
-        Team team = teamRepository.findByTeamId(teamId)
-                .orElseThrow(() -> new ProblemOwnerNotFoundException("Team not found"));
+        checkExistenceOfTeam(teamId);
         problem.setOwner(createOwner(teamId));
         problem = problemRepository.save(problem);
         return problem;
@@ -105,5 +107,11 @@ public class TeamServiceImpl implements TeamService {
 
     private Owner createOwner(String teamId) {
         return new Owner(ContentGeneratorType.TEAM, teamId);
+    }
+
+    private void checkExistenceOfTeam(String teamId) {
+        if (!teamRepository.existsByTeamId(teamId)) {
+            throw new TeamNotFoundException(teamId);
+        }
     }
 }

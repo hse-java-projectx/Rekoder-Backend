@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import ru.hse.rekoder.exceptions.ProblemNotFoundException;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.Submission;
+import ru.hse.rekoder.model.User;
 import ru.hse.rekoder.repositories.ProblemRepository;
 import ru.hse.rekoder.repositories.SubmissionRepository;
 
@@ -25,22 +26,21 @@ public class ProblemServiceImpl implements ProblemService {
     @Override
     public Problem getProblem(int problemId) {
         return problemRepository.findById(problemId)
-                .orElseThrow(() -> new ProblemNotFoundException("Problem with id \"" + problemId + "\" not found"));
+                .orElseThrow(() -> new ProblemNotFoundException(problemId));
     }
 
     @Override
     public List<Submission> getAllSubmissions(int problemId) {
+        checkExistenceOfProblem(problemId);
         return submissionRepository.findAllByProblemId(problemId);
     }
 
     @Override
-    public Submission createSubmission(int problemId, Submission submission) {
+    public Submission createSubmission(int problemId, Submission submission, String author) {
         submission.setSubmissionTime(new Date());
-        Problem problem = problemRepository.findById(problemId)
-                .orElseThrow(() -> new ProblemNotFoundException("Problem with id \"" + problemId + "\" not found"));
+        checkExistenceOfProblem(problemId);
         submission.setProblemId(problemId);
-        //TODO
-        submission.setAuthorId(problem.getOwner().getId());
+        submission.setAuthorId(author);
         submission = submissionRepository.save(submission);
         return submission;
     }
@@ -56,10 +56,14 @@ public class ProblemServiceImpl implements ProblemService {
 
     @Override
     public void deleteProblem(int problemId) {
-        if (!problemRepository.existsById(problemId)) {
-            throw new ProblemNotFoundException("Problem not found");
-        }
+        checkExistenceOfProblem(problemId);
         problemRepository.deleteById(problemId);
         submissionRepository.deleteAllByProblemId(problemId);
+    }
+
+    private void checkExistenceOfProblem(int problemId) {
+        if (!problemRepository.existsById(problemId)) {
+            throw new ProblemNotFoundException(problemId);
+        }
     }
 }

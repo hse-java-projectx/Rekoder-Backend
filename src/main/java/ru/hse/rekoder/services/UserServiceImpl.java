@@ -2,7 +2,7 @@ package ru.hse.rekoder.services;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.hse.rekoder.exceptions.ProblemOwnerNotFoundException;
+import ru.hse.rekoder.exceptions.UserNotFoundException;
 import ru.hse.rekoder.model.*;
 import ru.hse.rekoder.repositories.FolderRepository;
 import ru.hse.rekoder.repositories.ProblemRepository;
@@ -30,20 +30,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUser(String userName) throws ProblemOwnerNotFoundException {
+    public User getUser(String userName) {
         return userRepository.findByUsername(userName)
-                .orElseThrow(() -> new ProblemOwnerNotFoundException("User with id \"" + userName + "\" not found"));
+                .orElseThrow(() -> new UserNotFoundException(userName));
     }
 
     @Override
-    public List<Problem> getProblems(String userName) throws ProblemOwnerNotFoundException {
+    public List<Problem> getProblems(String userName) {
+        checkExistenceOfUser(userName);
         return problemRepository.findAllByOwner(createOwner(userName));
     }
 
     @Override
     public Problem createProblem(String userName, Problem problem) {
-        User user = userRepository.findByUsername(userName)
-                .orElseThrow(() -> new ProblemOwnerNotFoundException("User with name \"" + userName + "\" not found"));
+        checkExistenceOfUser(userName);
         problem.setOwner(createOwner(userName));
         problem = problemRepository.save(problem);
         return problem;
@@ -74,5 +74,11 @@ public class UserServiceImpl implements UserService {
 
     private Owner createOwner(String username) {
         return new Owner(ContentGeneratorType.USER, username);
+    }
+
+    private void checkExistenceOfUser(String username) {
+        if (!userRepository.existsByUsername(username)) {
+            throw new UserNotFoundException(username);
+        }
     }
 }
