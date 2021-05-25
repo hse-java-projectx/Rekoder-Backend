@@ -1,6 +1,9 @@
 package ru.hse.rekoder.jwt;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class UsernamePasswordAuthenticationRequest {
+    @JsonProperty("id")
     private String username;
     private String password;
 
