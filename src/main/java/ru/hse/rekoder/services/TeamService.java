@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface TeamService {
     Team getTeam(String teamName);
-    Team createTeam(Team team);
+    Team createTeam(Team team, String founderUsername);
     Team updateTeam(Team team);
 
     List<Team> getTeamsUserIn(String userName);

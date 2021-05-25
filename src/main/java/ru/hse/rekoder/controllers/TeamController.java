@@ -44,8 +44,9 @@ public class TeamController {
     }
 
     @PostMapping
-    public ResponseEntity<TeamResponse> createTeam(@RequestBody @Valid Team team) {
-        Team createdTeam = teamService.createTeam(team);
+    public ResponseEntity<TeamResponse> createTeam(@RequestBody @Valid Team team,
+                                                   Authentication authentication) {
+        Team createdTeam = teamService.createTeam(team, authentication.getName());
         return ResponseEntity.ok(new TeamResponse(createdTeam));
     }
 

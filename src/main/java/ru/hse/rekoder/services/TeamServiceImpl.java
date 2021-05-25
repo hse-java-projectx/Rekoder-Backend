@@ -39,11 +39,12 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public Team createTeam(Team team) {
+    public Team createTeam(Team team, String founderUsername) {
         team.setRegistrationDate(new Date());
         if (teamRepository.existsByTeamId(team.getTeamId())) {
             throw new TeamConflictException(team.getTeamId());
         }
+        team.getMemberIds().add(founderUsername);
         Folder rootFolder = new Folder();
         rootFolder.setOwner(createOwner(team.getTeamId()));
         rootFolder.setName("root");

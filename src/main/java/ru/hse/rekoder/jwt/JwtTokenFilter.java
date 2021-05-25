@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import ru.hse.rekoder.exceptions.AccessDeniedException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -63,7 +64,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
         } catch (JwtException e) {
-            throw new IllegalStateException(String.format("Token %s cannot be trusted", token));
+            //TODO
         }
 
         filterChain.doFilter(request, response);
