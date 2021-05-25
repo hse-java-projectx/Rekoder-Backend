@@ -35,20 +35,20 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUser(String userName) throws ProblemOwnerNotFoundException {
-        return userRepository.findById(new User.UserCompositeKey(userName))
+        return userRepository.findByUsername(userName)
                 .orElseThrow(() -> new ProblemOwnerNotFoundException("User with id \"" + userName + "\" not found"));
     }
 
     @Override
     public List<Problem> getProblems(String userName) throws ProblemOwnerNotFoundException {
-        return problemRepository.findAllByOwnerId(new User.UserCompositeKey(userName));
+        return problemRepository.findAllByOwner(createOwner(userName));
     }
 
     @Override
     public Problem createProblem(String userName, Problem problem) {
-        User user = userRepository.findById(new User.UserCompositeKey(userName))
+        User user = userRepository.findByUsername(userName)
                 .orElseThrow(() -> new ProblemOwnerNotFoundException("User with name \"" + userName + "\" not found"));
-        problem.setOwnerId(new User.UserCompositeKey(userName));
+        problem.setOwner(createOwner(userName));
         problem.setId(sequenceService.generateSequence(Problem.SEQUENCE_NAME));
         problem = problemRepository.save(problem);
         return problem;
@@ -56,14 +56,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User createUser(User user) {
-        user.setId(new User.UserCompositeKey(user.getUsername()));
-        if (userRepository.existsById((User.UserCompositeKey) user.getId())) {
+        user.setRegistrationDate(new Date());
+        if (userRepository.existsByUsername(user.getUsername())) {
             throw new RuntimeException("User has already existed");
         }
-        user.setRegistrationTime(new Date());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Folder rootFolder = new Folder();
-        rootFolder.setOwnerId(new User.UserCompositeKey(user.getUsername()));
+        rootFolder.setOwner(createOwner(user.getUsername()));
         rootFolder.setName("root");
         rootFolder.setId(sequenceService.generateSequence(Folder.SEQUENCE_NAME));
         rootFolder = folderRepository.save(rootFolder);
@@ -73,9 +72,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateUser(User user) {
-        if (Objects.isNull(user.getId())) {
+        if (Objects.isNull(user.getObjectId())) {
             throw new RuntimeException("User must have an id");
         }
         return userRepository.save(user);
+    }
+
+    private Owner createOwner(String username) {
+        return new Owner(ContentGeneratorType.USER, username);
     }
 }

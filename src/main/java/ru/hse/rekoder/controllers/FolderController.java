@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import ru.hse.rekoder.exceptions.AccessDeniedException;
+import ru.hse.rekoder.model.ContentGeneratorType;
 import ru.hse.rekoder.model.Folder;
 import ru.hse.rekoder.requests.FolderRequest;
 import ru.hse.rekoder.requests.ProblemIdWrap;
@@ -107,11 +108,11 @@ public class FolderController {
 
     private void checkAccess(int folderId, String username) {
         Folder folder = folderService.getFolder(folderId);
-        if (folder.getOwnerId().getProblemOwnerType().equals("user")
-                && !folder.getOwnerId().getProblemOwnerId().equals(username)) {
+        if (folder.getOwner().getType().equals(ContentGeneratorType.USER)
+                && !folder.getOwner().getId().equals(username)) {
             throw new AccessDeniedException();
-        } else if (folder.getOwnerId().getProblemOwnerType().equals("team")) {
-            if (!teamService.getTeam(folder.getOwnerId().getProblemOwnerId()).getMemberIds().contains(username)) {
+        } else if (folder.getOwner().getType().equals(ContentGeneratorType.TEAM)) {
+            if (!teamService.getTeam(folder.getOwner().getId()).getMemberIds().contains(username)) {
                 throw new AccessDeniedException();
             }
         }

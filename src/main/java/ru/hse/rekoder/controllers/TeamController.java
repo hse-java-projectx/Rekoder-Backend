@@ -123,6 +123,7 @@ public class TeamController {
     private TeamRequest convertToRequest(Team team) {
         TeamRequest teamRequest = new TeamRequest();
         teamRequest.setBio(team.getBio());
+        teamRequest.setName(team.getName());
         teamRequest.setContacts(team.getContacts());
         return teamRequest;
     }

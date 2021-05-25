@@ -105,6 +105,7 @@ public class UserController {
     private UserRequest convertToRequest(User user) {
         UserRequest userRequest = new UserRequest();
         userRequest.setBio(user.getBio());
+        userRequest.setName(user.getName());
         userRequest.setContacts(user.getContacts());
         return userRequest;
     }

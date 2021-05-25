@@ -1,84 +1,28 @@
 package ru.hse.rekoder.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.data.annotation.Transient;
+import lombok.Getter;
+import lombok.Setter;
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.validation.constraints.NotEmpty;
-import java.util.*;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+import java.util.Collections;
+import java.util.Map;
 
-public class User extends ProblemOwner {
-    @Transient
-    public static final String PROBLEM_OWNER_TYPE = "user";
+@Getter
+@Setter
+@Document(collection = "users")
+public class User extends ContentGenerator {
+    @Id
+    ObjectId objectId;
 
-    public static class UserCompositeKey extends CompositeKey {
-        public UserCompositeKey(String name) {
-            super(PROBLEM_OWNER_TYPE, name);
-        }
-
-        public UserCompositeKey(String problemOwnerType, String name) {
-            super(problemOwnerType, name);
-        }
-
-        public UserCompositeKey() {
-        }
-    }
-
-    @NotEmpty(message = "User name cannot be empty")
+    @Size(min = 1, max = 100, message = "1 <= username length <= 100")
+    @Pattern(regexp = "^[a-zA-Z0-9_]+$", message = "The username can only contain the following characters [a-zA-Z0-9_]")
     private String username;
+    @Size(min = 1)
     private String password;
 
-    private String name;
-
-    private String bio;
-    @JsonFormat(pattern="yyyy-MM-dd" /* TODO,timezone=*/)
-    private Date registrationTime;
     private Map<String, String> contacts = Collections.emptyMap();
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Map<String, String> getContacts() {
-        return contacts;
-    }
-
-    public void setContacts(Map<String, String> contacts) {
-        this.contacts = contacts;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getBio() {
-        return bio;
-    }
-
-    public void setBio(String bio) {
-        this.bio = bio;
-    }
-
-    public Date getRegistrationTime() {
-        return registrationTime;
-    }
-
-    public void setRegistrationTime(Date registrationTime) {
-        this.registrationTime = registrationTime;
-    }
 }

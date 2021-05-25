@@ -19,28 +19,26 @@ public class TeamModifyingRepositoryImpl implements TeamModifyingRepository{
     }
 
     @Override
-    public Optional<Boolean> addUserToTeamById(Team.TeamCompositeKey teamId, String userId) {
-        Query teamById = Query.query(Criteria.where("_id").is(teamId));
+    public Optional<Boolean> addUserToTeamById(String teamId, String userId) {
+        Query teamById = Query.query(Criteria.where("teamId").is(teamId));
         Update update = new Update();
         update.addToSet("memberIds", userId);
         Team oldTeam = mongoOperations.findAndModify(teamById,
                 update,
                 FindAndModifyOptions.options().returnNew(false),
-                Team.class,
-                "problem_owners");
+                Team.class);
         return Optional.ofNullable(oldTeam).map((team) -> !team.getMemberIds().contains(userId));
     }
 
     @Override
-    public Optional<Boolean> deleteUserFromTeamById(Team.TeamCompositeKey teamId, String userId) {
-        Query teamById = Query.query(Criteria.where("_id").is(teamId));
+    public Optional<Boolean> deleteUserFromTeamById(String teamId, String userId) {
+        Query teamById = Query.query(Criteria.where("teamId").is(teamId));
         Update update = new Update();
         update.pull("memberIds", userId);
         Team oldTeam = mongoOperations.findAndModify(teamById,
                 update,
                 FindAndModifyOptions.options().returnNew(false),
-                Team.class,
-                "problem_owners");
+                Team.class);
         return Optional.ofNullable(oldTeam).map((team) -> team.getMemberIds().contains(userId));
     }
 }

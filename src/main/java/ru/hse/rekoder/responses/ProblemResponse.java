@@ -1,73 +1,34 @@
 package ru.hse.rekoder.responses;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Getter;
+import ru.hse.rekoder.model.Owner;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.Test;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Set;
 
-public class ProblemResponse extends BaseResponse {
-    private final int id;
+@Getter
+public class ProblemResponse {
+    private final Integer id;
     private final String name;
     private final String statement;
-    private final List<Test> tests;
-    private final List<String> tags;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private final Set<@NotNull String> tags;
+    private final List<@Valid @NotNull Test> tests;
+    private final Owner owner;
+    private final Integer originalProblemId;
     private final String problemUrl;
-    private final int numberOfSuccessfulSubmissions;
-    private final String problemOwnerType;
-    private final String problemOwnerId;
-
-    public ProblemResponse(Problem originalProblem, String pathToResource) {
-        super(pathToResource);
-        this.id = originalProblem.getId();
-        this.name = originalProblem.getName();
-        this.statement = originalProblem.getStatement();
-        this.tests = originalProblem.getTests();
-        this.tags = originalProblem.getTags();
-        this.problemUrl = originalProblem.getProblemUrl();
-        this.numberOfSuccessfulSubmissions = originalProblem.getNumberOfSuccessfulSubmissions();
-        this.problemOwnerType = originalProblem.getOwnerId().getProblemOwnerType();
-        this.problemOwnerId = originalProblem.getOwnerId().getProblemOwnerId();
-    }
-
-    public String getProblemOwnerType() {
-        return problemOwnerType;
-    }
-
-    public String getProblemOwnerId() {
-        return problemOwnerId;
-    }
-
-    public List<Test> getTests() {
-        return tests;
-    }
 
     public ProblemResponse(Problem problem) {
-        this(problem, "/problems/" + problem.getId());
-    }
-
-    public int getNumberOfSuccessfulSubmissions() {
-        return numberOfSuccessfulSubmissions;
-    }
-
-    public String getProblemUrl() {
-        return problemUrl;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getStatement() {
-        return statement;
-    }
-
-    public List<String> getTags() {
-        return tags;
+        this.id = problem.getId();
+        this.name = problem.getName();
+        this.statement = problem.getStatement();
+        this.tags = problem.getTags();
+        this.tests = problem.getTests();
+        this.owner = problem.getOwner();
+        this.originalProblemId = problem.getOriginalProblemId();
+        this.problemUrl = problem.getProblemUrl();
     }
 }

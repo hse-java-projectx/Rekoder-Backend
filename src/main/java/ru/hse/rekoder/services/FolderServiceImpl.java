@@ -43,7 +43,7 @@ public class FolderServiceImpl implements FolderService {
             throw new FolderNotFoundException("TODO you create two folders with equal names");
         }
         folder.setParentFolderId(parentFolderId);
-        folder.setOwnerId(parentFolder.getOwnerId());
+        folder.setOwner(parentFolder.getOwner());
         folder.setId(sequenceService.generateSequence(Folder.SEQUENCE_NAME));
         folder = folderRepository.save(folder);
         return folder;

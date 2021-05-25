@@ -1,16 +1,15 @@
 package ru.hse.rekoder.requests;
 
-import javax.validation.constraints.NotEmpty;
+import lombok.Getter;
+import lombok.Setter;
 
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
+@Getter
+@Setter
 public class FolderRequest {
-    @NotEmpty(message = "Folder name cannot be a empty string")
+    @Size(min = 1, max = 100, message = "1 <= name length <= 100")
+    @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "The folder name can only contain the following characters [a-zA-Z0-9_]")
     private String name;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }

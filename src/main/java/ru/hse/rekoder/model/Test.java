@@ -1,26 +1,15 @@
 package ru.hse.rekoder.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.validation.constraints.NotNull;
 
+@Getter
+@Setter
 public class Test {
     @NotNull(message = "Specify input data")
     private String input;
-    @NotNull(message = "Specify input data")
+    @NotNull(message = "Specify output data")
     private String output;
-
-    public String getInput() {
-        return input;
-    }
-
-    public void setInput(String input) {
-        this.input = input;
-    }
-
-    public String getOutput() {
-        return output;
-    }
-
-    public void setOutput(String output) {
-        this.output = output;
-    }
 }

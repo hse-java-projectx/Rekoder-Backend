@@ -41,19 +41,18 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public Team getTeam(String teamName) {
-        return teamRepository.findById(new Team.TeamCompositeKey(teamName))
+        return teamRepository.findByTeamId(teamName)
                 .orElseThrow();
     }
 
     @Override
     public Team createTeam(Team team) {
-        team.setId(new Team.TeamCompositeKey(team.getName()));
-        if (teamRepository.existsById((Team.TeamCompositeKey) team.getId())) {
+        team.setRegistrationDate(new Date());
+        if (teamRepository.existsByTeamId(team.getTeamId())) {
             throw new RuntimeException();
         }
-        team.setRegistrationDate(new Date());
         Folder rootFolder = new Folder();
-        rootFolder.setOwnerId(new Team.TeamCompositeKey(team.getName()));
+        rootFolder.setOwner(createOwner(team.getTeamId()));
         rootFolder.setName("root");
         rootFolder.setId(sequenceService.generateSequence(Folder.SEQUENCE_NAME));
         rootFolder = folderRepository.save(rootFolder);
@@ -63,7 +62,7 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public Team updateTeam(Team team) {
-        if (Objects.isNull(team.getId())) {
+        if (Objects.isNull(team.getObjectId())) {
             throw new RuntimeException("Team must have an id");
         }
         return teamRepository.save(team);
@@ -76,48 +75,45 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public List<User> getAllMembers(String teamName) {
-        Team team = teamRepository.findById(new Team.TeamCompositeKey(teamName))
+        Team team = teamRepository.findByTeamId(teamName)
                 .orElseThrow(() -> new ProblemOwnerNotFoundException("Team not found"));
-        return userRepository.findAllById(team.getMemberIds()
-                .stream()
-                .map(User.UserCompositeKey::new)
-                .collect(Collectors.toList()));
+        return userRepository.findAllByUsername(team.getMemberIds());
     }
 
     @Override
-    public boolean addExistingUserToTeam(String teamName, String userName) {
-        Team.TeamCompositeKey teamId = new Team.TeamCompositeKey(teamName);
-        User.UserCompositeKey userId = new User.UserCompositeKey(userName);
-        if (!userRepository.existsById(userId)) {
+    public boolean addExistingUserToTeam(String teamId, String username) {
+        if (!userRepository.existsByUsername(username)) {
             throw new ProblemOwnerNotFoundException("User not found");
         }
-        return teamRepository.addUserToTeamById(teamId, userName)
+        return teamRepository.addUserToTeamById(teamId, username)
                 .orElseThrow(() -> new ProblemOwnerNotFoundException("Team not found"));
     }
 
     @Override
-    public boolean deleteUserFromTeam(String teamName, String userName) {
-        Team.TeamCompositeKey teamId = new Team.TeamCompositeKey(teamName);
-        User.UserCompositeKey userId = new User.UserCompositeKey(userName);
-        if (!userRepository.existsById(userId)) {
+    public boolean deleteUserFromTeam(String teamId, String username) {
+        if (!userRepository.existsByUsername(username)) {
             throw new ProblemOwnerNotFoundException("User not found");
         }
-        return teamRepository.deleteUserFromTeamById(teamId, userName)
+        return teamRepository.deleteUserFromTeamById(teamId, username)
                 .orElseThrow(() -> new ProblemOwnerNotFoundException("Team not found"));
     }
 
     @Override
-    public List<Problem> getAllProblems(String teamName) {
-        return problemRepository.findAllByOwnerId(new Team.TeamCompositeKey(teamName));
+    public List<Problem> getAllProblems(String teamId) {
+        return problemRepository.findAllByOwner(createOwner(teamId));
     }
 
     @Override
-    public Problem createProblem(String teamName, Problem problem) {
-        Team team = teamRepository.findById(new Team.TeamCompositeKey(teamName))
+    public Problem createProblem(String teamId, Problem problem) {
+        Team team = teamRepository.findByTeamId(teamId)
                 .orElseThrow(() -> new ProblemOwnerNotFoundException("Team not found"));
-        problem.setOwnerId(new Team.TeamCompositeKey(teamName));
+        problem.setOwner(createOwner(teamId));
         problem.setId(sequenceService.generateSequence(Problem.SEQUENCE_NAME));
         problem = problemRepository.save(problem);
         return problem;
+    }
+
+    private Owner createOwner(String teamId) {
+        return new Owner(ContentGeneratorType.TEAM, teamId);
     }
 }

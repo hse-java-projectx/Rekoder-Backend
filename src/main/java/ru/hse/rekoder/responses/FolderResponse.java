@@ -1,43 +1,25 @@
 package ru.hse.rekoder.responses;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Getter;
 import ru.hse.rekoder.model.Folder;
-import ru.hse.rekoder.model.ProblemOwner;
+import ru.hse.rekoder.model.Owner;
 
-import java.util.Objects;
+import javax.validation.constraints.NotNull;
+import java.util.Set;
 
-public class FolderResponse extends BaseResponse {
-    private final int id;
+@Getter
+public class FolderResponse {
+    private final Integer id;
     private final String name;
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private final Integer parentFolderId;
-    private final String ownerId;
+    private final Set<@NotNull Integer> problemIds;
+    private final Owner owner;
 
-    public FolderResponse(Folder originalFolder, String pathToResource) {
-        super(pathToResource);
-        this.id = originalFolder.getId();
-        this.name = originalFolder.getName();
-        this.parentFolderId = originalFolder.getParentFolderId();
-        this.ownerId = originalFolder.getOwnerId().getProblemOwnerId();
-    }
-
-    public FolderResponse(Folder originalFolder) {
-        this(originalFolder, "/folders/" + originalFolder.getId());
-    }
-
-    public String getOwnerId() {
-        return ownerId;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Integer getParentFolderId() {
-        return parentFolderId;
+    public FolderResponse(Folder folder) {
+        this.id = folder.getId();
+        this.name = folder.getName();
+        this.parentFolderId = folder.getParentFolderId();
+        this.problemIds = folder.getProblemIds();
+        this.owner = folder.getOwner();
     }
 }

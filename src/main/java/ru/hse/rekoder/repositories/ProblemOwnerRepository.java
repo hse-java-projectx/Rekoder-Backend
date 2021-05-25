@@ -1,10 +1,10 @@
 package ru.hse.rekoder.repositories;
 
-import ru.hse.rekoder.model.ProblemOwner;
+import ru.hse.rekoder.model.ContentGenerator;
 
 import java.util.Optional;
 
 public interface ProblemOwnerRepository {
-    Optional<ProblemOwner> findById(Integer id);
-    ProblemOwner save(ProblemOwner newUser);
+    Optional<ContentGenerator> findById(Integer id);
+    ContentGenerator save(ContentGenerator newUser);
 }

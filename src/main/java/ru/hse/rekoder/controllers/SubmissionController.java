@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import ru.hse.rekoder.exceptions.AccessDeniedException;
+import ru.hse.rekoder.model.ContentGeneratorType;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.Submission;
 import ru.hse.rekoder.requests.SubmissionRequest;
@@ -66,11 +67,11 @@ public class SubmissionController {
     private void checkAccess(int submissionId, String username) {
         Submission submission = submissionService.getSubmission(submissionId);
         Problem problem = problemService.getProblem(submission.getProblemId());
-        if (problem.getOwnerId().getProblemOwnerType().equals("user")
-                && !problem.getOwnerId().getProblemOwnerId().equals(username)) {
+        if (problem.getOwner().getType().equals(ContentGeneratorType.USER)
+                && !problem.getOwner().getId().equals(username)) {
             throw new AccessDeniedException();
-        } else if (problem.getOwnerId().getProblemOwnerType().equals("team")) {
-            if (!teamService.getTeam(problem.getOwnerId().getProblemOwnerId()).getMemberIds().contains(username)) {
+        } else if (problem.getOwner().getType().equals(ContentGeneratorType.TEAM)) {
+            if (!teamService.getTeam(problem.getOwner().getId()).getMemberIds().contains(username)) {
                 throw new AccessDeniedException();
             }
         }

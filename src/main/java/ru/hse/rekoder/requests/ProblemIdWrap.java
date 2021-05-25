@@ -1,13 +1,10 @@
 package ru.hse.rekoder.requests;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class ProblemIdWrap {
     private int problemId;
-
-    public int getProblemId() {
-        return problemId;
-    }
-
-    public void setProblemId(int problemId) {
-        this.problemId = problemId;
-    }
 }

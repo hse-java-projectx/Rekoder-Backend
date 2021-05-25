@@ -1,47 +1,19 @@
 package ru.hse.rekoder.responses;
 
+import lombok.Getter;
 import ru.hse.rekoder.model.User;
 
-import java.util.Date;
 import java.util.Map;
 
-public class UserResponse extends BaseResponse {
-    private final String name;
-    private final String bio;
+@Getter
+public class UserResponse extends ContentGeneratorResponse{
+    private final String username;
     private final Map<String, String> contacts;
-    private final Date registrationDate;
-    private final int rootFolderId;
 
-    public UserResponse(User originalUser) {
-        this(originalUser, "/users/" + originalUser.getId().getProblemOwnerId());
+    public UserResponse(User user) {
+        super(user);
+        this.username = user.getUsername();
+        this.contacts = user.getContacts();
     }
 
-    public UserResponse(User originalUser, String pathToResource) {
-        super(pathToResource);
-        this.name = originalUser.getUsername();
-        this.bio = originalUser.getBio();
-        this.contacts = originalUser.getContacts();
-        this.registrationDate = originalUser.getRegistrationTime();
-        this.rootFolderId = originalUser.getRootFolderId();
-    }
-
-    public int getRootFolderId() {
-        return rootFolderId;
-    }
-
-    public Map<String, String> getContacts() {
-        return contacts;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getBio() {
-        return bio;
-    }
-
-    public Date getRegistrationDate() {
-        return registrationDate;
-    }
 }

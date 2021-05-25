@@ -1,60 +1,25 @@
 package ru.hse.rekoder.requests;
 
-import ru.hse.rekoder.model.Problem;
+import lombok.Getter;
+import lombok.Setter;
 import ru.hse.rekoder.model.Test;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+@Getter
+@Setter
 public class ProblemRequest {
     @NotEmpty(message = "Problem name must be not empty")
     private String name;
-    @NotEmpty(message = "Specify not empty statement")
+    @NotNull(message = "Specify not empty statement")
     private String statement;
-    private List<@NotNull String> tags = new ArrayList<>();
+    private Set<@NotNull String> tags = new HashSet<>();
     private List<@Valid @NotNull Test> tests = new ArrayList<>();
     private String problemUrl;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getStatement() {
-        return statement;
-    }
-
-    public void setStatement(String statement) {
-        this.statement = statement;
-    }
-
-    public List<String> getTags() {
-        return tags;
-    }
-
-    public void setTags(List<String> tags) {
-        this.tags = tags;
-    }
-
-    public List<Test> getTests() {
-        return tests;
-    }
-
-    public void setTests(List<Test> tests) {
-        this.tests = tests;
-    }
-
-    public String getProblemUrl() {
-        return problemUrl;
-    }
-
-    public void setProblemUrl(String problemUrl) {
-        this.problemUrl = problemUrl;
-    }
 }

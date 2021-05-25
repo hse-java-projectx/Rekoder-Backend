@@ -1,52 +1,20 @@
 package ru.hse.rekoder.responses;
 
+import lombok.Getter;
 import ru.hse.rekoder.model.Team;
 
 import java.util.*;
 
-public class TeamResponse extends BaseResponse {
-    private final String name;
-    private final String bio;
-    private final Date registrationDate;
+@Getter
+public class TeamResponse extends ContentGeneratorResponse {
+    private final String teamId;
     private final Map<String, String> contacts;
-    private final List<String> membersId;
-    private final int rootFolderId;
+    private final Set<String> memberIds;
 
-    public TeamResponse(Team originalTeam, String pathToResource) {
-        super(pathToResource);
-        this.name = originalTeam.getName();
-        this.bio = originalTeam.getBio();
-        this.membersId = new ArrayList<>(originalTeam.getMemberIds());
-        this.registrationDate = originalTeam.getRegistrationDate();
-        this.contacts = originalTeam.getContacts();
-        this.rootFolderId = originalTeam.getRootFolderId();
-    }
-
-    public TeamResponse(Team originalTeam) {
-        this(originalTeam, "/teams/" + originalTeam.getId().getProblemOwnerId());
-    }
-
-    public int getRootFolderId() {
-        return rootFolderId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getBio() {
-        return bio;
-    }
-
-    public Date getRegistrationDate() {
-        return registrationDate;
-    }
-
-    public Map<String, String> getContacts() {
-        return contacts;
-    }
-
-    public List<String> getMembersId() {
-        return membersId;
+    public TeamResponse(Team team) {
+        super(team);
+        this.teamId = team.getTeamId();
+        this.contacts = team.getContacts();
+        this.memberIds = team.getMemberIds();
     }
 }

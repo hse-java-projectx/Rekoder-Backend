@@ -45,7 +45,7 @@ public class ProblemServiceImpl implements ProblemService {
                 .orElseThrow(() -> new ProblemNotFoundException("Problem with id \"" + problemId + "\" not found"));
         submission.setProblemId(problemId);
         //TODO
-        submission.setAuthorId(problem.getOwnerId());
+        submission.setAuthorId(problem.getOwner().getId());
         submission.setId(sequenceService.generateSequence(Submission.SEQUENCE_NAME));
         submission = submissionRepository.save(submission);
         return submission;
