@@ -1,8 +1,7 @@
 package ru.hse.rekoder.services;
 
 import org.springframework.stereotype.Service;
-import ru.hse.rekoder.exceptions.FolderNotFoundException;
-import ru.hse.rekoder.exceptions.ProblemNotFoundException;
+import ru.hse.rekoder.exceptions.*;
 import ru.hse.rekoder.model.Folder;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.repositories.FolderRepository;
@@ -35,7 +34,7 @@ public class FolderServiceImpl implements FolderService {
         Folder parentFolder = folderRepository.findById(parentFolderId)
                 .orElseThrow(() -> new FolderNotFoundException(parentFolderId));
         if (folderRepository.existsByParentFolderIdAndName(parentFolderId, folder.getName())) {
-            throw new RuntimeException("TODO you create two folders with equal names");
+            throw new FolderConflictException(parentFolderId, folder.getName());
         }
         folder.setParentFolderId(parentFolderId);
         folder.setOwner(parentFolder.getOwner());
@@ -46,17 +45,15 @@ public class FolderServiceImpl implements FolderService {
     @Override
     public Folder updateFolder(Folder folder) {
         if (Objects.isNull(folder.getId())) {
-            //TODO
-            throw new RuntimeException("Folder must have an id");
+            throw new FolderException("Folder must have an id");
         }
         if (Objects.isNull(folder.getParentFolderId())) {
-            throw new RuntimeException("You cannot change the root folder");
+            throw new FolderException("You cannot change the root folder");
         }
         if (folderRepository.existsByParentFolderIdAndNameAndIdIsNot(folder.getParentFolderId(),
                                                                      folder.getName(),
                                                                      folder.getId())) {
-            //TODO
-            throw new RuntimeException("Cannot update folder name because of duplicate in the folder");
+            throw new FolderConflictException(folder.getParentFolderId(), folder.getName());
         }
         return folderRepository.save(folder);
     }
@@ -71,7 +68,6 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     public List<Problem> getProblemsFromFolder(int folderId) {
-        //TODO
         Folder folder = folderRepository.findById(folderId)
                 .orElseThrow(() -> new FolderNotFoundException(folderId));
         return problemRepository.findAllById(folder.getProblemIds());
@@ -89,7 +85,7 @@ public class FolderServiceImpl implements FolderService {
                 .map(Problem::getId)
                 .collect(Collectors.toSet());
         if (!problemIds.add(problemId)) {
-            throw new RuntimeException("The problem is already in the folder");
+            throw new ProblemException("The problem " + problemId + "is already in the folder " + folderId);
         }
         if (problemIds.size() != problems.size()) {
             folder.setProblemIds(problemIds);
@@ -106,7 +102,7 @@ public class FolderServiceImpl implements FolderService {
                 .map(Problem::getId)
                 .collect(Collectors.toSet());
         if (!problemIds.remove(problemId)) {
-            throw new RuntimeException("The problem does not exist or the folder does not contains it");
+            throw new ProblemException("The problem " + problemId + " does not exist or the folder " + folderId+ " does not contains it");
         }
         if (problems.size() != problemIds.size()) {
             folder.setProblemIds(problemIds);
@@ -119,7 +115,7 @@ public class FolderServiceImpl implements FolderService {
         Folder folder = folderRepository.findById(folderId)
                 .orElseThrow(() -> new FolderNotFoundException(folderId));
         if (Objects.isNull(folder.getParentFolderId())) {
-            throw new RuntimeException("You cannot delete a root folder");
+            throw new FolderException("The root folder cannot be deleted");
         }
         List<Integer> s = folderRepository.getSubTree(folderId);
         folderRepository.deleteByIdIn(s);

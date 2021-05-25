@@ -6,9 +6,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import ru.hse.rekoder.exceptions.FolderNotFoundException;
-import ru.hse.rekoder.exceptions.ProblemNotFoundException;
-import ru.hse.rekoder.exceptions.SubmissionNotFoundException;
 
 import javax.validation.ConstraintViolationException;
 import java.util.HashMap;

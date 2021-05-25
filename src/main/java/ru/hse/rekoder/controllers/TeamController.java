@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
 import ru.hse.rekoder.exceptions.AccessDeniedException;
+import ru.hse.rekoder.exceptions.TeamException;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.Team;
 import ru.hse.rekoder.requests.ProblemRequest;
@@ -63,7 +64,7 @@ public class TeamController {
         checkAccess(teamId, authentication.getName());
         boolean isNewMember = teamService.addExistingUserToTeam(teamId, member);
         if (!isNewMember) {
-            throw new RuntimeException("Member already in the team");
+            throw new TeamException("User \"" + member+ "\" already in the team");
         }
         return ResponseEntity.noContent().build();
     }
@@ -75,7 +76,7 @@ public class TeamController {
         checkAccess(teamId, authentication.getName());
         boolean userWasInTeam = teamService.deleteUserFromTeam(teamId, userId);
         if (!userWasInTeam) {
-            throw new RuntimeException("There is not the user in the team");
+            throw new TeamException("There is not the user\"" + userId + "\" in the team");
         }
         return ResponseEntity.noContent().build();
     }

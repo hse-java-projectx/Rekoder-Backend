@@ -2,6 +2,8 @@ package ru.hse.rekoder.services;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.hse.rekoder.exceptions.UserConflictException;
+import ru.hse.rekoder.exceptions.UserException;
 import ru.hse.rekoder.exceptions.UserNotFoundException;
 import ru.hse.rekoder.model.*;
 import ru.hse.rekoder.repositories.FolderRepository;
@@ -53,7 +55,7 @@ public class UserServiceImpl implements UserService {
     public User createUser(User user) {
         user.setRegistrationDate(new Date());
         if (userRepository.existsByUsername(user.getUsername())) {
-            throw new RuntimeException("User has already existed");
+            throw new UserConflictException(user.getUsername());
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Folder rootFolder = new Folder();
@@ -67,7 +69,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUser(User user) {
         if (Objects.isNull(user.getId())) {
-            throw new RuntimeException("User must have an id");
+            throw new UserException("User must have an id");
         }
         return userRepository.save(user);
     }

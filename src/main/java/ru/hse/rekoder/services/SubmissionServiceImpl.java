@@ -1,6 +1,7 @@
 package ru.hse.rekoder.services;
 
 import org.springframework.stereotype.Service;
+import ru.hse.rekoder.exceptions.SubmissionException;
 import ru.hse.rekoder.exceptions.SubmissionNotFoundException;
 import ru.hse.rekoder.model.Submission;
 import ru.hse.rekoder.repositories.SubmissionRepository;
@@ -25,7 +26,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     @Override
     public Submission updateSubmission(Submission Submission) {
         if (Objects.isNull(Submission.getId())) {
-            throw new RuntimeException("Submission must have an id");
+            throw new SubmissionException("Submission must have an id");
         }
         return submissionRepository.save(Submission);
     }

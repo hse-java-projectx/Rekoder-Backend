@@ -1,6 +1,8 @@
 package ru.hse.rekoder.services;
 
 import org.springframework.stereotype.Service;
+import ru.hse.rekoder.exceptions.TeamConflictException;
+import ru.hse.rekoder.exceptions.TeamException;
 import ru.hse.rekoder.exceptions.TeamNotFoundException;
 import ru.hse.rekoder.exceptions.UserNotFoundException;
 import ru.hse.rekoder.model.*;
@@ -40,7 +42,7 @@ public class TeamServiceImpl implements TeamService {
     public Team createTeam(Team team) {
         team.setRegistrationDate(new Date());
         if (teamRepository.existsByTeamId(team.getTeamId())) {
-            throw new RuntimeException();
+            throw new TeamConflictException(team.getTeamId());
         }
         Folder rootFolder = new Folder();
         rootFolder.setOwner(createOwner(team.getTeamId()));
@@ -53,7 +55,7 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public Team updateTeam(Team team) {
         if (Objects.isNull(team.getId())) {
-            throw new RuntimeException("Team must have an id");
+            throw new TeamException("Team must have an id");
         }
         return teamRepository.save(team);
     }
