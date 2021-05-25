@@ -2,8 +2,6 @@ package ru.hse.rekoder.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Collections;
@@ -16,9 +14,6 @@ import java.util.Set;
 @Setter
 @Document(collection = "teams")
 public class Team extends ContentGenerator {
-    @Id
-    ObjectId objectId;
-
     private String teamId;
 
     private Map<String, String> contacts = Collections.emptyMap();

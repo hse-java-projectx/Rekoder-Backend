@@ -13,12 +13,7 @@ import java.util.Date;
 @Getter
 @Setter
 @Document(collection = "submissions")
-public class Submission {
-    @Transient
-    public static final String SEQUENCE_NAME = "submission_sequence";
-
-    @Id
-    private Integer id;
+public class Submission extends DocumentWithIncreasingIdSequence {
     private Integer problemId;
     private String comment;
 

@@ -7,7 +7,6 @@ import ru.hse.rekoder.model.*;
 import ru.hse.rekoder.repositories.FolderRepository;
 import ru.hse.rekoder.repositories.ProblemRepository;
 import ru.hse.rekoder.repositories.UserRepository;
-import ru.hse.rekoder.repositories.mongodb.seqGenerators.DatabaseIntSequenceService;
 
 import java.util.Date;
 import java.util.List;
@@ -18,18 +17,15 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ProblemRepository problemRepository;
     private final FolderRepository folderRepository;
-    private final DatabaseIntSequenceService sequenceService;
     private final PasswordEncoder passwordEncoder;
 
     public UserServiceImpl(UserRepository userRepository,
                            ProblemRepository problemRepository,
                            FolderRepository folderRepository,
-                           DatabaseIntSequenceService sequenceService,
                            PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.problemRepository = problemRepository;
         this.folderRepository = folderRepository;
-        this.sequenceService = sequenceService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -49,7 +45,6 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUsername(userName)
                 .orElseThrow(() -> new ProblemOwnerNotFoundException("User with name \"" + userName + "\" not found"));
         problem.setOwner(createOwner(userName));
-        problem.setId(sequenceService.generateSequence(Problem.SEQUENCE_NAME));
         problem = problemRepository.save(problem);
         return problem;
     }
@@ -64,7 +59,6 @@ public class UserServiceImpl implements UserService {
         Folder rootFolder = new Folder();
         rootFolder.setOwner(createOwner(user.getUsername()));
         rootFolder.setName("root");
-        rootFolder.setId(sequenceService.generateSequence(Folder.SEQUENCE_NAME));
         rootFolder = folderRepository.save(rootFolder);
         user.setRootFolderId(rootFolder.getId());
         return userRepository.save(user);
@@ -72,7 +66,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateUser(User user) {
-        if (Objects.isNull(user.getObjectId())) {
+        if (Objects.isNull(user.getId())) {
             throw new RuntimeException("User must have an id");
         }
         return userRepository.save(user);

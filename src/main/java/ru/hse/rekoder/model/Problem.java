@@ -2,7 +2,7 @@ package ru.hse.rekoder.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.Valid;
@@ -16,11 +16,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Document(collection = "problems")
-public class Problem {
-    public static final String SEQUENCE_NAME = "problem_sequence";
-
-    @Id
-    private Integer id;
+public class Problem extends DocumentWithIncreasingIdSequence {
     @NotEmpty(message = "Problem name must be not empty")
     private String name;
     @NotNull(message = "Specify not empty statement")

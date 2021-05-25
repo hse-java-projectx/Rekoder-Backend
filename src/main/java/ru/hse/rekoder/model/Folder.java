@@ -2,7 +2,6 @@ package ru.hse.rekoder.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -15,12 +14,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Document(collection = "folders")
-public class Folder {
-    @Transient
-    public static final String SEQUENCE_NAME = "folder_sequence";
-
-    @Id
-    private Integer id;
+public class Folder extends DocumentWithIncreasingIdSequence {
     @Size(min = 1, max = 100, message = "1 <= name length <= 100")
     @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "The folder name can only contain the following characters [a-zA-Z0-9_]")
     private String name;

@@ -1,6 +1,5 @@
 package ru.hse.rekoder.services;
 
-import org.springframework.data.mongodb.core.aggregation.ArrayOperators;
 import org.springframework.stereotype.Service;
 import ru.hse.rekoder.exceptions.FolderNotFoundException;
 import ru.hse.rekoder.exceptions.ProblemNotFoundException;
@@ -8,7 +7,6 @@ import ru.hse.rekoder.model.Folder;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.repositories.FolderRepository;
 import ru.hse.rekoder.repositories.ProblemRepository;
-import ru.hse.rekoder.repositories.mongodb.seqGenerators.DatabaseIntSequenceService;
 
 import java.util.List;
 import java.util.Objects;
@@ -19,14 +17,11 @@ import java.util.stream.Collectors;
 public class FolderServiceImpl implements FolderService {
     private final FolderRepository folderRepository;
     private final ProblemRepository problemRepository;
-    private final DatabaseIntSequenceService sequenceService;
 
     public FolderServiceImpl(FolderRepository folderRepository,
-                             ProblemRepository problemRepository,
-                             DatabaseIntSequenceService sequenceService) {
+                             ProblemRepository problemRepository) {
         this.folderRepository = folderRepository;
         this.problemRepository = problemRepository;
-        this.sequenceService = sequenceService;
     }
 
     @Override
@@ -44,7 +39,6 @@ public class FolderServiceImpl implements FolderService {
         }
         folder.setParentFolderId(parentFolderId);
         folder.setOwner(parentFolder.getOwner());
-        folder.setId(sequenceService.generateSequence(Folder.SEQUENCE_NAME));
         folder = folderRepository.save(folder);
         return folder;
     }

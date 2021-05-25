@@ -7,7 +7,7 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class ContentGenerator {
+public class ContentGenerator extends DocumentWithIncreasingIdSequence {
     protected String name;
     protected String bio;
     protected Integer rootFolderId;

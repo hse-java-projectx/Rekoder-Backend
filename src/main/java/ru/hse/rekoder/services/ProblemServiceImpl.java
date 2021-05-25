@@ -6,7 +6,6 @@ import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.Submission;
 import ru.hse.rekoder.repositories.ProblemRepository;
 import ru.hse.rekoder.repositories.SubmissionRepository;
-import ru.hse.rekoder.repositories.mongodb.seqGenerators.DatabaseIntSequenceService;
 
 import java.util.Date;
 import java.util.List;
@@ -16,15 +15,11 @@ import java.util.Objects;
 public class ProblemServiceImpl implements ProblemService {
     private final ProblemRepository problemRepository;
     private final SubmissionRepository submissionRepository;
-    private final DatabaseIntSequenceService sequenceService;
 
     public ProblemServiceImpl(ProblemRepository problemRepository,
-                              SubmissionRepository submissionRepository,
-                              DatabaseIntSequenceService sequenceService,
-                              JsonMergePatchService jsonMergePatchService) {
+                              SubmissionRepository submissionRepository) {
         this.problemRepository = problemRepository;
         this.submissionRepository = submissionRepository;
-        this.sequenceService = sequenceService;
     }
 
     @Override
@@ -46,7 +41,6 @@ public class ProblemServiceImpl implements ProblemService {
         submission.setProblemId(problemId);
         //TODO
         submission.setAuthorId(problem.getOwner().getId());
-        submission.setId(sequenceService.generateSequence(Submission.SEQUENCE_NAME));
         submission = submissionRepository.save(submission);
         return submission;
     }
