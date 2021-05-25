@@ -28,7 +28,7 @@ jobs:
       - name: Set database password
         env:
           SECRETS_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-        run: echo "database_password=$SECRETS_PASSWORD\n" | cat >> ./src/main/resources/application.properties
+        run: echo -e "database_password=$SECRETS_PASSWORD\n" | cat >> ./src/main/resources/application.properties
 
       - name: Set secret key for JWT
         env:
