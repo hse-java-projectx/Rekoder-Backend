@@ -18,7 +18,6 @@ import ru.hse.rekoder.services.TeamService;
 import javax.json.JsonMergePatch;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/submissions")
 public class SubmissionController {
     private final SubmissionService submissionService;

@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/teams")
 public class TeamController {
     private final TeamService teamService;

@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/folders")
 public class FolderController {
     private final FolderService folderService;
