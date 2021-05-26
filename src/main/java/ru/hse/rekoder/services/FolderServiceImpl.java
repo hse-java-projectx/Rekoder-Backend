@@ -55,7 +55,8 @@ public class FolderServiceImpl implements FolderService {
                                                                      folder.getId())) {
             throw new FolderConflictException(folder.getParentFolderId(), folder.getName());
         }
-        return folderRepository.save(folder);
+        return folderRepository.update(folder, folder.getId())
+                .orElseThrow(() -> new FolderNotFoundException(folder.getId()));
     }
 
     @Override

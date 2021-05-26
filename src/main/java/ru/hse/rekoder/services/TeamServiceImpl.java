@@ -58,7 +58,8 @@ public class TeamServiceImpl implements TeamService {
         if (Objects.isNull(team.getId())) {
             throw new TeamException("Team must have an id");
         }
-        return teamRepository.save(team);
+        return teamRepository.update(team, team.getId())
+                .orElseThrow(() -> new TeamNotFoundException(team.getTeamId()));
     }
 
     @Override

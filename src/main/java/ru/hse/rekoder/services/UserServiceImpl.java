@@ -71,7 +71,8 @@ public class UserServiceImpl implements UserService {
         if (Objects.isNull(user.getId())) {
             throw new UserException("User must have an id");
         }
-        return userRepository.save(user);
+        return userRepository.update(user, user.getId())
+                .orElseThrow(() -> new UserNotFoundException(user.getUsername()));
     }
 
     private Owner createOwner(String username) {

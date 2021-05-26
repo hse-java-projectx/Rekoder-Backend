@@ -50,8 +50,8 @@ public class ProblemServiceImpl implements ProblemService {
         if (Objects.isNull(problem.getId())) {
             throw new ProblemException("Problem must have an id");
         }
-        //use update
-        return problemRepository.save(problem);
+        return problemRepository.update(problem, problem.getId())
+                .orElseThrow(() -> new ProblemNotFoundException(problem.getId()));
     }
 
     @Override

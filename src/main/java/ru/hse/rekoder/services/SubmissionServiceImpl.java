@@ -24,11 +24,12 @@ public class SubmissionServiceImpl implements SubmissionService {
     }
 
     @Override
-    public Submission updateSubmission(Submission Submission) {
-        if (Objects.isNull(Submission.getId())) {
+    public Submission updateSubmission(Submission submission) {
+        if (Objects.isNull(submission.getId())) {
             throw new SubmissionException("Submission must have an id");
         }
-        return submissionRepository.save(Submission);
+        return submissionRepository.update(submission, submission.getId())
+                .orElseThrow(() -> new SubmissionNotFoundException(submission.getId()));
     }
 
     @Override
