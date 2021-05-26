@@ -15,6 +15,9 @@ import java.util.Set;
 @Setter
 @Document(collection = "folders")
 public class Folder extends DocumentWithIncreasingIdSequence {
+    @Transient
+    public static int MAX_DEPTH = 25;
+
     @NotNull(message = "Folder name must be not null")
     @Size(min = 1, max = 100, message = "1 <= name length <= 100")
     @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "The folder name can only contain the following characters [a-zA-Z0-9_]")

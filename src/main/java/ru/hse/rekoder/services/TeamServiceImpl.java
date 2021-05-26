@@ -74,7 +74,7 @@ public class TeamServiceImpl implements TeamService {
     public List<User> getAllMembers(String teamName) {
         Team team = teamRepository.findByTeamId(teamName)
                 .orElseThrow(() -> new TeamNotFoundException(teamName));
-        return userRepository.findAllByUsername(team.getMemberIds());
+        return userRepository.findAllByUsernameIn(team.getMemberIds());
     }
 
     @Override

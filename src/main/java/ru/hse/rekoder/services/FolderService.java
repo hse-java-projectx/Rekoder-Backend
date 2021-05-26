@@ -10,11 +10,12 @@ public interface FolderService {
     Folder createNewFolder(int parentFolderId, Folder folder);
     Folder updateFolder(Folder folder);
 
+    List<Folder> getPathToRootFrom(int folderId);
     List<Folder> getSubFolders(int folderId);
     List<Problem> getProblemsFromFolder(int folderId);
 
-    void addProblemToFolder(int folderId, int problemId);
-    void deleteProblemFromFolder(int folderId, int problemId);
+    boolean addProblemToFolder(int folderId, int problemId);
+    boolean deleteProblemFromFolder(int folderId, int problemId);
 
     void deleteFolder(int folderId);
 }

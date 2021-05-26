@@ -7,9 +7,7 @@ import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.repositories.FolderRepository;
 import ru.hse.rekoder.repositories.ProblemRepository;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,7 +36,12 @@ public class FolderServiceImpl implements FolderService {
         }
         folder.setParentFolderId(parentFolderId);
         folder.setOwner(parentFolder.getOwner());
+        folder.setId(null);
         folder = folderRepository.save(folder);
+        if (getLengthOfPathToRootFrom(folder).filter(depth -> depth <= Folder.MAX_DEPTH).isEmpty()) {
+            deleteFolder(folder.getId());
+            throw new FolderNotFoundException(parentFolderId);
+        }
         return folder;
     }
 
@@ -51,12 +54,28 @@ public class FolderServiceImpl implements FolderService {
             throw new FolderException("You cannot change the root folder");
         }
         if (folderRepository.existsByParentFolderIdAndNameAndIdIsNot(folder.getParentFolderId(),
-                                                                     folder.getName(),
-                                                                     folder.getId())) {
+                folder.getName(),
+                folder.getId())) {
             throw new FolderConflictException(folder.getParentFolderId(), folder.getName());
         }
         return folderRepository.update(folder, folder.getId())
                 .orElseThrow(() -> new FolderNotFoundException(folder.getId()));
+    }
+
+    @Override
+    public List<Folder> getPathToRootFrom(int folderId) {
+        List<Folder> pathToRoot = new ArrayList<>();
+        Folder currentFolder = folderRepository.findById(folderId)
+                .orElseThrow(() -> new FolderNotFoundException(folderId));
+        pathToRoot.add(currentFolder);
+        while (Objects.nonNull(currentFolder.getParentFolderId())) {
+            final int parentFolderId = currentFolder.getParentFolderId();
+            currentFolder = folderRepository.findById(parentFolderId)
+                    .orElseThrow(() -> new FolderNotFoundException(parentFolderId));
+            pathToRoot.add(currentFolder);
+        }
+        Collections.reverse(pathToRoot);
+        return pathToRoot;
     }
 
     @Override
@@ -75,40 +94,21 @@ public class FolderServiceImpl implements FolderService {
     }
 
     @Override
-    public void addProblemToFolder(int folderId, int problemId) {
-        Folder folder = folderRepository.findById(folderId)
-                .orElseThrow(() -> new FolderNotFoundException(folderId));
+    public boolean addProblemToFolder(int folderId, int problemId) {
         if (!problemRepository.existsById(problemId)) {
             throw new ProblemNotFoundException(problemId);
         }
-        List<Problem> problems = problemRepository.findAllById(folder.getProblemIds());
-        Set<Integer> problemIds = problems.stream()
-                .map(Problem::getId)
-                .collect(Collectors.toSet());
-        if (!problemIds.add(problemId)) {
-            throw new ProblemException("The problem " + problemId + "is already in the folder " + folderId);
-        }
-        if (problemIds.size() != problems.size()) {
-            folder.setProblemIds(problemIds);
-            folderRepository.save(folder);
-        }
+        return folderRepository.addProblemToFolderById(folderId, problemId)
+                .orElseThrow(() -> new FolderNotFoundException(folderId));
     }
 
     @Override
-    public void deleteProblemFromFolder(int folderId, int problemId) {
-        Folder folder = folderRepository.findById(folderId)
+    public boolean deleteProblemFromFolder(int folderId, int problemId) {
+        if (!problemRepository.existsById(problemId)) {
+            throw new ProblemNotFoundException(problemId);
+        }
+        return folderRepository.deleteProblemToFolderById(folderId, problemId)
                 .orElseThrow(() -> new FolderNotFoundException(folderId));
-        List<Problem> problems = problemRepository.findAllById(folder.getProblemIds());
-        Set<Integer> problemIds = problems.stream()
-                .map(Problem::getId)
-                .collect(Collectors.toSet());
-        if (!problemIds.remove(problemId)) {
-            throw new ProblemException("The problem " + problemId + " does not exist or the folder " + folderId+ " does not contains it");
-        }
-        if (problems.size() != problemIds.size()) {
-            folder.setProblemIds(problemIds);
-            folderRepository.save(folder);
-        }
     }
 
     @Override
@@ -118,8 +118,27 @@ public class FolderServiceImpl implements FolderService {
         if (Objects.isNull(folder.getParentFolderId())) {
             throw new FolderException("The root folder cannot be deleted");
         }
-        List<Integer> s = folderRepository.getSubTree(folderId);
-        folderRepository.deleteByIdIn(s);
-        folderRepository.deleteById(folderId);
+        List<Integer> folderIdsToDelete = List.of(folderId);
+        while (!folderIdsToDelete.isEmpty()) {
+            folderRepository.deleteByIdIn(folderIdsToDelete);
+            folderIdsToDelete = folderRepository.findAllByParentFolderIdIn(folderIdsToDelete)
+                    .stream()
+                    .map(Folder::getId)
+                    .collect(Collectors.toList());
+        }
+    }
+
+    private Optional<Integer> getLengthOfPathToRootFrom(Folder folder) {
+        int pathLength = 1;
+        Folder currentFolder = folder;
+        while (Objects.nonNull(currentFolder.getParentFolderId())) {
+            pathLength += 1;
+            currentFolder = folderRepository.findById(currentFolder.getParentFolderId())
+                    .orElse(null);
+            if (Objects.isNull(currentFolder)) {
+                return Optional.empty();
+            }
+        }
+        return Optional.of(pathLength);
     }
 }

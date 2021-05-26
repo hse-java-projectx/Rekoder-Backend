@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import ru.hse.rekoder.exceptions.AccessDeniedException;
+import ru.hse.rekoder.exceptions.FolderException;
 import ru.hse.rekoder.model.ContentGeneratorType;
 import ru.hse.rekoder.model.Folder;
 import ru.hse.rekoder.requests.FolderRequest;
@@ -52,6 +53,14 @@ public class FolderController {
         return ResponseEntity.ok(new FolderResponse(createdFolder));
     }
 
+    @GetMapping("/{folderId}/path-to-root")
+    public ResponseEntity<List<FolderResponse>> getPathToRootFrom(@PathVariable int folderId) {
+        return ResponseEntity.ok(folderService.getPathToRootFrom(folderId)
+                .stream()
+                .map(FolderResponse::new)
+                .collect(Collectors.toList()));
+    }
+
     @GetMapping("/{folderId}/folders")
     public ResponseEntity<List<FolderResponse>> getSubFolders(@PathVariable int folderId) {
         return ResponseEntity.ok(folderService.getSubFolders(folderId)
@@ -72,7 +81,10 @@ public class FolderController {
     public ResponseEntity<?> addProblemToFolder(@PathVariable int folderId, @RequestBody ProblemIdWrap problemToAdd,
                                                 Authentication authentication) {
         checkAccess(folderId, authentication.getName());
-        folderService.addProblemToFolder(folderId, problemToAdd.getProblemId());
+        boolean isNewProblemForFolder = folderService.addProblemToFolder(folderId, problemToAdd.getProblemId());
+        if (!isNewProblemForFolder) {
+            throw new FolderException("Problem " + problemToAdd.getProblemId() + " is already in the folder " + folderId);
+        }
         return ResponseEntity.noContent().build();
     }
 
@@ -80,13 +92,16 @@ public class FolderController {
     public ResponseEntity<?> deleteProblemFromFolder(@PathVariable int folderId, @PathVariable int problemId,
                                                      Authentication authentication) {
         checkAccess(folderId, authentication.getName());
-        folderService.deleteProblemFromFolder(folderId, problemId);
+        boolean problemWasInFolder = folderService.deleteProblemFromFolder(folderId, problemId);
+        if (!problemWasInFolder) {
+            throw new FolderException("There is not problem " + problemId + " in the folder " + folderId);
+        }
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping(path = "/{folderId}", consumes = "application/merge-patch+json")
     public ResponseEntity<FolderResponse> updateProblem(@PathVariable int folderId,
-                                                         @Valid @RequestBody JsonMergePatch jsonMergePatch,
+                                                        @Valid @RequestBody JsonMergePatch jsonMergePatch,
                                                         Authentication authentication) {
         checkAccess(folderId, authentication.getName());
         Folder folder = folderService.getFolder(folderId);

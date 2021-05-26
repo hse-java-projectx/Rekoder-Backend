@@ -8,6 +8,6 @@ import java.util.Optional;
 
 public interface UserRepository extends MongoRepository<User, Integer>, UpdatableRepository<User, Integer> {
     Optional<User> findByUsername(String username);
-    List<User> findAllByUsername(Iterable<String> username);
+    List<User> findAllByUsernameIn(Iterable<String> username);
     boolean existsByUsername(String username);
 }

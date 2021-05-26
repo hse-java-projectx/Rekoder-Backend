@@ -11,10 +11,10 @@ import ru.hse.rekoder.model.Team;
 import java.util.Optional;
 
 @Repository
-public class TeamModifyingRepositoryImpl implements TeamModifyingRepository{
+public class ModifiableTeamRepositoryImpl implements ModifiableTeamRepository {
     private final MongoOperations mongoOperations;
 
-    public TeamModifyingRepositoryImpl(MongoOperations mongoOperations) {
+    public ModifiableTeamRepositoryImpl(MongoOperations mongoOperations) {
         this.mongoOperations = mongoOperations;
     }
 
