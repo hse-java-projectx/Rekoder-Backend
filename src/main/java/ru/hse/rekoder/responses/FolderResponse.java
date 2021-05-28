@@ -12,14 +12,12 @@ public class FolderResponse {
     private final Integer id;
     private final String name;
     private final Integer parentFolderId;
-    private final Set<@NotNull Integer> problemIds;
     private final Owner owner;
 
     public FolderResponse(Folder folder) {
         this.id = folder.getId();
         this.name = folder.getName();
         this.parentFolderId = folder.getParentFolderId();
-        this.problemIds = folder.getProblemIds();
         this.owner = folder.getOwner();
     }
 }

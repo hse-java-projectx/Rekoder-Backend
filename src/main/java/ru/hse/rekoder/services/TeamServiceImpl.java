@@ -47,7 +47,7 @@ public class TeamServiceImpl implements TeamService {
         team.getMemberIds().add(founderUsername);
 
         Folder rootFolder = new Folder();
-        rootFolder.setOwner(createOwner(team.getTeamId()));
+        rootFolder.setOwner(Owner.teamWithId(team.getTeamId()));
         rootFolder.setName("root");
         rootFolder = folderService.createRootFolder(rootFolder);
 
@@ -105,19 +105,15 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public List<Problem> getAllProblems(String teamId) {
         checkExistenceOfTeam(teamId);
-        return problemRepository.findAllByOwner(createOwner(teamId));
+        return problemRepository.findAllByOwner(Owner.teamWithId(teamId));
     }
 
     @Override
     public Problem createProblem(String teamId, Problem problem) {
         checkExistenceOfTeam(teamId);
-        problem.setOwner(createOwner(teamId));
+        problem.setOwner(Owner.teamWithId(teamId));
         problem = problemRepository.save(problem);
         return problem;
-    }
-
-    private Owner createOwner(String teamId) {
-        return new Owner(ContentGeneratorType.TEAM, teamId);
     }
 
     private void checkExistenceOfTeam(String teamId) {

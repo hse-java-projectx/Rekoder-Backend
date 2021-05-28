@@ -40,13 +40,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Problem> getProblems(String userName) {
         checkExistenceOfUser(userName);
-        return problemRepository.findAllByOwner(createOwner(userName));
+        return problemRepository.findAllByOwner(Owner.userWithId(userName));
     }
 
     @Override
     public Problem createProblem(String userName, Problem problem) {
         checkExistenceOfUser(userName);
-        problem.setOwner(createOwner(userName));
+        problem.setOwner(Owner.userWithId(userName));
         problem = problemRepository.save(problem);
         return problem;
     }
@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         Folder rootFolder = new Folder();
-        rootFolder.setOwner(createOwner(user.getUsername()));
+        rootFolder.setOwner(Owner.userWithId(user.getUsername()));
         rootFolder.setName("root");
         rootFolder = folderService.createRootFolder(rootFolder);
 
@@ -80,10 +80,6 @@ public class UserServiceImpl implements UserService {
         }
         return userRepository.update(user, user.getId())
                 .orElseThrow(() -> new UserNotFoundException(user.getUsername()));
-    }
-
-    private Owner createOwner(String username) {
-        return new Owner(ContentGeneratorType.USER, username);
     }
 
     private void checkExistenceOfUser(String username) {

@@ -14,9 +14,10 @@ import javax.validation.Validator;
 public class JsonMergePatchService {
     private final ObjectMapper mapper;
 
-    public JsonMergePatchService(ObjectMapper mapper, Validator validator) {
+    public JsonMergePatchService(ObjectMapper mapper) {
         this.mapper = mapper;
     }
+
     @Valid
     public <T> T mergePatch(JsonMergePatch mergePatch, T targetBean, Class<T> beanClass) {
         JsonValue target = mapper.convertValue(targetBean, JsonValue.class);

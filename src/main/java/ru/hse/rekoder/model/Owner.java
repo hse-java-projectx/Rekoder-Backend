@@ -10,4 +10,12 @@ import lombok.Setter;
 public class Owner {
     private ContentGeneratorType type;
     private String id;
+
+    public static Owner userWithId(String id) {
+        return new Owner(ContentGeneratorType.USER, id);
+    }
+
+    public static Owner teamWithId(String id) {
+        return new Owner(ContentGeneratorType.TEAM, id);
+    }
 }

@@ -4,17 +4,16 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import ru.hse.rekoder.exceptions.AccessDeniedException;
 import ru.hse.rekoder.exceptions.FolderException;
-import ru.hse.rekoder.model.ContentGeneratorType;
 import ru.hse.rekoder.model.Folder;
+import ru.hse.rekoder.model.Owner;
 import ru.hse.rekoder.requests.FolderRequest;
 import ru.hse.rekoder.requests.ProblemIdWrap;
 import ru.hse.rekoder.responses.FolderResponse;
 import ru.hse.rekoder.responses.ProblemResponse;
 import ru.hse.rekoder.services.FolderService;
 import ru.hse.rekoder.services.JsonMergePatchService;
-import ru.hse.rekoder.services.TeamService;
+import ru.hse.rekoder.services.ProblemService;
 
 import javax.json.JsonMergePatch;
 import javax.validation.Valid;
@@ -26,15 +25,18 @@ import java.util.stream.Collectors;
 @RequestMapping("/folders")
 public class FolderController {
     private final FolderService folderService;
+    private final ProblemService problemService;
     private final JsonMergePatchService jsonMergePatchService;
-    private final TeamService teamService;
+    private final AccessChecker accessChecker;
 
     public FolderController(FolderService folderService,
+                            ProblemService problemService,
                             JsonMergePatchService jsonMergePatchService,
-                            TeamService teamService) {
+                            AccessChecker accessChecker) {
         this.folderService = folderService;
+        this.problemService = problemService;
         this.jsonMergePatchService = jsonMergePatchService;
-        this.teamService = teamService;
+        this.accessChecker = accessChecker;
     }
 
     @GetMapping("/{folderId}")
@@ -47,7 +49,11 @@ public class FolderController {
     public ResponseEntity<FolderResponse> createFolder(@PathVariable int folderId,
                                                        @RequestBody @Valid FolderRequest folderRequest,
                                                        Authentication authentication) {
-        checkAccess(folderId, authentication.getName());
+        accessChecker.checkAccessToResourceWithOwner(
+                folderService.getFolder(folderId).getOwner(),
+                Owner.userWithId(authentication.getName())
+        );
+
         Folder folder = new Folder();
         BeanUtils.copyProperties(folderRequest, folder);
         Folder createdFolder = folderService.createNewFolder(folderId, folder);
@@ -81,7 +87,15 @@ public class FolderController {
     @PatchMapping("/{folderId}/problems")
     public ResponseEntity<?> addProblemToFolder(@PathVariable int folderId, @RequestBody ProblemIdWrap problemToAdd,
                                                 Authentication authentication) {
-        checkAccess(folderId, authentication.getName());
+        Folder folder = folderService.getFolder(folderId);
+        accessChecker.checkAccessToResourceWithOwner(
+                folder.getOwner(),
+                Owner.userWithId(authentication.getName())
+        );
+        accessChecker.checkAccessToResourceWithOwner(
+                problemService.getProblem(problemToAdd.getProblemId()).getOwner(),
+                folder.getOwner()
+        );
         boolean isNewProblemForFolder = folderService.addProblemToFolder(folderId, problemToAdd.getProblemId());
         if (!isNewProblemForFolder) {
             throw new FolderException("Problem " + problemToAdd.getProblemId() + " is already in the folder " + folderId);
@@ -92,7 +106,10 @@ public class FolderController {
     @DeleteMapping("/{folderId}/problems/{problemId}")
     public ResponseEntity<?> deleteProblemFromFolder(@PathVariable int folderId, @PathVariable int problemId,
                                                      Authentication authentication) {
-        checkAccess(folderId, authentication.getName());
+        accessChecker.checkAccessToResourceWithOwner(
+                folderService.getFolder(folderId).getOwner(),
+                Owner.userWithId(authentication.getName())
+        );
         boolean problemWasInFolder = folderService.deleteProblemFromFolder(folderId, problemId);
         if (!problemWasInFolder) {
             throw new FolderException("There is not problem " + problemId + " in the folder " + folderId);
@@ -104,8 +121,11 @@ public class FolderController {
     public ResponseEntity<FolderResponse> updateProblem(@PathVariable int folderId,
                                                         @Valid @RequestBody JsonMergePatch jsonMergePatch,
                                                         Authentication authentication) {
-        checkAccess(folderId, authentication.getName());
         Folder folder = folderService.getFolder(folderId);
+        accessChecker.checkAccessToResourceWithOwner(
+                folder.getOwner(),
+                Owner.userWithId(authentication.getName())
+        );
         BeanUtils.copyProperties(
                 jsonMergePatchService.mergePatch(jsonMergePatch, convertToRequest(folder), FolderRequest.class),
                 folder);
@@ -116,24 +136,15 @@ public class FolderController {
     @DeleteMapping("/{folderId}")
     public ResponseEntity<?> deleteFolder(@PathVariable int folderId,
                                           Authentication authentication) {
-        checkAccess(folderId, authentication.getName());
+        accessChecker.checkAccessToResourceWithOwner(
+                folderService.getFolder(folderId).getOwner(),
+                Owner.userWithId(authentication.getName())
+        );
         if (Objects.isNull(folderService.getFolder(folderId).getParentFolderId())) {
             throw new FolderException("The root folder cannot be deleted");
         }
         folderService.deleteFolder(folderId);
         return ResponseEntity.noContent().build();
-    }
-
-    private void checkAccess(int folderId, String username) {
-        Folder folder = folderService.getFolder(folderId);
-        if (folder.getOwner().getType().equals(ContentGeneratorType.USER)
-                && !folder.getOwner().getId().equals(username)) {
-            throw new AccessDeniedException();
-        } else if (folder.getOwner().getType().equals(ContentGeneratorType.TEAM)) {
-            if (!teamService.getTeam(folder.getOwner().getId()).getMemberIds().contains(username)) {
-                throw new AccessDeniedException();
-            }
-        }
     }
 
     private FolderRequest convertToRequest(Folder folder) {

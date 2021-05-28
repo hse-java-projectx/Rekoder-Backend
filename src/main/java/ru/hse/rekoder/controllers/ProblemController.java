@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import ru.hse.rekoder.exceptions.AccessDeniedException;
-import ru.hse.rekoder.model.ContentGeneratorType;
+import ru.hse.rekoder.model.Owner;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.Submission;
 import ru.hse.rekoder.requests.ProblemRequest;
@@ -26,14 +26,15 @@ import java.util.stream.Collectors;
 public class ProblemController {
     private final ProblemService problemService;
     private final JsonMergePatchService jsonMergePatchService;
-    private final TeamService teamService;
+    private final AccessChecker accessChecker;
 
     public ProblemController(ProblemService problemService,
                              JsonMergePatchService jsonMergePatchService,
-                             TeamService teamService) {
+                             TeamService teamService,
+                             AccessChecker accessChecker) {
         this.problemService = problemService;
         this.jsonMergePatchService = jsonMergePatchService;
-        this.teamService = teamService;
+        this.accessChecker = accessChecker;
     }
 
     @GetMapping("/{problemId}")
@@ -54,7 +55,10 @@ public class ProblemController {
     public ResponseEntity<SubmissionResponse> createSubmission(@PathVariable int problemId,
                                                                @Valid @RequestBody SubmissionRequest submissionRequest,
                                                                Authentication authentication) {
-        checkAccess(problemId, authentication.getName());
+        accessChecker.checkAccessToResourceWithOwner(
+                problemService.getProblem(problemId).getOwner(),
+                Owner.userWithId(authentication.getName())
+        );
         Submission submission = new Submission();
         BeanUtils.copyProperties(submissionRequest, submission);
         Submission createdSubmission = problemService.createSubmission(problemId, submission, authentication.getName());
@@ -65,8 +69,13 @@ public class ProblemController {
     public ResponseEntity<ProblemResponse> updateProblem(@PathVariable int problemId,
                                                          @Valid @RequestBody JsonMergePatch jsonMergePatch,
                                                          Authentication authentication) {
-        checkAccess(problemId, authentication.getName());
         Problem problem = problemService.getProblem(problemId);
+
+        accessChecker.checkAccessToResourceWithOwner(
+                problem.getOwner(),
+                Owner.userWithId(authentication.getName())
+        );
+
         BeanUtils.copyProperties(
                 jsonMergePatchService.mergePatch(jsonMergePatch, convertToRequest(problem), ProblemRequest.class),
                 problem);
@@ -77,21 +86,12 @@ public class ProblemController {
     @DeleteMapping("/{problemId}")
     public ResponseEntity<?> deleteProblem(@PathVariable int problemId,
                                            Authentication authentication) {
-        checkAccess(problemId, authentication.getName());
+        accessChecker.checkAccessToResourceWithOwner(
+                problemService.getProblem(problemId).getOwner(),
+                Owner.userWithId(authentication.getName())
+        );
         problemService.deleteProblem(problemId);
         return ResponseEntity.noContent().build();
-    }
-
-    private void checkAccess(int problemId, String username) {
-        Problem problem = problemService.getProblem(problemId);
-        if (problem.getOwner().getType().equals(ContentGeneratorType.USER)
-                && !problem.getOwner().getId().equals(username)) {
-            throw new AccessDeniedException();
-        } else if (problem.getOwner().getType().equals(ContentGeneratorType.TEAM)) {
-            if (!teamService.getTeam(problem.getOwner().getId()).getMemberIds().contains(username)) {
-                throw new AccessDeniedException();
-            }
-        }
     }
 
     private ProblemRequest convertToRequest(Problem problem) {

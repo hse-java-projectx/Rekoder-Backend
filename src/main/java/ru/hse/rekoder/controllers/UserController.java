@@ -1,12 +1,10 @@
 package ru.hse.rekoder.controllers;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import ru.hse.rekoder.model.Owner;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.User;
 import ru.hse.rekoder.requests.ProblemRequest;
@@ -28,13 +26,16 @@ import java.util.stream.Collectors;
 public class UserController {
     private final UserService userService;
     private final TeamService teamService;
+    private final AccessChecker accessChecker;
     private final JsonMergePatchService jsonMergePatchService;
 
     public UserController(UserService userService,
                           TeamService teamService,
+                          AccessChecker accessChecker,
                           JsonMergePatchService jsonMergePatchService) {
         this.userService = userService;
         this.teamService = teamService;
+        this.accessChecker = accessChecker;
         this.jsonMergePatchService = jsonMergePatchService;
     }
 
@@ -76,10 +77,10 @@ public class UserController {
     public ResponseEntity<ProblemResponse> createProblem(@PathVariable String userId,
                                                          @Valid @RequestBody ProblemRequest problemRequest,
                                                          Authentication authentication) {
-        if (!authentication.getName().equals(userId)) {
-            System.out.println(authentication.getPrincipal());
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        accessChecker.checkAccessToResourceWithOwner(
+                Owner.userWithId(userId),
+                Owner.userWithId(authentication.getName())
+        );
         Problem problem = new Problem();
         BeanUtils.copyProperties(problemRequest, problem);
         Problem createdProblem = userService.createProblem(userId, problem);
@@ -90,9 +91,11 @@ public class UserController {
     public ResponseEntity<UserResponse> updateUser(@PathVariable String userId,
                                                    @RequestBody JsonMergePatch jsonMergePatch,
                                                    Authentication authentication) {
-        if (!authentication.getName().equals(userId)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        accessChecker.checkAccessToResourceWithOwner(
+                Owner.userWithId(userId),
+                Owner.userWithId(authentication.getName())
+        );
+
         User user = userService.getUser(userId);
         BeanUtils.copyProperties(
                 jsonMergePatchService.mergePatch(jsonMergePatch, convertToRequest(user), UserRequest.class),

@@ -4,16 +4,13 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import ru.hse.rekoder.exceptions.AccessDeniedException;
-import ru.hse.rekoder.model.ContentGeneratorType;
-import ru.hse.rekoder.model.Problem;
+import ru.hse.rekoder.model.Owner;
 import ru.hse.rekoder.model.Submission;
 import ru.hse.rekoder.requests.SubmissionRequest;
 import ru.hse.rekoder.responses.SubmissionResponse;
 import ru.hse.rekoder.services.JsonMergePatchService;
 import ru.hse.rekoder.services.ProblemService;
 import ru.hse.rekoder.services.SubmissionService;
-import ru.hse.rekoder.services.TeamService;
 
 import javax.json.JsonMergePatch;
 
@@ -23,16 +20,16 @@ public class SubmissionController {
     private final SubmissionService submissionService;
     private final JsonMergePatchService jsonMergePatchService;
     private final ProblemService problemService;
-    private final TeamService teamService;
+    private final AccessChecker accessChecker;
 
     public SubmissionController(SubmissionService submissionService,
                                 JsonMergePatchService jsonMergePatchService,
                                 ProblemService problemService,
-                                TeamService teamService) {
+                                AccessChecker accessChecker) {
         this.submissionService = submissionService;
         this.jsonMergePatchService = jsonMergePatchService;
         this.problemService = problemService;
-        this.teamService = teamService;
+        this.accessChecker = accessChecker;
     }
 
     @GetMapping("/{submissionId}")
@@ -45,8 +42,11 @@ public class SubmissionController {
     public ResponseEntity<SubmissionResponse> updateSubmission(@PathVariable int submissionId,
                                                                @RequestBody JsonMergePatch jsonMergePatch,
                                                                Authentication authentication) {
-        checkAccess(submissionId, authentication.getName());
         Submission submission = submissionService.getSubmission(submissionId);
+        accessChecker.checkAccessToResourceWithOwner(
+                problemService.getProblem(submission.getProblemId()).getOwner(),
+                Owner.userWithId(authentication.getName())
+        );
         BeanUtils.copyProperties(
                 jsonMergePatchService.mergePatch(jsonMergePatch, convertToRequest(submission), SubmissionRequest.class),
                 submission
@@ -58,22 +58,13 @@ public class SubmissionController {
     @DeleteMapping("/{submissionId}")
     public ResponseEntity<?> deleteSubmission(@PathVariable int submissionId,
                                               Authentication authentication) {
-        checkAccess(submissionId, authentication.getName());
+        Submission submission = submissionService.getSubmission(submissionId);
+        accessChecker.checkAccessToResourceWithOwner(
+                problemService.getProblem(submission.getProblemId()).getOwner(),
+                Owner.userWithId(authentication.getName())
+        );
         submissionService.deleteSubmission(submissionId);
         return ResponseEntity.noContent().build();
-    }
-
-    private void checkAccess(int submissionId, String username) {
-        Submission submission = submissionService.getSubmission(submissionId);
-        Problem problem = problemService.getProblem(submission.getProblemId());
-        if (problem.getOwner().getType().equals(ContentGeneratorType.USER)
-                && !problem.getOwner().getId().equals(username)) {
-            throw new AccessDeniedException();
-        } else if (problem.getOwner().getType().equals(ContentGeneratorType.TEAM)) {
-            if (!teamService.getTeam(problem.getOwner().getId()).getMemberIds().contains(username)) {
-                throw new AccessDeniedException();
-            }
-        }
     }
 
     private SubmissionRequest convertToRequest(Submission submission) {
