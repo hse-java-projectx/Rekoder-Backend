@@ -1,12 +1,12 @@
 package ru.hse.rekoder.services;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import ru.hse.rekoder.exceptions.TeamConflictException;
 import ru.hse.rekoder.exceptions.TeamException;
 import ru.hse.rekoder.exceptions.TeamNotFoundException;
 import ru.hse.rekoder.exceptions.UserNotFoundException;
 import ru.hse.rekoder.model.*;
-import ru.hse.rekoder.repositories.FolderRepository;
 import ru.hse.rekoder.repositories.ProblemRepository;
 import ru.hse.rekoder.repositories.TeamRepository;
 import ru.hse.rekoder.repositories.UserRepository;
@@ -18,18 +18,18 @@ import java.util.Objects;
 @Service
 public class TeamServiceImpl implements TeamService {
     private final TeamRepository teamRepository;
-    private final FolderRepository folderRepository;
     private final ProblemRepository problemRepository;
     private final UserRepository userRepository;
+    private final FolderService folderService;
 
     public TeamServiceImpl(TeamRepository teamRepository,
-                           FolderRepository folderRepository,
                            ProblemRepository problemRepository,
-                           UserRepository userRepository) {
+                           UserRepository userRepository,
+                           FolderService folderService) {
         this.teamRepository = teamRepository;
-        this.folderRepository = folderRepository;
         this.problemRepository = problemRepository;
         this.userRepository = userRepository;
+        this.folderService = folderService;
     }
 
     @Override
@@ -45,12 +45,19 @@ public class TeamServiceImpl implements TeamService {
             throw new TeamConflictException(team.getTeamId());
         }
         team.getMemberIds().add(founderUsername);
+
         Folder rootFolder = new Folder();
         rootFolder.setOwner(createOwner(team.getTeamId()));
         rootFolder.setName("root");
-        rootFolder = folderRepository.save(rootFolder);
+        rootFolder = folderService.createRootFolder(rootFolder);
+
         team.setRootFolderId(rootFolder.getId());
-        return teamRepository.save(team);
+        try {
+            return teamRepository.insert(team);
+        } catch (DuplicateKeyException e) {
+            folderService.deleteFolder(rootFolder.getId());
+            throw new TeamConflictException(team.getTeamId());
+        }
     }
 
     @Override

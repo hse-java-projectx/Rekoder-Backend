@@ -1,12 +1,12 @@
 package ru.hse.rekoder.services;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.hse.rekoder.exceptions.UserConflictException;
 import ru.hse.rekoder.exceptions.UserException;
 import ru.hse.rekoder.exceptions.UserNotFoundException;
 import ru.hse.rekoder.model.*;
-import ru.hse.rekoder.repositories.FolderRepository;
 import ru.hse.rekoder.repositories.ProblemRepository;
 import ru.hse.rekoder.repositories.UserRepository;
 
@@ -18,16 +18,16 @@ import java.util.Objects;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ProblemRepository problemRepository;
-    private final FolderRepository folderRepository;
+    private final FolderService folderService;
     private final PasswordEncoder passwordEncoder;
 
     public UserServiceImpl(UserRepository userRepository,
                            ProblemRepository problemRepository,
-                           FolderRepository folderRepository,
+                           FolderService folderService,
                            PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.problemRepository = problemRepository;
-        this.folderRepository = folderRepository;
+        this.folderService = folderService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -58,12 +58,19 @@ public class UserServiceImpl implements UserService {
             throw new UserConflictException(user.getUsername());
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+
         Folder rootFolder = new Folder();
         rootFolder.setOwner(createOwner(user.getUsername()));
         rootFolder.setName("root");
-        rootFolder = folderRepository.save(rootFolder);
+        rootFolder = folderService.createRootFolder(rootFolder);
+
         user.setRootFolderId(rootFolder.getId());
-        return userRepository.save(user);
+        try {
+            return userRepository.insert(user);
+        } catch (DuplicateKeyException e) {
+            folderService.deleteFolder(rootFolder.getId());
+            throw new UserConflictException(user.getUsername());
+        }
     }
 
     @Override

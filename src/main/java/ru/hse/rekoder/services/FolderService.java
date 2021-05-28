@@ -8,6 +8,7 @@ import java.util.List;
 public interface FolderService {
     Folder getFolder(int folderId);
     Folder createNewFolder(int parentFolderId, Folder folder);
+    Folder createRootFolder(Folder folder);
     Folder updateFolder(Folder folder);
 
     List<Folder> getPathToRootFrom(int folderId);

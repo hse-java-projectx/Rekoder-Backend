@@ -19,6 +19,7 @@ import ru.hse.rekoder.services.TeamService;
 import javax.json.JsonMergePatch;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -116,6 +117,9 @@ public class FolderController {
     public ResponseEntity<?> deleteFolder(@PathVariable int folderId,
                                           Authentication authentication) {
         checkAccess(folderId, authentication.getName());
+        if (Objects.isNull(folderService.getFolder(folderId).getParentFolderId())) {
+            throw new FolderException("The root folder cannot be deleted");
+        }
         folderService.deleteFolder(folderId);
         return ResponseEntity.noContent().build();
     }

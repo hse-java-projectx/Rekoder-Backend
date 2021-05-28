@@ -42,6 +42,10 @@ public class ProblemServiceImpl implements ProblemService {
         submission.setProblemId(problemId);
         submission.setAuthorId(author);
         submission = submissionRepository.save(submission);
+        if (!problemRepository.existsById(problemId)) {
+            submissionRepository.deleteById(submission.getId());
+            throw new ProblemNotFoundException(problemId);
+        }
         return submission;
     }
 

@@ -46,6 +46,13 @@ public class FolderServiceImpl implements FolderService {
     }
 
     @Override
+    public Folder createRootFolder(Folder folder) {
+        folder.setId(null);
+        folder.setParentFolderId(null);
+        return folderRepository.save(folder);
+    }
+
+    @Override
     public Folder updateFolder(Folder folder) {
         if (Objects.isNull(folder.getId())) {
             throw new FolderException("Folder must have an id");
@@ -115,9 +122,6 @@ public class FolderServiceImpl implements FolderService {
     public void deleteFolder(int folderId) {
         Folder folder = folderRepository.findById(folderId)
                 .orElseThrow(() -> new FolderNotFoundException(folderId));
-        if (Objects.isNull(folder.getParentFolderId())) {
-            throw new FolderException("The root folder cannot be deleted");
-        }
         List<Integer> folderIdsToDelete = List.of(folderId);
         while (!folderIdsToDelete.isEmpty()) {
             folderRepository.deleteByIdIn(folderIdsToDelete);

@@ -3,6 +3,7 @@ package ru.hse.rekoder.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
@@ -18,6 +19,7 @@ import java.util.Set;
 @Setter
 @Document(collection = "teams")
 public class Team extends ContentGenerator {
+    @Indexed(unique = true)
     @JsonProperty("id")
     @NotNull(message = "Id must not be null")
     @Size(min = 1, max = 100, message = "1 <= id length <= 100")
