@@ -7,7 +7,6 @@ import ru.hse.rekoder.exceptions.UserConflictException;
 import ru.hse.rekoder.exceptions.UserException;
 import ru.hse.rekoder.exceptions.UserNotFoundException;
 import ru.hse.rekoder.model.*;
-import ru.hse.rekoder.repositories.ProblemRepository;
 import ru.hse.rekoder.repositories.UserRepository;
 
 import java.util.Date;
@@ -17,16 +16,15 @@ import java.util.Objects;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final ProblemRepository problemRepository;
+    private final ProblemService problemService;
     private final FolderService folderService;
     private final PasswordEncoder passwordEncoder;
 
     public UserServiceImpl(UserRepository userRepository,
-                           ProblemRepository problemRepository,
-                           FolderService folderService,
+                           ProblemService problemService, FolderService folderService,
                            PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.problemRepository = problemRepository;
+        this.problemService = problemService;
         this.folderService = folderService;
         this.passwordEncoder = passwordEncoder;
     }
@@ -40,15 +38,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Problem> getProblems(String userName) {
         checkExistenceOfUser(userName);
-        return problemRepository.findAllByOwner(Owner.userWithId(userName));
+        return problemService.getAllProblemsOfOwner(Owner.userWithId(userName));
     }
 
     @Override
     public Problem createProblem(String userName, Problem problem) {
         checkExistenceOfUser(userName);
         problem.setOwner(Owner.userWithId(userName));
-        problem = problemRepository.save(problem);
-        return problem;
+        return problemService.createProblem(problem);
+    }
+
+    @Override
+    public Problem cloneProblem(String cloneOwner, int originalProblemId) {
+        checkExistenceOfUser(cloneOwner);
+        return problemService.cloneProblem(Owner.userWithId(cloneOwner), originalProblemId);
     }
 
     @Override

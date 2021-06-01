@@ -20,4 +20,5 @@ public interface TeamService {
 
     List<Problem> getAllProblems(String teamName);
     Problem createProblem(String teamName, Problem problem);
+    Problem cloneProblem(String ownerOfProblemClone, int originalProblemId);
 }

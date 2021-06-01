@@ -1,8 +1,10 @@
 package ru.hse.rekoder.services;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import ru.hse.rekoder.exceptions.ProblemException;
 import ru.hse.rekoder.exceptions.ProblemNotFoundException;
+import ru.hse.rekoder.model.Owner;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.Submission;
 import ru.hse.rekoder.repositories.ProblemRepository;
@@ -56,6 +58,33 @@ public class ProblemServiceImpl implements ProblemService {
         }
         return problemRepository.update(problem, problem.getId())
                 .orElseThrow(() -> new ProblemNotFoundException(problem.getId()));
+    }
+
+    @Override
+    public Problem createProblem(Problem problem) {
+        problem.setId(null);
+        return problemRepository.save(problem);
+    }
+
+    @Override
+    public Problem cloneProblem(Owner ownerOfProblemClone, int originalProblemId) {
+        Problem originalProblem = problemRepository.findById(originalProblemId)
+                .orElseThrow(() -> new ProblemNotFoundException(originalProblemId));
+        Problem problemClone = new Problem();
+        BeanUtils.copyProperties(originalProblem, problemClone);
+        problemClone.setId(null);
+        problemClone.setOwner(ownerOfProblemClone);
+        if (Objects.isNull(originalProblem.getOriginalProblemId())) {
+            problemClone.setOriginalProblemId(originalProblemId);
+        } else {
+            problemClone.setOriginalProblemId(originalProblem.getOriginalProblemId());
+        }
+        return problemRepository.save(problemClone);
+    }
+
+    @Override
+    public List<Problem> getAllProblemsOfOwner(Owner owner) {
+        return problemRepository.findAllByOwner(owner);
     }
 
     @Override

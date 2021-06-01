@@ -7,7 +7,6 @@ import ru.hse.rekoder.exceptions.TeamException;
 import ru.hse.rekoder.exceptions.TeamNotFoundException;
 import ru.hse.rekoder.exceptions.UserNotFoundException;
 import ru.hse.rekoder.model.*;
-import ru.hse.rekoder.repositories.ProblemRepository;
 import ru.hse.rekoder.repositories.TeamRepository;
 import ru.hse.rekoder.repositories.UserRepository;
 
@@ -18,18 +17,18 @@ import java.util.Objects;
 @Service
 public class TeamServiceImpl implements TeamService {
     private final TeamRepository teamRepository;
-    private final ProblemRepository problemRepository;
     private final UserRepository userRepository;
     private final FolderService folderService;
+    private final ProblemService problemService;
 
     public TeamServiceImpl(TeamRepository teamRepository,
-                           ProblemRepository problemRepository,
                            UserRepository userRepository,
-                           FolderService folderService) {
+                           FolderService folderService,
+                           ProblemService problemService) {
         this.teamRepository = teamRepository;
-        this.problemRepository = problemRepository;
         this.userRepository = userRepository;
         this.folderService = folderService;
+        this.problemService = problemService;
     }
 
     @Override
@@ -105,15 +104,20 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public List<Problem> getAllProblems(String teamId) {
         checkExistenceOfTeam(teamId);
-        return problemRepository.findAllByOwner(Owner.teamWithId(teamId));
+        return problemService.getAllProblemsOfOwner(Owner.teamWithId(teamId));
     }
 
     @Override
     public Problem createProblem(String teamId, Problem problem) {
         checkExistenceOfTeam(teamId);
         problem.setOwner(Owner.teamWithId(teamId));
-        problem = problemRepository.save(problem);
-        return problem;
+        return problemService.createProblem(problem);
+    }
+
+    @Override
+    public Problem cloneProblem(String ownerOfProblemClone, int originalProblemId) {
+        checkExistenceOfTeam(ownerOfProblemClone);
+        return problemService.cloneProblem(Owner.teamWithId(ownerOfProblemClone), originalProblemId);
     }
 
     private void checkExistenceOfTeam(String teamId) {

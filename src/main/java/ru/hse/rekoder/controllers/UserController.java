@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.hse.rekoder.model.Owner;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.User;
+import ru.hse.rekoder.requests.ProblemIdWrap;
 import ru.hse.rekoder.requests.ProblemRequest;
 import ru.hse.rekoder.requests.UserRequest;
 import ru.hse.rekoder.responses.ProblemResponse;
@@ -85,6 +86,19 @@ public class UserController {
         BeanUtils.copyProperties(problemRequest, problem);
         Problem createdProblem = userService.createProblem(userId, problem);
         return ResponseEntity.ok(new ProblemResponse(createdProblem));
+    }
+
+    @PostMapping("/{userId}/problems/clone")
+    public ResponseEntity<ProblemResponse> cloneProblem(@PathVariable String userId,
+                                                        @Valid @RequestBody ProblemIdWrap originalProblem,
+                                                        Authentication authentication) {
+        accessChecker.checkAccessToResourceWithOwner(
+                Owner.userWithId(userId),
+                Owner.userWithId(authentication.getName())
+        );
+
+        Problem problemClone = userService.cloneProblem(userId, originalProblem.getProblemId());
+        return ResponseEntity.ok(new ProblemResponse(problemClone));
     }
 
     @PatchMapping(path = "/{userId}", consumes = "application/merge-patch+json")

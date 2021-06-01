@@ -38,10 +38,17 @@ public class FolderServiceImpl implements FolderService {
         folder.setOwner(parentFolder.getOwner());
         folder.setId(null);
         folder = folderRepository.save(folder);
+
+        Optional<Integer> optionalFolderDepth = getLengthOfPathToRootFrom(folder);
         if (getLengthOfPathToRootFrom(folder).filter(depth -> depth <= Folder.MAX_DEPTH).isEmpty()) {
             deleteFolder(folder.getId());
-            throw new FolderNotFoundException(parentFolderId);
+            if (optionalFolderDepth.isEmpty()) {
+                throw new FolderNotFoundException(parentFolderId);
+            } else {
+                throw new FolderException("The maximum folder depth is 25, and here " + optionalFolderDepth.get());
+            }
         }
+
         return folder;
     }
 

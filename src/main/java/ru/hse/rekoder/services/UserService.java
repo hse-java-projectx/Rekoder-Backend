@@ -12,4 +12,5 @@ public interface UserService {
 
     List<Problem> getProblems(String userName);
     Problem createProblem(String userName, Problem problem);
+    Problem cloneProblem(String cloneOwner, int originalProblemId);
 }

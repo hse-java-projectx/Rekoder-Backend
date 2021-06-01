@@ -8,6 +8,7 @@ import ru.hse.rekoder.exceptions.TeamException;
 import ru.hse.rekoder.model.Owner;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.Team;
+import ru.hse.rekoder.requests.ProblemIdWrap;
 import ru.hse.rekoder.requests.ProblemRequest;
 import ru.hse.rekoder.requests.TeamMemberWrap;
 import ru.hse.rekoder.requests.TeamRequest;
@@ -108,6 +109,18 @@ public class TeamController {
         BeanUtils.copyProperties(problemRequest, problem);
         Problem createdProblem = teamService.createProblem(teamId, problem);
         return ResponseEntity.ok(new ProblemResponse(createdProblem));
+    }
+
+    @PostMapping("/{teamId}/problems/clone")
+    public ResponseEntity<ProblemResponse> cloneProblem(@PathVariable String teamId,
+                                                        @Valid @RequestBody ProblemIdWrap originalProblem,
+                                                        Authentication authentication) {
+        accessChecker.checkAccessToResourceWithOwner(
+                Owner.teamWithId(teamId),
+                Owner.userWithId(authentication.getName())
+        );
+        Problem problemClone = teamService.cloneProblem(teamId, originalProblem.getProblemId());
+        return ResponseEntity.ok(new ProblemResponse(problemClone));
     }
 
     @PatchMapping(path = "/{teamId}", consumes = "application/merge-patch+json")
