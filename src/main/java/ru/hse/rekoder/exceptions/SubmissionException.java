@@ -1,10 +1,6 @@
 package ru.hse.rekoder.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-@ResponseStatus(HttpStatus.BAD_REQUEST)
-public class SubmissionException extends  RuntimeException {
+public class SubmissionException extends RuntimeException implements ApiError {
     public SubmissionException() {
         super();
     }
@@ -16,5 +12,10 @@ public class SubmissionException extends  RuntimeException {
     }
     public SubmissionException(Throwable cause) {
         super(cause);
+    }
+
+    @Override
+    public String getErrorType() {
+        return "submission-error";
     }
 }

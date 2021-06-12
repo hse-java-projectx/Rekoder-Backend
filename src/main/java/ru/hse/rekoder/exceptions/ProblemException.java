@@ -1,10 +1,6 @@
 package ru.hse.rekoder.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-@ResponseStatus(HttpStatus.BAD_REQUEST)
-public class ProblemException extends RuntimeException {
+public class ProblemException extends RuntimeException implements ApiError {
     public ProblemException() {
         super();
     }
@@ -16,5 +12,10 @@ public class ProblemException extends RuntimeException {
     }
     public ProblemException(Throwable cause) {
         super(cause);
+    }
+
+    @Override
+    public String getErrorType() {
+        return "problem-error";
     }
 }

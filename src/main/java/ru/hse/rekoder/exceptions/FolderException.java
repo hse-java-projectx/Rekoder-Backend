@@ -1,10 +1,6 @@
 package ru.hse.rekoder.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-@ResponseStatus(HttpStatus.BAD_REQUEST)
-public class FolderException extends RuntimeException {
+public class FolderException extends RuntimeException implements ApiError {
     public FolderException() {
         super();
     }
@@ -16,5 +12,10 @@ public class FolderException extends RuntimeException {
     }
     public FolderException(Throwable cause) {
         super(cause);
+    }
+
+    @Override
+    public String getErrorType() {
+        return "folder-error";
     }
 }

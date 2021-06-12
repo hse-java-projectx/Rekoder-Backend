@@ -1,10 +1,6 @@
 package ru.hse.rekoder.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-@ResponseStatus(HttpStatus.BAD_REQUEST)
-public class UserException extends RuntimeException {
+public class UserException extends RuntimeException implements ApiError {
     public UserException() {
         super();
     }
@@ -16,5 +12,10 @@ public class UserException extends RuntimeException {
     }
     public UserException(Throwable cause) {
         super(cause);
+    }
+
+    @Override
+    public String getErrorType() {
+        return "user-error";
     }
 }
