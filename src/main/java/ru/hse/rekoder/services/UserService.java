@@ -10,6 +10,8 @@ public interface UserService {
     User createUser(User user);
     User updateUser(User user);
 
+    void changePassword(String username, String password);
+
     List<Problem> getProblems(String userName);
     Problem createProblem(String userName, Problem problem);
     Problem cloneProblem(String cloneOwner, int originalProblemId);

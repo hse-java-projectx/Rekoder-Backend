@@ -7,6 +7,7 @@ import ru.hse.rekoder.exceptions.UserConflictException;
 import ru.hse.rekoder.exceptions.UserException;
 import ru.hse.rekoder.exceptions.UserNotFoundException;
 import ru.hse.rekoder.model.*;
+import ru.hse.rekoder.repositories.PasswordRepository;
 import ru.hse.rekoder.repositories.UserRepository;
 
 import java.util.Date;
@@ -19,14 +20,18 @@ public class UserServiceImpl implements UserService {
     private final ProblemService problemService;
     private final FolderService folderService;
     private final PasswordEncoder passwordEncoder;
+    private final PasswordRepository passwordRepository;
 
     public UserServiceImpl(UserRepository userRepository,
-                           ProblemService problemService, FolderService folderService,
-                           PasswordEncoder passwordEncoder) {
+                           ProblemService problemService,
+                           FolderService folderService,
+                           PasswordEncoder passwordEncoder,
+                           PasswordRepository passwordRepository) {
         this.userRepository = userRepository;
         this.problemService = problemService;
         this.folderService = folderService;
         this.passwordEncoder = passwordEncoder;
+        this.passwordRepository = passwordRepository;
     }
 
     @Override
@@ -60,7 +65,10 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByUsername(user.getUsername())) {
             throw new UserConflictException(user.getUsername());
         }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        user.getPassword().setStringPassword(passwordEncoder.encode(user.getPassword().getStringPassword()));
+        user.getPassword().setId(null);
+        user.setPassword(passwordRepository.save(user.getPassword()));
 
         Folder rootFolder = new Folder();
         rootFolder.setOwner(Owner.userWithId(user.getUsername()));
@@ -83,6 +91,13 @@ public class UserServiceImpl implements UserService {
         }
         return userRepository.update(user, user.getId())
                 .orElseThrow(() -> new UserNotFoundException(user.getUsername()));
+    }
+
+    @Override
+    public void changePassword(String username, String password) {
+        Password userPassword = getUser(username).getPassword();
+        userPassword.setStringPassword(passwordEncoder.encode(password));
+        passwordRepository.save(userPassword);
     }
 
     private void checkExistenceOfUser(String username) {

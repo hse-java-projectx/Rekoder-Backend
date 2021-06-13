@@ -5,10 +5,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import ru.hse.rekoder.model.Owner;
+import ru.hse.rekoder.model.Password;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.User;
 import ru.hse.rekoder.requests.ProblemIdWrap;
 import ru.hse.rekoder.requests.ProblemRequest;
+import ru.hse.rekoder.requests.UserPatchRequest;
 import ru.hse.rekoder.requests.UserRequest;
 import ru.hse.rekoder.responses.ProblemResponse;
 import ru.hse.rekoder.responses.TeamResponse;
@@ -48,13 +50,17 @@ public class UserController {
     }
 
     @PostMapping()
-    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody User user) {
+    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest userRequest) {
+        Password password = new Password();
+        password.setStringPassword(userRequest.getPassword());
+        User user = new User();
+        user.setUsername(userRequest.getId());
+        user.setPassword(password);
+        user.setBio(userRequest.getBio());
+        user.setName(userRequest.getName());
+        user.setContacts(userRequest.getContacts());
         User createdUser = userService.createUser(user);
-        if (createdUser == null) {
-            return ResponseEntity.badRequest().build();
-        } else {
-            return ResponseEntity.ok(new UserResponse(createdUser));
-        }
+        return ResponseEntity.ok(new UserResponse(createdUser));
     }
 
     @GetMapping("/{userId}/teams")
@@ -112,17 +118,17 @@ public class UserController {
 
         User user = userService.getUser(userId);
         BeanUtils.copyProperties(
-                jsonMergePatchService.mergePatch(jsonMergePatch, convertToRequest(user), UserRequest.class),
+                jsonMergePatchService.mergePatch(jsonMergePatch, convertToRequest(user), UserPatchRequest.class),
                 user);
         User updatedUser = userService.updateUser(user);
         return ResponseEntity.ok(new UserResponse(updatedUser));
     }
 
-    private UserRequest convertToRequest(User user) {
-        UserRequest userRequest = new UserRequest();
-        userRequest.setBio(user.getBio());
-        userRequest.setName(user.getName());
-        userRequest.setContacts(user.getContacts());
-        return userRequest;
+    private UserPatchRequest convertToRequest(User user) {
+        UserPatchRequest userPatchRequest = new UserPatchRequest();
+        userPatchRequest.setBio(user.getBio());
+        userPatchRequest.setName(user.getName());
+        userPatchRequest.setContacts(user.getContacts());
+        return userPatchRequest;
     }
 }

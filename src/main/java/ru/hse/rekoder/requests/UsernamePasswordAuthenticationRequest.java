@@ -8,8 +8,8 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 public class UsernamePasswordAuthenticationRequest {
-    @NotNull
+    @NotNull(message = "An id must not be null")
     private String id;
-    @NotNull
+    @NotNull(message = "A password must not be null")
     private String password;
 }
