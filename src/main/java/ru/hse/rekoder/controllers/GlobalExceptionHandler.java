@@ -125,4 +125,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorsResponse(List.of(error)));
     }
+
+    @ExceptionHandler({AccessDeniedException.class})
+    public ResponseEntity<ErrorsResponse> handleAccessDeniedException(AccessDeniedException ex) {
+        SingleErrorResponse error = new SingleErrorResponse(
+            "access-denied",
+            ex.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorsResponse(List.of(error)));
+    }
 }
