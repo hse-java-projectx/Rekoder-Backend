@@ -1,5 +1,7 @@
 package ru.hse.rekoder.services;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import ru.hse.rekoder.model.Folder;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.Team;
@@ -18,7 +20,7 @@ public interface TeamService {
     boolean addExistingUserToTeam(String teamName, String userName);
     boolean deleteUserFromTeam(String teamName, String userName);
 
-    List<Problem> getAllProblems(String teamName);
+    Page<Problem> getAllProblems(String teamName, Pageable pageable);
     Problem createProblem(String teamName, Problem problem);
     Problem cloneProblem(String ownerOfProblemClone, int originalProblemId);
 }

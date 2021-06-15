@@ -3,6 +3,7 @@ package ru.hse.rekoder.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -19,6 +20,9 @@ import java.util.Set;
 @Setter
 @Document(collection = "teams")
 public class Team extends ContentGenerator {
+    @Transient
+    public static final int MAX_MEMBERS_NUMBER = 500;
+
     @Indexed(unique = true)
     @JsonProperty("id")
     @NotNull(message = "Id must not be null")

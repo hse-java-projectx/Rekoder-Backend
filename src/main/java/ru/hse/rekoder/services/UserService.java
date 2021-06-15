@@ -1,5 +1,7 @@
 package ru.hse.rekoder.services;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.User;
 
@@ -12,7 +14,7 @@ public interface UserService {
 
     void changePassword(String username, String password);
 
-    List<Problem> getProblems(String userName);
+    Page<Problem> getProblems(String userName, Pageable pageable);
     Problem createProblem(String userName, Problem problem);
     Problem cloneProblem(String cloneOwner, int originalProblemId);
 }

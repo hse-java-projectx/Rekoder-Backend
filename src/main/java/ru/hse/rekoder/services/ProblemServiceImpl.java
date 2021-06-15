@@ -1,6 +1,7 @@
 package ru.hse.rekoder.services;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import ru.hse.rekoder.exceptions.ProblemException;
 import ru.hse.rekoder.exceptions.ProblemNotFoundException;
@@ -10,8 +11,8 @@ import ru.hse.rekoder.model.Submission;
 import ru.hse.rekoder.repositories.ProblemRepository;
 import ru.hse.rekoder.repositories.SubmissionRepository;
 
+import org.springframework.data.domain.Pageable;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -32,9 +33,9 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public List<Submission> getAllSubmissions(int problemId) {
+    public Page<Submission> getAllSubmissions(int problemId, Pageable pageable) {
         checkExistenceOfProblem(problemId);
-        return submissionRepository.findAllByProblemId(problemId);
+        return submissionRepository.findAllByProblemId(problemId, pageable);
     }
 
     @Override
@@ -83,8 +84,8 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
-    public List<Problem> getAllProblemsOfOwner(Owner owner) {
-        return problemRepository.findAllByOwner(owner);
+    public Page<Problem> getAllProblemsOfOwner(Owner owner, Pageable pageable) {
+        return problemRepository.findAllByOwner(owner, pageable);
     }
 
     @Override

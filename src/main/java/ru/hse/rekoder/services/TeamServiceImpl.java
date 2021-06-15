@@ -1,6 +1,8 @@
 package ru.hse.rekoder.services;
 
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.hse.rekoder.exceptions.TeamConflictException;
 import ru.hse.rekoder.exceptions.TeamException;
@@ -88,6 +90,10 @@ public class TeamServiceImpl implements TeamService {
         if (!userRepository.existsByUsername(username)) {
             throw new UserNotFoundException(username);
         }
+        if (getTeam(teamId).getMemberIds().size() > Team.MAX_MEMBERS_NUMBER) {
+            throw new TeamException("Too many members in the team. " +
+                    "The number of people in the team should not exceed " + Team.MAX_MEMBERS_NUMBER);
+        }
         return teamRepository.addUserToTeamById(teamId, username)
                 .orElseThrow(() -> new TeamNotFoundException(teamId));
     }
@@ -102,9 +108,9 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public List<Problem> getAllProblems(String teamId) {
+    public Page<Problem> getAllProblems(String teamId, Pageable pageable) {
         checkExistenceOfTeam(teamId);
-        return problemService.getAllProblemsOfOwner(Owner.teamWithId(teamId));
+        return problemService.getAllProblemsOfOwner(Owner.teamWithId(teamId), pageable);
     }
 
     @Override

@@ -1,6 +1,8 @@
 package ru.hse.rekoder.services;
 
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.hse.rekoder.exceptions.UserConflictException;
@@ -41,9 +43,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<Problem> getProblems(String userName) {
+    public Page<Problem> getProblems(String userName, Pageable pageable) {
         checkExistenceOfUser(userName);
-        return problemService.getAllProblemsOfOwner(Owner.userWithId(userName));
+        return problemService.getAllProblemsOfOwner(Owner.userWithId(userName), pageable);
     }
 
     @Override

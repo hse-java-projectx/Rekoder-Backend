@@ -1,10 +1,12 @@
 package ru.hse.rekoder.controllers;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.hse.rekoder.exceptions.AccessDeniedException;
 import ru.hse.rekoder.model.Owner;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.Submission;
@@ -14,15 +16,17 @@ import ru.hse.rekoder.responses.ProblemResponse;
 import ru.hse.rekoder.responses.SubmissionResponse;
 import ru.hse.rekoder.services.JsonMergePatchService;
 import ru.hse.rekoder.services.ProblemService;
-import ru.hse.rekoder.services.TeamService;
 
 import javax.json.JsonMergePatch;
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/problems")
+@Validated
 public class ProblemController {
     private final ProblemService problemService;
     private final JsonMergePatchService jsonMergePatchService;
@@ -30,7 +34,6 @@ public class ProblemController {
 
     public ProblemController(ProblemService problemService,
                              JsonMergePatchService jsonMergePatchService,
-                             TeamService teamService,
                              AccessChecker accessChecker) {
         this.problemService = problemService;
         this.jsonMergePatchService = jsonMergePatchService;
@@ -44,9 +47,18 @@ public class ProblemController {
     }
 
     @GetMapping("/{problemId}/submissions")
-    public ResponseEntity<List<SubmissionResponse>> getSubmissions(@PathVariable int problemId) {
-        return ResponseEntity.ok(problemService.getAllSubmissions(problemId)
+    public ResponseEntity<List<SubmissionResponse>> getSubmissions(
+            @RequestParam(required = false) Integer from,
+            @Positive(message = "The size must be greater than 0") @RequestParam(required = false) Integer size,
+            @RequestParam(required = false, defaultValue = "ASC") Sort.Direction direction,
+            @PathVariable int problemId) {
+        return ResponseEntity.ok(problemService.getAllSubmissions(
+                problemId,
+                PageRequest.of(0, Integer.MAX_VALUE, direction, "id")
+        )
                 .stream()
+                .dropWhile(submission -> Objects.nonNull(from) && !submission.getId().equals(from))
+                .limit(Objects.requireNonNullElse(size, Integer.MAX_VALUE))
                 .map(SubmissionResponse::new)
                 .collect(Collectors.toList()));
     }

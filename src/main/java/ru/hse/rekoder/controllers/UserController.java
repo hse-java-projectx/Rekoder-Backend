@@ -1,8 +1,11 @@
 package ru.hse.rekoder.controllers;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.hse.rekoder.model.Owner;
 import ru.hse.rekoder.model.Password;
@@ -21,11 +24,14 @@ import ru.hse.rekoder.services.UserService;
 
 import javax.json.JsonMergePatch;
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
+@Validated
 public class UserController {
     private final UserService userService;
     private final TeamService teamService;
@@ -73,9 +79,17 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/problems")
-    public ResponseEntity<List<ProblemResponse>> getProblems(@PathVariable String userId) {
-        return ResponseEntity.ok(userService.getProblems(userId)
+    public ResponseEntity<List<ProblemResponse>> getProblems(
+            @RequestParam(required = false) Integer from,
+            @Positive(message = "The size must be greater than 0") @RequestParam(required = false) Integer size,
+            @RequestParam(required = false, defaultValue = "ASC") Sort.Direction direction,
+            @PathVariable String userId) {
+        return ResponseEntity.ok(userService.getProblems(
+                userId, PageRequest.of(0, Integer.MAX_VALUE, direction, "id")
+        )
                 .stream()
+                .dropWhile(problem -> Objects.nonNull(from) && !problem.getId().equals(from))
+                .limit(Objects.requireNonNullElse(size, Integer.MAX_VALUE))
                 .map(ProblemResponse::new)
                 .collect(Collectors.toList()));
     }
