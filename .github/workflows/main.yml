@@ -24,11 +24,26 @@ jobs:
     steps:      
       - name: Checkout
         uses: actions/checkout@v2
-        
+
+      - name: Set database user
+        env:
+           SECRETS_USER: ${{ secrets.DATABASE_USER }}
+        run: echo -e "database.user=$SECRETS_USER\n" | cat >> ./src/main/resources/application.properties
+
       - name: Set database password
         env:
           SECRETS_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-        run: echo -e "database_password=$SECRETS_PASSWORD\n" | cat >> ./src/main/resources/application.properties
+        run: echo -e "database.password=$SECRETS_PASSWORD\n" | cat >> ./src/main/resources/application.properties
+
+      - name: Set database name
+        env:
+          SECRETS_DB_NAME: ${{ secrets.DATABASE_NAME }}
+        run: echo -e "database.database_name=$SECRETS_DB_NAME\n" | cat >> ./src/main/resources/application.properties
+
+      - name: Set database host
+        env:
+          SECRETS_DB_HOST: ${{ secrets.DATABASE_HOST }}
+        run: echo -e "database.host=$SECRETS_DB_HOST\n" | cat >> ./src/main/resources/application.properties
 
       - name: Set secret key for JWT
         env:
