@@ -2,6 +2,7 @@ package ru.hse.rekoder.repositories.mongodb;
 
 import com.mongodb.MongoClientSettings;
 import com.mongodb.ServerAddress;
+import com.mongodb.WriteConcern;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.MongoCredential;
@@ -13,31 +14,34 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 
 
+import javax.validation.Valid;
 import java.util.Collections;
 
 @Configuration
 @PropertySource("classpath:application.properties")
 @EnableMongoRepositories(basePackages = "ru.hse.rekoder.repositories")
 public class MongoConfiguration extends AbstractMongoClientConfiguration {
-    @Value("${database_password}")
-    private String password;
-    private final String databaseName = "admin";
+    private final String user;
+    private final String password;
+    private final String databaseName;
+    private final String host;
+
+    public MongoConfiguration(@Value("${database.user}") String user,
+                              @Value("${database.password}") String password,
+                              @Value("${database.database_name}") String databaseName,
+                              @Value("${database.host}") String host) {
+        this.user = user;
+        this.password = password;
+        this.databaseName = databaseName;
+        this.host = host;
+    }
 
     @Override
     public MongoClient mongoClient() {
-        String user = "root"; // the user name
-        char[] password = this.password.toCharArray(); // the password as a character array
-
-        MongoCredential credential = MongoCredential.createCredential(user, databaseName, password);
-
-        MongoClientSettings settings = MongoClientSettings.builder()
-                .credential(credential)
-                .applyToSslSettings(builder -> builder.enabled(false))
-                .applyToClusterSettings(builder ->
-                        builder.hosts(Collections.singletonList(new ServerAddress("34.89.122.71", 27017))))
-                .build();
-
-        return MongoClients.create(settings);
+        MongoClient mongoClient = MongoClients.create(
+                "mongodb+srv://"+ user + ":" + password +
+                        "@" + host + "?retryWrites=true&w=majority");
+        return mongoClient;
     }
 
     @Override
