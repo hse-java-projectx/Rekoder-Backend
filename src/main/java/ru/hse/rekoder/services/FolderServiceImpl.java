@@ -1,5 +1,6 @@
 package ru.hse.rekoder.services;
 
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 import ru.hse.rekoder.exceptions.*;
 import ru.hse.rekoder.model.Folder;
@@ -14,11 +15,14 @@ import java.util.stream.Collectors;
 public class FolderServiceImpl implements FolderService {
     private final FolderRepository folderRepository;
     private final ProblemRepository problemRepository;
+    private final TaskExecutor taskExecutor;
 
     public FolderServiceImpl(FolderRepository folderRepository,
-                             ProblemRepository problemRepository) {
+                             ProblemRepository problemRepository,
+                             TaskExecutor taskExecutor) {
         this.folderRepository = folderRepository;
         this.problemRepository = problemRepository;
+        this.taskExecutor = taskExecutor;
     }
 
     @Override
@@ -79,13 +83,11 @@ public class FolderServiceImpl implements FolderService {
     @Override
     public List<Folder> getPathToRootFrom(int folderId) {
         List<Folder> pathToRoot = new ArrayList<>();
-        Folder currentFolder = folderRepository.findById(folderId)
-                .orElseThrow(() -> new FolderNotFoundException(folderId));
+        Folder currentFolder = getFolder(folderId);
         pathToRoot.add(currentFolder);
         while (Objects.nonNull(currentFolder.getParentFolderId())) {
             final int parentFolderId = currentFolder.getParentFolderId();
-            currentFolder = folderRepository.findById(parentFolderId)
-                    .orElseThrow(() -> new FolderNotFoundException(parentFolderId));
+            currentFolder = getFolder(parentFolderId);
             pathToRoot.add(currentFolder);
         }
         Collections.reverse(pathToRoot);
@@ -102,8 +104,7 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     public List<Problem> getProblemsFromFolder(int folderId) {
-        Folder folder = folderRepository.findById(folderId)
-                .orElseThrow(() -> new FolderNotFoundException(folderId));
+        Folder folder = getFolder(folderId);
         return problemRepository.findAllById(folder.getProblemIds());
     }
 
@@ -112,23 +113,40 @@ public class FolderServiceImpl implements FolderService {
         if (!problemRepository.existsById(problemId)) {
             throw new ProblemNotFoundException(problemId);
         }
-        return folderRepository.addProblemToFolderById(folderId, problemId)
+        Folder oldFolder = folderRepository.addProblemToFolderById(folderId, problemId)
                 .orElseThrow(() -> new FolderNotFoundException(folderId));
+        boolean result = !oldFolder.getProblemIds().contains(problemId);
+
+        taskExecutor.execute(() -> {
+            List<Integer> existingProblemsFromFolder = problemRepository.findAllById(oldFolder.getProblemIds())
+                    .stream()
+                    .map(Problem::getId)
+                    .collect(Collectors.toList());
+            existingProblemsFromFolder.forEach(oldFolder.getProblemIds()::remove);
+            for (Integer nonExistingProblemId : oldFolder.getProblemIds()) {
+                try {
+                    deleteProblemFromFolder(folderId, nonExistingProblemId);
+                } catch (FolderNotFoundException ignored) {
+                    return;
+                }
+            }
+        });
+
+        return result;
     }
 
     @Override
     public boolean deleteProblemFromFolder(int folderId, int problemId) {
-        if (!problemRepository.existsById(problemId)) {
-            throw new ProblemNotFoundException(problemId);
-        }
-        return folderRepository.deleteProblemToFolderById(folderId, problemId)
+        Folder oldFolder = folderRepository.deleteProblemToFolderById(folderId, problemId)
                 .orElseThrow(() -> new FolderNotFoundException(folderId));
+        return oldFolder.getProblemIds().contains(problemId);
     }
 
     @Override
     public void deleteFolder(int folderId) {
-        Folder folder = folderRepository.findById(folderId)
-                .orElseThrow(() -> new FolderNotFoundException(folderId));
+        if (!folderRepository.existsById(folderId)) {
+            throw new FolderNotFoundException(folderId);
+        }
         List<Integer> folderIdsToDelete = List.of(folderId);
         while (!folderIdsToDelete.isEmpty()) {
             folderRepository.deleteByIdIn(folderIdsToDelete);

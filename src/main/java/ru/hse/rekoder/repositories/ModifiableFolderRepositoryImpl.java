@@ -18,7 +18,7 @@ public class ModifiableFolderRepositoryImpl implements ModifiableFolderRepositor
     }
 
     @Override
-    public Optional<Boolean> addProblemToFolderById(int folderId, int problemId) {
+    public Optional<Folder> addProblemToFolderById(int folderId, int problemId) {
         Query folderById = Query.query(Criteria.where("_id").is(folderId));
         Update update = new Update();
         update.addToSet("problemIds", problemId);
@@ -26,11 +26,11 @@ public class ModifiableFolderRepositoryImpl implements ModifiableFolderRepositor
                 update,
                 FindAndModifyOptions.options().returnNew(false),
                 Folder.class);
-        return Optional.ofNullable(oldFolder).map((folder) -> !folder.getProblemIds().contains(problemId));
+        return Optional.ofNullable(oldFolder);
     }
 
     @Override
-    public Optional<Boolean> deleteProblemToFolderById(int folderId, int problemId) {
+    public Optional<Folder> deleteProblemToFolderById(int folderId, int problemId) {
         Query folderById = Query.query(Criteria.where("_id").is(folderId));
         Update update = new Update();
         update.pull("problemIds", problemId);
@@ -38,7 +38,7 @@ public class ModifiableFolderRepositoryImpl implements ModifiableFolderRepositor
                 update,
                 FindAndModifyOptions.options().returnNew(false),
                 Folder.class);
-        return Optional.ofNullable(oldFolder).map((folder) -> folder.getProblemIds().contains(problemId));
+        return Optional.ofNullable(oldFolder);
 
     }
 }

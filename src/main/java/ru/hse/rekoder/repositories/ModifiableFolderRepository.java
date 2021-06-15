@@ -1,8 +1,10 @@
 package ru.hse.rekoder.repositories;
 
+import ru.hse.rekoder.model.Folder;
+
 import java.util.Optional;
 
 public interface ModifiableFolderRepository {
-    Optional<Boolean> addProblemToFolderById(int folderId, int problemId);
-    Optional<Boolean> deleteProblemToFolderById(int folderId, int problemId);
+    Optional<Folder> addProblemToFolderById(int folderId, int problemId);
+    Optional<Folder> deleteProblemToFolderById(int folderId, int problemId);
 }
