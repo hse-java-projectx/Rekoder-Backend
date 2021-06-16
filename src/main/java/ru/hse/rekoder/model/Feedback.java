@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 public class Feedback {
     @NotNull(message = "The verdict cannot be null")
     private String verdict;
+    private boolean isSuccessful = false;
     private String comment;
     private String timeConsumed;
     private String memoryConsumed;
