@@ -8,8 +8,8 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 public class Test {
-    @NotNull(message = "Specify input data")
+    @NotNull(message = "The input data cannot be null")
     private String input;
-    @NotNull(message = "Specify output data")
+    @NotNull(message = "The input data cannot be null")
     private String output;
 }

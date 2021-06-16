@@ -89,7 +89,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUser(User user) {
         if (Objects.isNull(user.getId())) {
-            throw new UserException("User must have an id");
+            throw new UserException("The user must have an id");
         }
         return userRepository.update(user, user.getId())
                 .orElseThrow(() -> new UserNotFoundException(user.getUsername()));

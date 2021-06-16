@@ -101,7 +101,7 @@ public class FolderController {
         );
         boolean isNewProblemForFolder = folderService.addProblemToFolder(folderId, problemToAdd.getProblemId());
         if (!isNewProblemForFolder) {
-            throw new FolderException("Problem " + problemToAdd.getProblemId() + " is already in the folder " + folderId);
+            throw new FolderException("The problem " + problemToAdd.getProblemId() + " is already in the folder " + folderId);
         }
         return ResponseEntity.noContent().build();
     }
@@ -115,7 +115,7 @@ public class FolderController {
         );
         boolean problemWasInFolder = folderService.deleteProblemFromFolder(folderId, problemId);
         if (!problemWasInFolder) {
-            throw new FolderException("There is not problem " + problemId + " in the folder " + folderId);
+            throw new FolderException("There is not the problem " + problemId + " in the folder " + folderId);
         }
         return ResponseEntity.noContent().build();
     }

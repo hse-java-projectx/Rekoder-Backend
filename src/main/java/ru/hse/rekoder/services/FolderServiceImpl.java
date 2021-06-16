@@ -49,7 +49,7 @@ public class FolderServiceImpl implements FolderService {
             if (optionalFolderDepth.isEmpty()) {
                 throw new FolderNotFoundException(parentFolderId);
             } else {
-                throw new FolderException("The maximum folder depth is 25, and here " + optionalFolderDepth.get());
+                throw new FolderException("The maximum folder depth is 25, but here " + optionalFolderDepth.get());
             }
         }
 
@@ -66,7 +66,7 @@ public class FolderServiceImpl implements FolderService {
     @Override
     public Folder updateFolder(Folder folder) {
         if (Objects.isNull(folder.getId())) {
-            throw new FolderException("Folder must have an id");
+            throw new FolderException("The folder must have an id");
         }
         if (Objects.isNull(folder.getParentFolderId())) {
             throw new FolderException("You cannot change the root folder");

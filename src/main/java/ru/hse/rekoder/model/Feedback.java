@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 public class Feedback {
-    @NotNull(message = "Verdict cannot be empty")
+    @NotNull(message = "The verdict cannot be null")
     private String verdict;
     private String comment;
     private String timeConsumed;

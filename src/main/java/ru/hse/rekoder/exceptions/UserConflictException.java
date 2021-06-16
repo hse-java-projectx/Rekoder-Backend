@@ -2,7 +2,7 @@ package ru.hse.rekoder.exceptions;
 
 public class UserConflictException extends UserException {
     public UserConflictException(String username) {
-        super("The username \"" + username + "\" is already taken");
+        super("The id \"" + username + "\" is already taken");
     }
 
     @Override

@@ -10,8 +10,8 @@ import javax.validation.constraints.Size;
 @Getter
 @Setter
 public class TeamMemberWrap {
-    @NotNull(message = "memberId must not be null")
+    @NotNull(message = "The member id must not be null")
     @Size(min = 1, max = 100, message = "1 <= memberId length <= 100")
-    @Pattern(regexp = "^[a-zA-Z0-9_]+$", message = "The memberId can only contain the following characters [a-zA-Z0-9_]")
+    @Pattern(regexp = "^[a-zA-Z0-9_]+$", message = "The member Id can only contain the following characters [a-zA-Z0-9_]")
     private String memberId;
 }

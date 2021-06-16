@@ -11,9 +11,9 @@ import javax.validation.constraints.NotNull;
 @Setter
 public class SubmissionRequest {
     private String comment;
-    @NotNull(message = "Specify source code")
+    @NotNull(message = "The source code must not be null")
     private String sourceCode;
-    @NotNull(message = "Specify compiler")
+    @NotNull(message = "The compiler must not be null")
     private String compiler;
     @Valid
     private Feedback feedback;

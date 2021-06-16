@@ -80,7 +80,7 @@ public class TeamController {
         );
         boolean isNewMember = teamService.addExistingUserToTeam(teamId, member.getMemberId());
         if (!isNewMember) {
-            throw new TeamException("User \"" + member.getMemberId() + "\" already in the team");
+            throw new TeamException("The user \"" + member.getMemberId() + "\" is already in the team");
         }
         return ResponseEntity.noContent().build();
     }
