@@ -21,7 +21,9 @@ public class ProblemRequest {
     private String statement;
     private String inputFormat;
     private String outputFormat;
+    @NotNull(message = "The tags must not be null if they are specified")
     private Set<@NotNull String> tags = new HashSet<>();
+    @NotNull(message = "The tests must not be null if they are specified")
     private List<@Valid @NotNull Test> tests = new ArrayList<>();
     private String problemUrl;
 }
