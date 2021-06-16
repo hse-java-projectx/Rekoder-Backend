@@ -17,6 +17,7 @@ import ru.hse.rekoder.services.ProblemService;
 
 import javax.json.JsonMergePatch;
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -57,7 +58,9 @@ public class FolderController {
         Folder folder = new Folder();
         BeanUtils.copyProperties(folderRequest, folder);
         Folder createdFolder = folderService.createNewFolder(folderId, folder);
-        return ResponseEntity.ok(new FolderResponse(createdFolder));
+        return ResponseEntity
+                .created(URI.create("/folders/" + createdFolder.getId()))
+                .body(new FolderResponse(createdFolder));
     }
 
     @GetMapping("/{folderId}/path-to-root")

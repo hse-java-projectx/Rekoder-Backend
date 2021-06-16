@@ -24,6 +24,7 @@ import ru.hse.rekoder.services.TeamService;
 import javax.json.JsonMergePatch;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
+import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -54,7 +55,9 @@ public class TeamController {
     public ResponseEntity<TeamResponse> createTeam(@RequestBody @Valid Team team,
                                                    Authentication authentication) {
         Team createdTeam = teamService.createTeam(team, authentication.getName());
-        return ResponseEntity.ok(new TeamResponse(createdTeam));
+        return ResponseEntity
+                .created(URI.create("/teams/" + createdTeam.getTeamId()))
+                .body(new TeamResponse(createdTeam));
     }
 
     @GetMapping("/{teamId}/users")
@@ -123,7 +126,9 @@ public class TeamController {
         Problem problem = new Problem();
         BeanUtils.copyProperties(problemRequest, problem);
         Problem createdProblem = teamService.createProblem(teamId, problem);
-        return ResponseEntity.ok(new ProblemResponse(createdProblem));
+        return ResponseEntity
+                .created(URI.create("/problems/" + createdProblem.getId()))
+                .body(new ProblemResponse(createdProblem));
     }
 
     @PostMapping("/{teamId}/problems/clone")
@@ -135,7 +140,9 @@ public class TeamController {
                 Owner.userWithId(authentication.getName())
         );
         Problem problemClone = teamService.cloneProblem(teamId, originalProblem.getProblemId());
-        return ResponseEntity.ok(new ProblemResponse(problemClone));
+        return ResponseEntity
+                .created(URI.create("/problems/" + problemClone.getId()))
+                .body(new ProblemResponse(problemClone));
     }
 
     @PatchMapping(path = "/{teamId}", consumes = "application/merge-patch+json")

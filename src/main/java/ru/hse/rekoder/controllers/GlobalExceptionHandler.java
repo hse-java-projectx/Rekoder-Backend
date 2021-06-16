@@ -5,6 +5,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -133,5 +134,11 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             ex.getMessage()
         );
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorsResponse(List.of(error)));
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        SingleErrorResponse error = new SingleErrorResponse("not-readable-body", "Failed to read the request body");
+        return new ResponseEntity<>(new ErrorsResponse(List.of(error)), headers, HttpStatus.BAD_REQUEST);
     }
 }

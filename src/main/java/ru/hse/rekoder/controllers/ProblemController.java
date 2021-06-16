@@ -20,6 +20,7 @@ import ru.hse.rekoder.services.ProblemService;
 import javax.json.JsonMergePatch;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
+import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -74,7 +75,9 @@ public class ProblemController {
         Submission submission = new Submission();
         BeanUtils.copyProperties(submissionRequest, submission);
         Submission createdSubmission = problemService.createSubmission(problemId, submission, authentication.getName());
-        return ResponseEntity.ok(new SubmissionResponse(createdSubmission));
+        return ResponseEntity
+                .created(URI.create("/submissions/" + createdSubmission.getId()))
+                .body(new SubmissionResponse(createdSubmission));
     }
 
     @PatchMapping(path = "/{problemId}", consumes = "application/merge-patch+json")

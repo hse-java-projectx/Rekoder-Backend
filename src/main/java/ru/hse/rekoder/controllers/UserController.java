@@ -25,6 +25,7 @@ import ru.hse.rekoder.services.UserService;
 import javax.json.JsonMergePatch;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
+import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -66,7 +67,9 @@ public class UserController {
         user.setName(userRequest.getName());
         user.setContacts(userRequest.getContacts());
         User createdUser = userService.createUser(user);
-        return ResponseEntity.ok(new UserResponse(createdUser));
+        return ResponseEntity
+                .created(URI.create("/users/" + createdUser.getUsername()))
+                .body(new UserResponse(createdUser));
     }
 
     @GetMapping("/{userId}/teams")
@@ -105,7 +108,9 @@ public class UserController {
         Problem problem = new Problem();
         BeanUtils.copyProperties(problemRequest, problem);
         Problem createdProblem = userService.createProblem(userId, problem);
-        return ResponseEntity.ok(new ProblemResponse(createdProblem));
+        return ResponseEntity
+                .created(URI.create("/problems/" + createdProblem.getId()))
+                .body(new ProblemResponse(createdProblem));
     }
 
     @PostMapping("/{userId}/problems/clone")
@@ -118,7 +123,9 @@ public class UserController {
         );
 
         Problem problemClone = userService.cloneProblem(userId, originalProblem.getProblemId());
-        return ResponseEntity.ok(new ProblemResponse(problemClone));
+        return ResponseEntity
+                .created(URI.create("/problems/" + problemClone.getId()))
+                .body(new ProblemResponse(problemClone));
     }
 
     @PatchMapping(path = "/{userId}", consumes = "application/merge-patch+json")
