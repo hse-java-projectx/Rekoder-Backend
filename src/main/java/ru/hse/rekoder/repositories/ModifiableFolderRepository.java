@@ -6,5 +6,5 @@ import java.util.Optional;
 
 public interface ModifiableFolderRepository {
     Optional<Folder> addProblemToFolderById(int folderId, int problemId);
-    Optional<Folder> deleteProblemToFolderById(int folderId, int problemId);
+    Optional<Folder> deleteProblemFromFolderById(int folderId, int problemId);
 }

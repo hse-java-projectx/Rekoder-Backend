@@ -123,11 +123,16 @@ public class FolderServiceImpl implements FolderService {
                     .map(Problem::getId)
                     .collect(Collectors.toList());
             existingProblemsFromFolder.forEach(oldFolder.getProblemIds()::remove);
-            for (Integer nonExistingProblemId : oldFolder.getProblemIds()) {
-                try {
-                    deleteProblemFromFolder(folderId, nonExistingProblemId);
-                } catch (FolderNotFoundException ignored) {
-                    return;
+            Folder latestVersionOfFolder = oldFolder;
+            for (int idOfNonExistingProblem : oldFolder.getProblemIds()) {
+                if (latestVersionOfFolder.getProblemIds().contains(idOfNonExistingProblem)) {
+                    Optional<Folder> optLatestVersionOfFolder =
+                            folderRepository.deleteProblemFromFolderById(folderId, idOfNonExistingProblem);
+                    if (optLatestVersionOfFolder.isPresent()) {
+                        latestVersionOfFolder = optLatestVersionOfFolder.get();
+                    } else {
+                        return;
+                    }
                 }
             }
         });
@@ -137,7 +142,7 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     public boolean deleteProblemFromFolder(int folderId, int problemId) {
-        Folder oldFolder = folderRepository.deleteProblemToFolderById(folderId, problemId)
+        Folder oldFolder = folderRepository.deleteProblemFromFolderById(folderId, problemId)
                 .orElseThrow(() -> new FolderNotFoundException(folderId));
         return oldFolder.getProblemIds().contains(problemId);
     }

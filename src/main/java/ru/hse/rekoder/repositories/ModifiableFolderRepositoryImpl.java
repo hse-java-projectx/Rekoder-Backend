@@ -30,7 +30,7 @@ public class ModifiableFolderRepositoryImpl implements ModifiableFolderRepositor
     }
 
     @Override
-    public Optional<Folder> deleteProblemToFolderById(int folderId, int problemId) {
+    public Optional<Folder> deleteProblemFromFolderById(int folderId, int problemId) {
         Query folderById = Query.query(Criteria.where("_id").is(folderId));
         Update update = new Update();
         update.pull("problemIds", problemId);
