@@ -9,7 +9,7 @@ import java.util.Map;
 
 @Getter
 @Setter
-public class UserPatchRequest {
+public class TeamPatchRequest {
     protected String name;
     protected String bio;
     @NotNull(message = "The contacts must not be null if they specify in request body")

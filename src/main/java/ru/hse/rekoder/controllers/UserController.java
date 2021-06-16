@@ -139,13 +139,13 @@ public class UserController {
 
         User user = userService.getUser(userId);
         BeanUtils.copyProperties(
-                jsonMergePatchService.mergePatch(jsonMergePatch, convertToRequest(user), UserPatchRequest.class),
+                jsonMergePatchService.mergePatch(jsonMergePatch, convertToPatchRequest(user), UserPatchRequest.class),
                 user);
         User updatedUser = userService.updateUser(user);
         return ResponseEntity.ok(new UserResponse(updatedUser));
     }
 
-    private UserPatchRequest convertToRequest(User user) {
+    private UserPatchRequest convertToPatchRequest(User user) {
         UserPatchRequest userPatchRequest = new UserPatchRequest();
         userPatchRequest.setBio(user.getBio());
         userPatchRequest.setName(user.getName());

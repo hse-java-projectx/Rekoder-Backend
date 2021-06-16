@@ -141,4 +141,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         SingleErrorResponse error = new SingleErrorResponse("not-readable-body", "Failed to read the request body");
         return new ResponseEntity<>(new ErrorsResponse(List.of(error)), headers, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler({MergePatchException.class})
+    public ResponseEntity<ErrorsResponse> handleMergePatchException(MergePatchException ex) {
+        SingleErrorResponse error = new SingleErrorResponse("patch-error", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorsResponse(List.of(error)));
+    }
 }

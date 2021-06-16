@@ -11,10 +11,7 @@ import ru.hse.rekoder.exceptions.TeamException;
 import ru.hse.rekoder.model.Owner;
 import ru.hse.rekoder.model.Problem;
 import ru.hse.rekoder.model.Team;
-import ru.hse.rekoder.requests.ProblemIdWrap;
-import ru.hse.rekoder.requests.ProblemRequest;
-import ru.hse.rekoder.requests.TeamMemberWrap;
-import ru.hse.rekoder.requests.TeamRequest;
+import ru.hse.rekoder.requests.*;
 import ru.hse.rekoder.responses.ProblemResponse;
 import ru.hse.rekoder.responses.TeamResponse;
 import ru.hse.rekoder.responses.UserResponse;
@@ -52,8 +49,13 @@ public class TeamController {
     }
 
     @PostMapping
-    public ResponseEntity<TeamResponse> createTeam(@RequestBody @Valid Team team,
+    public ResponseEntity<TeamResponse> createTeam(@RequestBody @Valid TeamRequest teamRequest,
                                                    Authentication authentication) {
+        Team team = new Team();
+        team.setTeamId(teamRequest.getId());
+        team.setContacts(teamRequest.getContacts());
+        team.setName(teamRequest.getName());
+        team.setBio(teamRequest.getBio());
         Team createdTeam = teamService.createTeam(team, authentication.getName());
         return ResponseEntity
                 .created(URI.create("/teams/" + createdTeam.getTeamId()))
@@ -155,18 +157,18 @@ public class TeamController {
         );
         Team team = teamService.getTeam(teamId);
         BeanUtils.copyProperties(
-                jsonMergePatchService.mergePatch(jsonMergePatch, convertToRequest(team), TeamRequest.class),
+                jsonMergePatchService.mergePatch(jsonMergePatch, convertToPatchRequest(team), TeamPatchRequest.class),
                 team
         );
         Team updatedTeam = teamService.updateTeam(team);
         return ResponseEntity.ok(new TeamResponse(updatedTeam));
     }
 
-    private TeamRequest convertToRequest(Team team) {
-        TeamRequest teamRequest = new TeamRequest();
-        teamRequest.setBio(team.getBio());
-        teamRequest.setName(team.getName());
-        teamRequest.setContacts(team.getContacts());
-        return teamRequest;
+    private TeamPatchRequest convertToPatchRequest(Team team) {
+        TeamPatchRequest teamPatchRequest = new TeamPatchRequest();
+        teamPatchRequest.setBio(team.getBio());
+        teamPatchRequest.setName(team.getName());
+        teamPatchRequest.setContacts(team.getContacts());
+        return teamPatchRequest;
     }
 }
